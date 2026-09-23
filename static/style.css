@@ -1,0 +1,186 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0b0f19;
+    color: white;
+}
+
+.home {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.home-content {
+    max-width: 700px;
+}
+
+.logo {
+    font-size: 70px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 64px;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    font-size: 24px;
+    margin-top: 15px;
+    color: #4ade80;
+}
+
+.description {
+    max-width: 550px;
+    margin: 25px auto;
+    font-size: 17px;
+    line-height: 1.6;
+    color: #b8c0cc;
+}
+
+.start-button {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 15px 30px;
+    background: #22c55e;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.start-button:hover {
+    transform: translateY(-3px);
+    background: #16a34a;
+}
+
+/* Mobiel */
+
+@media (max-width: 600px) {
+
+    h1 {
+        font-size: 45px;
+    }
+
+    .subtitle {
+        font-size: 19px;
+    }
+
+    .description {
+        font-size: 15px;
+    }
+
+    .logo {
+        font-size: 55px;
+    }
+
+/* Club kiezen */
+
+.clubs-page {
+    min-height: 100vh;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.page-subtitle {
+    color: #b8c0cc;
+    margin-bottom: 40px;
+}
+
+.club-grid {
+    max-width: 1100px;
+    margin: auto;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.club-card {
+    background: #151b29;
+    border: 1px solid #252e40;
+    border-radius: 14px;
+    padding: 25px;
+
+    transition: 0.2s;
+}
+
+.club-card:hover {
+    transform: translateY(-5px);
+    border-color: #22c55e;
+}
+
+.club-logo {
+    font-size: 45px;
+}
+
+.club-card h2 {
+    margin: 10px 0 5px;
+}
+
+.club-card p {
+    color: #9ca6b5;
+}
+
+.club-rating {
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+.club-button {
+    display: inline-block;
+    padding: 10px 18px;
+
+    background: #22c55e;
+    color: white;
+
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.club-button:hover {
+    background: #16a34a;
+}
+
+.back-button {
+    display: inline-block;
+    margin-top: 35px;
+
+    color: #9ca6b5;
+    text-decoration: none;
+}
+
+
+/* Mobiel */
+
+@media (max-width: 800px) {
+
+    .club-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 550px) {
+
+    .club-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .clubs-page {
+        padding: 40px 15px;
+    }
+}   
+
+}

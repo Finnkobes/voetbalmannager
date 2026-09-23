@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Club kiezen - ClubMaster</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <main class="clubs-page">
+
+        <h1>Kies je club</h1>
+
+        <p class="page-subtitle">
+            Kies de club waarmee jij kampioen wilt worden.
+        </p>
+
+        <div class="club-grid">
+
+            {% for club in clubs %}
+
+            <div class="club-card">
+
+                <div class="club-logo">
+                    ⚽
+                </div>
+
+                <h2>{{ club.naam }}</h2>
+
+                <p>{{ club.stad }}</p>
+
+                <div class="club-rating">
+                    ⭐ {{ club.rating }}
+                </div>
+
+                <a href="/dashboard" class="club-button">
+                    Deze club kiezen
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        <a href="/" class="back-button">
+            ← Terug
+        </a>
+
+    </main>
+
+</body>
+</html>
