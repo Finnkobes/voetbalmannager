@@ -15,7 +15,6 @@ Tijdens deze sprint ga ik:
 
 * [ ] De GitHub repository opzetten en koppelen aan mijn lokale repository.
 * [ ] De basisstructuur van het project maken.
-* [ ] Flask installeren en configureren.
 * [ ] Een werkende Flask-applicatie maken.
 * [ ] Een basis homepage maken.
 * [ ] Een dashboard ontwerpen.
