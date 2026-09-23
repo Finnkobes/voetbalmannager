@@ -2,19 +2,79 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - ClubMaster</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-    <h1>Dashboard</h1>
 
-    <ul>
-        <li>Selectie</li>
-        <li>Tactiek</li>
-        <li>Transfers</li>
-        <li>Wedstrijden</li>
-    </ul>
+    <nav class="navbar">
+   
+<a href="{{ url_for('home') }}" class="nav-logo">
+    ⚽ ClubMaster
+</a>
+    <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
+        <a href="{{ url_for('selection') }}">Selectie</a>
+        <a href="#">Tactiek</a>
+        <a href="#">Transfers</a>
+        <a href="#">Wedstrijden</a>
+        <a href="#">Competitie</a>
+    </div>
+</nav>
 
-    <a href="/">Terug</a>
+    <main class="dashboard">
+
+        {% if club %}
+
+            <h1>Welkom, manager!</h1>
+
+            <p class="dashboard-subtitle">
+                Je bent manager van {{ club.naam }}
+            </p>
+
+            <div class="dashboard-grid">
+
+                <div class="dashboard-card">
+                    <span class="card-icon">⚽</span>
+                    <h2>{{ club.naam }}</h2>
+                    <p>{{ club.stad }}</p>
+                </div>
+
+                <div class="dashboard-card">
+                    <span class="card-icon">⭐</span>
+                    <h2>{{ club.rating }}</h2>
+                    <p>Club rating</p>
+                </div>
+
+                <div class="dashboard-card">
+                    <span class="card-icon">💰</span>
+                    <h2>€10.000.000</h2>
+                    <p>Transferbudget</p>
+                </div>
+
+                <div class="dashboard-card">
+                    <span class="card-icon">🏆</span>
+                    <h2>0</h2>
+                    <p>Punten</p>
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <h1>Je hebt nog geen club gekozen.</h1>
+
+            <a href="/clubs" class="start-button">
+                Kies een club
+            </a>
+
+        {% endif %}
+
+    </main>
+
 </body>
 </html>

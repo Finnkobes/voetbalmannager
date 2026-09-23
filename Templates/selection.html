@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selectie - ClubMaster</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-logo">
+            ⚽ ClubMaster
+        </div>
+
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('selection') }}" class="active">Selectie</a>
+            <a href="#">Tactiek</a>
+            <a href="#">Transfers</a>
+            <a href="#">Wedstrijden</a>
+            <a href="#">Competitie</a>
+        </div>
+    </nav>
+
+    <main class="selection-page">
+
+        <h1>Jouw selectie</h1>
+
+        {% if club %}
+            <p class="page-subtitle">
+                {{ club.naam }} • Selectie
+            </p>
+        {% endif %}
+
+        <div class="player-list">
+
+            {% for player in players %}
+
+            <div class="player-card">
+
+                <div class="player-avatar">
+                    👤
+                </div>
+
+                <div class="player-info">
+                    <h2>{{ player.naam }}</h2>
+                    <p>{{ player.positie }}</p>
+                </div>
+
+                <div class="player-stat">
+                    <strong>{{ player.rating }}</strong>
+                    <span>Rating</span>
+                </div>
+
+                <div class="player-stat">
+                    <strong>{{ player.leeftijd }}</strong>
+                    <span>Leeftijd</span>
+                </div>
+
+                <div class="player-stat">
+                    <strong>€{{ "{:,.0f}".format(player.marktwaarde).replace(",", ".") }}</strong>
+                    <span>Marktwaarde</span>
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </main>
+
+</body>
+</html>

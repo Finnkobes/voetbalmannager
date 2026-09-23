@@ -9,6 +9,11 @@ body {
     color: white;
 }
 
+
+/* =========================
+   HOMEPAGE
+========================= */
+
 .home {
     min-height: 100vh;
     display: flex;
@@ -51,12 +56,16 @@ h1 {
     display: inline-block;
     margin-top: 15px;
     padding: 15px 30px;
+
     background: #22c55e;
     color: white;
+
     text-decoration: none;
     border-radius: 10px;
+
     font-size: 18px;
     font-weight: bold;
+
     transition: 0.2s;
 }
 
@@ -65,27 +74,10 @@ h1 {
     background: #16a34a;
 }
 
-/* Mobiel */
 
-@media (max-width: 600px) {
-
-    h1 {
-        font-size: 45px;
-    }
-
-    .subtitle {
-        font-size: 19px;
-    }
-
-    .description {
-        font-size: 15px;
-    }
-
-    .logo {
-        font-size: 55px;
-    }
-
-/* Club kiezen */
+/* =========================
+   CLUB KIEZEN
+========================= */
 
 .clubs-page {
     min-height: 100vh;
@@ -111,6 +103,7 @@ h1 {
     background: #151b29;
     border: 1px solid #252e40;
     border-radius: 14px;
+
     padding: 25px;
 
     transition: 0.2s;
@@ -138,49 +131,349 @@ h1 {
     font-weight: bold;
 }
 
+
+/* =========================
+   BUTTONS
+========================= */
+
 .club-button {
     display: inline-block;
-    padding: 10px 18px;
+
+    padding: 12px 22px;
 
     background: #22c55e;
     color: white;
 
     text-decoration: none;
     border-radius: 8px;
+
     font-weight: bold;
+
+    transition: 0.2s;
 }
 
 .club-button:hover {
     background: #16a34a;
+    transform: translateY(-2px);
 }
 
 .back-button {
     display: inline-block;
+
     margin-top: 35px;
+    padding: 12px 22px;
+
+    background: #252e40;
+    color: white;
+
+    text-decoration: none;
+    border-radius: 8px;
+
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+.back-button:hover {
+    background: #323d52;
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   NAVIGATIE
+========================= */
+
+.navbar {
+    min-height: 70px;
+    padding: 0 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: #111827;
+    border-bottom: 1px solid #252e40;
+}
+
+.nav-logo {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    gap: 8px;
+}
+
+.nav-links a {
+    padding: 10px 14px;
+
+    border-radius: 8px;
 
     color: #9ca6b5;
+    text-decoration: none;
+
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+.nav-links a:hover {
+    color: white;
+    background: #1f2937;
+}
+
+.nav-links a.active {
+    color: white;
+    background: #22c55e;
+}
+
+.nav-logo {
+    color: white;
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.nav-logo:hover {
+    color: white;
     text-decoration: none;
 }
 
 
-/* Mobiel */
+/* =========================
+   DASHBOARD
+========================= */
+
+.dashboard {
+    min-height: calc(100vh - 70px);
+    padding: 55px 20px;
+
+    text-align: center;
+}
+
+.dashboard h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.dashboard-subtitle {
+    color: #9ca6b5;
+    font-size: 18px;
+
+    margin-bottom: 45px;
+}
+
+.dashboard-grid {
+    max-width: 1100px;
+    margin: auto;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 20px;
+}
+
+.dashboard-card {
+    background: #151b29;
+
+    border: 1px solid #252e40;
+    border-radius: 14px;
+
+    padding: 30px 20px;
+
+    transition: 0.2s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+    border-color: #22c55e;
+}
+
+.card-icon {
+    font-size: 42px;
+}
+
+.dashboard-card h2 {
+    margin: 15px 0 5px;
+}
+
+.dashboard-card p {
+    color: #9ca6b5;
+    margin: 0;
+}
+
+
+/* =========================
+   MOBIEL
+========================= */
 
 @media (max-width: 800px) {
 
     .club-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .navbar {
+        flex-direction: column;
+        padding: 18px 15px;
+        gap: 15px;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 }
+
 
 @media (max-width: 550px) {
 
+    h1 {
+        font-size: 45px;
+    }
+
+    .subtitle {
+        font-size: 19px;
+    }
+
+    .description {
+        font-size: 15px;
+    }
+
+    .logo {
+        font-size: 55px;
+    }
+
     .club-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-grid {
         grid-template-columns: 1fr;
     }
 
     .clubs-page {
         padding: 40px 15px;
     }
-}   
 
+    .dashboard {
+        padding: 35px 15px;
+    }
+
+    .dashboard h1 {
+        font-size: 34px;
+    }
+/* =========================
+   SELECTIE
+========================= */
+
+.selection-page {
+    min-height: calc(100vh - 70px);
+    padding: 50px 20px;
 }
+
+.selection-page h1 {
+    text-align: center;
+    font-size: 42px;
+}
+
+.selection-page .page-subtitle {
+    text-align: center;
+}
+
+.player-list {
+    max-width: 1000px;
+    margin: 40px auto 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.player-card {
+    display: grid;
+    grid-template-columns: 70px 1fr 100px 100px 150px;
+    align-items: center;
+    gap: 20px;
+
+    padding: 18px 22px;
+
+    background: #151b29;
+    border: 1px solid #252e40;
+    border-radius: 12px;
+
+    transition: 0.2s;
+}
+
+.player-card:hover {
+    border-color: #22c55e;
+    transform: translateX(3px);
+}
+
+.player-avatar {
+    width: 55px;
+    height: 55px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #252e40;
+    border-radius: 50%;
+
+    font-size: 27px;
+}
+
+.player-info h2 {
+    margin: 0 0 5px;
+    font-size: 19px;
+}
+
+.player-info p {
+    margin: 0;
+    color: #9ca6b5;
+}
+
+.player-stat {
+    text-align: center;
+}
+
+.player-stat strong {
+    display: block;
+    font-size: 18px;
+}
+
+.player-stat span {
+    display: block;
+    margin-top: 4px;
+    color: #9ca6b5;
+    font-size: 13px;
+}
+
+
+/* Selectie mobiel */
+
+@media (max-width: 700px) {
+
+    .player-card {
+        grid-template-columns: 60px 1fr 70px;
+        gap: 12px;
+    }
+
+    .player-stat:nth-last-child(-n+2) {
+        display: none;
+    }
+
+    .player-info h2 {
+        font-size: 16px;
+    }
+}
+
+}   
