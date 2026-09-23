@@ -1,69 +1,185 @@
+
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Selectie - ClubMaster</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-    <nav class="navbar">
-        <div class="nav-logo">
-            ⚽ ClubMaster
-        </div>
-
-        <div class="nav-links">
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('selection') }}" class="active">Selectie</a>
-            <a href="#">Tactiek</a>
-            <a href="#">Transfers</a>
-            <a href="#">Wedstrijden</a>
-            <a href="#">Competitie</a>
-        </div>
-    </nav>
+    {% include "navbar.html" %}
 
     <main class="selection-page">
 
-        <h1>Jouw selectie</h1>
+        <h1>{{ club.naam }} - Selectie</h1>
 
-        {% if club %}
-            <p class="page-subtitle">
-                {{ club.naam }} • Selectie
-            </p>
-        {% endif %}
+        <p class="page-subtitle">
+            Bekijk en filter de spelers van jouw club.
+        </p>
 
-        <div class="player-list">
+
+        <!-- FILTERS -->
+
+        <form method="GET" class="player-filters">
+
+            <div class="filter-group">
+
+                <label for="positie">
+                    Positie
+                </label>
+
+                <select name="positie"
+                        id="positie"
+                        onchange="this.form.submit()">
+
+                    <option value="alle"
+                        {% if positie_filter == "alle" %}selected{% endif %}>
+                        Alle spelers
+                    </option>
+
+                    <option value="Keeper"
+                        {% if positie_filter == "Keeper" %}selected{% endif %}>
+                        🧤 Keepers
+                    </option>
+
+                    <option value="Verdediger"
+                        {% if positie_filter == "Verdediger" %}selected{% endif %}>
+                        🛡️ Verdedigers
+                    </option>
+
+                    <option value="Middenvelder"
+                        {% if positie_filter == "Middenvelder" %}selected{% endif %}>
+                        🎯 Middenvelders
+                    </option>
+
+                    <option value="Aanvaller"
+                        {% if positie_filter == "Aanvaller" %}selected{% endif %}>
+                        ⚡ Aanvallers
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="sorteer">
+                    Sorteren op
+                </label>
+
+                <select name="sorteer"
+                        id="sorteer"
+                        onchange="this.form.submit()">
+
+                    <option value="rating_desc"
+                        {% if sorteer == "rating_desc" %}selected{% endif %}>
+                        ⭐ Rating hoog → laag
+                    </option>
+
+                    <option value="rating_asc"
+                        {% if sorteer == "rating_asc" %}selected{% endif %}>
+                        ⭐ Rating laag → hoog
+                    </option>
+
+                    <option value="waarde_desc"
+                        {% if sorteer == "waarde_desc" %}selected{% endif %}>
+                        💰 Marktwaarde hoog → laag
+                    </option>
+
+                    <option value="waarde_asc"
+                        {% if sorteer == "waarde_asc" %}selected{% endif %}>
+                        💰 Marktwaarde laag → hoog
+                    </option>
+
+                    <option value="leeftijd_asc"
+                        {% if sorteer == "leeftijd_asc" %}selected{% endif %}>
+                        🎂 Leeftijd jong → oud
+                    </option>
+
+                    <option value="leeftijd_desc"
+                        {% if sorteer == "leeftijd_desc" %}selected{% endif %}>
+                        🎂 Leeftijd oud → jong
+                    </option>
+
+                </select>
+
+            </div>
+
+        </form>
+
+
+        <!-- SPELERS -->
+
+        <div class="selection-grid">
 
             {% for player in players %}
 
-            <div class="player-card">
+            <div class="selection-card">
 
-                <div class="player-avatar">
-                    👤
+                <div class="player-card-top">
+
+                    <div>
+
+                        <h2>
+                            {{ player.naam }}
+                        </h2>
+
+                        <span class="player-position">
+                            {{ player.positie }}
+                        </span>
+
+                    </div>
+
+                    <div class="player-rating">
+                        {{ player.rating }}
+                    </div>
+
                 </div>
+
 
                 <div class="player-info">
-                    <h2>{{ player.naam }}</h2>
-                    <p>{{ player.positie }}</p>
+
+                    <div>
+
+                        <span>
+                            Leeftijd
+                        </span>
+
+                        <strong>
+                            {{ player.leeftijd }} jaar
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Marktwaarde
+                        </span>
+
+                        <strong>
+                            €{{ "{:,.0f}".format(player.marktwaarde).replace(",", ".") }}
+                        </strong>
+
+                    </div>
+
                 </div>
 
-                <div class="player-stat">
-                    <strong>{{ player.rating }}</strong>
-                    <span>Rating</span>
-                </div>
+            </div>
 
-                <div class="player-stat">
-                    <strong>{{ player.leeftijd }}</strong>
-                    <span>Leeftijd</span>
-                </div>
+            {% else %}
 
-                <div class="player-stat">
-                    <strong>€{{ "{:,.0f}".format(player.marktwaarde).replace(",", ".") }}</strong>
-                    <span>Marktwaarde</span>
-                </div>
-
+            <div class="no-players">
+                Geen spelers gevonden met deze filter.
             </div>
 
             {% endfor %}
@@ -73,4 +189,6 @@
     </main>
 
 </body>
+
 </html>
+

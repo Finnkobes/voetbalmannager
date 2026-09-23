@@ -1,0 +1,168 @@
+```html
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Statistieken - ClubMaster</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    {% include "navbar.html" %}
+
+    <main class="statistics-page">
+
+        <h1>{{ club.naam }} - Statistieken</h1>
+
+        <p class="page-subtitle">
+            Bekijk de belangrijkste statistieken van jouw selectie.
+        </p>
+
+
+        <!-- OVERZICHT -->
+
+        <section class="statistics-overview">
+
+            <div class="statistics-card">
+                <span class="statistics-icon">👥</span>
+
+                <div>
+                    <strong>{{ totaal_spelers }}</strong>
+                    <p>Spelers</p>
+                </div>
+            </div>
+
+
+            <div class="statistics-card">
+                <span class="statistics-icon">⭐</span>
+
+                <div>
+                    <strong>{{ gemiddelde_rating }}</strong>
+                    <p>Gemiddelde rating</p>
+                </div>
+            </div>
+
+
+            <div class="statistics-card">
+                <span class="statistics-icon">💰</span>
+
+                <div>
+                    <strong>
+                        €{{ "{:,.0f}".format(totale_waarde).replace(",", ".") }}
+                    </strong>
+
+                    <p>Totale marktwaarde</p>
+                </div>
+            </div>
+
+
+            <div class="statistics-card">
+                <span class="statistics-icon">🏆</span>
+
+                <div>
+                    <strong>
+                        {% if hoogste_rating %}
+                            {{ hoogste_rating.rating }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </strong>
+
+                    <p>Hoogste rating</p>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- BESTE SPELER -->
+
+        {% if hoogste_rating %}
+
+        <section class="statistics-section">
+
+            <h2>Beste speler</h2>
+
+            <div class="best-player">
+
+                <div class="best-player-rating">
+                    {{ hoogste_rating.rating }}
+                </div>
+
+                <div>
+                    <h3>{{ hoogste_rating.naam }}</h3>
+
+                    <p>
+                        {{ hoogste_rating.positie }}
+                        · {{ hoogste_rating.leeftijd }} jaar
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+        {% endif %}
+
+
+        <!-- SPELERS -->
+
+        <section class="statistics-section">
+
+            <h2>Spelersoverzicht</h2>
+
+            <div class="statistics-table">
+
+                <div class="statistics-row statistics-header">
+                    <span>Speler</span>
+                    <span>Positie</span>
+                    <span>Leeftijd</span>
+                    <span>Rating</span>
+                    <span>Marktwaarde</span>
+                </div>
+
+
+                {% for player in players %}
+
+                <div class="statistics-row">
+
+                    <strong>
+                        {{ player.naam }}
+                    </strong>
+
+                    <span>
+                        {{ player.positie }}
+                    </span>
+
+                    <span>
+                        {{ player.leeftijd }} jaar
+                    </span>
+
+                    <strong>
+                        {{ player.rating }}
+                    </strong>
+
+                    <span>
+                        €{{ "{:,.0f}".format(player.marktwaarde).replace(",", ".") }}
+                    </span>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
+```

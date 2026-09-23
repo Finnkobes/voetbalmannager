@@ -1,3 +1,4 @@
+
 * {
     box-sizing: border-box;
 }
@@ -56,16 +57,12 @@ h1 {
     display: inline-block;
     margin-top: 15px;
     padding: 15px 30px;
-
     background: #22c55e;
     color: white;
-
     text-decoration: none;
     border-radius: 10px;
-
     font-size: 18px;
     font-weight: bold;
-
     transition: 0.2s;
 }
 
@@ -103,9 +100,7 @@ h1 {
     background: #151b29;
     border: 1px solid #252e40;
     border-radius: 14px;
-
     padding: 25px;
-
     transition: 0.2s;
 }
 
@@ -138,17 +133,12 @@ h1 {
 
 .club-button {
     display: inline-block;
-
     padding: 12px 22px;
-
     background: #22c55e;
     color: white;
-
     text-decoration: none;
     border-radius: 8px;
-
     font-weight: bold;
-
     transition: 0.2s;
 }
 
@@ -159,18 +149,13 @@ h1 {
 
 .back-button {
     display: inline-block;
-
     margin-top: 35px;
     padding: 12px 22px;
-
     background: #252e40;
     color: white;
-
     text-decoration: none;
     border-radius: 8px;
-
     font-weight: bold;
-
     transition: 0.2s;
 }
 
@@ -197,39 +182,6 @@ h1 {
 }
 
 .nav-logo {
-    font-size: 22px;
-    font-weight: bold;
-}
-
-.nav-links {
-    display: flex;
-    gap: 8px;
-}
-
-.nav-links a {
-    padding: 10px 14px;
-
-    border-radius: 8px;
-
-    color: #9ca6b5;
-    text-decoration: none;
-
-    font-weight: bold;
-
-    transition: 0.2s;
-}
-
-.nav-links a:hover {
-    color: white;
-    background: #1f2937;
-}
-
-.nav-links a.active {
-    color: white;
-    background: #22c55e;
-}
-
-.nav-logo {
     color: white;
     text-decoration: none;
     font-size: 22px;
@@ -238,7 +190,108 @@ h1 {
 
 .nav-logo:hover {
     color: white;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-links > a {
+    padding: 10px 14px;
+    border-radius: 8px;
+
+    color: #9ca6b5;
     text-decoration: none;
+
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.nav-links > a:hover {
+    color: white;
+    background: #1f2937;
+}
+
+.nav-links > a.active {
+    color: white;
+    background: #22c55e;
+}
+
+
+/* =========================
+   TEAM MENU
+========================= */
+
+.nav-dropdown {
+    position: relative;
+}
+
+.dropdown-button {
+    list-style: none;
+
+    padding: 10px 14px;
+
+    border-radius: 8px;
+
+    color: #9ca6b5;
+    background: transparent;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.dropdown-button::-webkit-details-marker {
+    display: none;
+}
+
+.dropdown-button:hover {
+    color: white;
+    background: #1f2937;
+}
+
+.nav-dropdown[open] .dropdown-button {
+    color: white;
+    background: #22c55e;
+}
+
+.dropdown-menu {
+    position: absolute;
+
+    top: calc(100% - 5px);
+    left: 0;
+
+    width: 190px;
+    padding: 8px;
+
+    background: #151b29;
+
+    border: 1px solid #252e40;
+    border-radius: 10px;
+
+    z-index: 1000;
+}
+
+.dropdown-menu a {
+    display: block;
+
+    width: 100%;
+    padding: 11px 13px;
+
+    color: #9ca6b5;
+
+    text-decoration: none;
+    border-radius: 7px;
+
+    font-weight: bold;
+}
+
+.dropdown-menu a:hover {
+    color: white;
+    background: #22c55e;
 }
 
 
@@ -249,7 +302,6 @@ h1 {
 .dashboard {
     min-height: calc(100vh - 70px);
     padding: 55px 20px;
-
     text-align: center;
 }
 
@@ -261,7 +313,6 @@ h1 {
 .dashboard-subtitle {
     color: #9ca6b5;
     font-size: 18px;
-
     margin-bottom: 45px;
 }
 
@@ -271,7 +322,6 @@ h1 {
 
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-
     gap: 20px;
 }
 
@@ -306,10 +356,616 @@ h1 {
 
 
 /* =========================
+   SELECTIE PAGINA
+========================= */
+
+.selection-page {
+    max-width: 1200px;
+    min-height: calc(100vh - 70px);
+
+    margin: 0 auto;
+    padding: 50px 25px;
+}
+
+.selection-page h1 {
+    text-align: center;
+    font-size: 42px;
+    margin-bottom: 8px;
+}
+
+.selection-page .page-subtitle {
+    text-align: center;
+    margin-top: 0;
+}
+
+
+/* =========================
+   FILTERS
+========================= */
+
+.player-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+
+    margin: 35px 0 25px;
+    padding: 18px;
+
+    background: #151b29;
+
+    border: 1px solid #252e40;
+    border-radius: 12px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.filter-group label {
+    color: #9ca6b5;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.filter-group select {
+    width: 230px;
+
+    padding: 11px 13px;
+
+    background: #0b0f19;
+    color: white;
+
+    border: 1px solid #303a4d;
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.filter-group select:hover {
+    border-color: #22c55e;
+}
+
+.filter-group select:focus {
+    outline: none;
+    border-color: #22c55e;
+}
+
+
+/* =========================
+   SPELERS
+========================= */
+
+.selection-grid {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 16px;
+}
+
+.selection-card {
+    background: #151b29;
+
+    border: 1px solid #252e40;
+    border-radius: 12px;
+
+    padding: 18px;
+
+    transition: 0.2s;
+}
+
+.selection-card:hover {
+    transform: translateY(-3px);
+    border-color: #22c55e;
+}
+
+
+/* =========================
+   SPELER KAART
+========================= */
+
+.player-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 15px;
+}
+
+.player-card-top h2 {
+    margin: 0 0 5px;
+
+    font-size: 17px;
+}
+
+.player-position {
+    color: #8d98a8;
+    font-size: 13px;
+}
+
+
+/* RATING */
+
+.player-rating {
+    flex-shrink: 0;
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #22c55e;
+    color: white;
+
+    border-radius: 8px;
+
+    font-size: 17px;
+    font-weight: bold;
+}
+
+
+/* INFO */
+
+.player-info {
+    display: flex;
+    justify-content: space-between;
+
+    margin-top: 17px;
+    padding-top: 14px;
+
+    border-top: 1px solid #252e40;
+}
+
+.player-info div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.player-info span {
+    color: #727d8d;
+    font-size: 12px;
+}
+
+.player-info strong {
+    color: #e5e7eb;
+    font-size: 13px;
+}
+
+
+/* GEEN SPELERS */
+
+.no-players {
+    grid-column: 1 / -1;
+
+    padding: 30px;
+
+    background: #151b29;
+
+    border: 1px solid #252e40;
+    border-radius: 12px;
+
+    color: #9ca6b5;
+
+    text-align: center;
+}
+
+
+/* =========================
+   TACTIEKEN
+========================= */
+
+.tactics-page {
+    min-height: calc(100vh - 70px);
+    padding: 50px 20px;
+}
+
+.tactics-page h1 {
+    text-align: center;
+    font-size: 42px;
+}
+
+.tactics-page .page-subtitle {
+    text-align: center;
+}
+
+.tactics-panel {
+    max-width: 1100px;
+    margin: 40px auto 0;
+
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+
+    gap: 25px;
+    align-items: start;
+}
+
+.formation-section,
+.tactic-settings {
+    background: #151b29;
+
+    border: 1px solid #252e40;
+    border-radius: 14px;
+
+    padding: 22px;
+}
+
+.formation-section h2,
+.tactic-settings h2 {
+    margin-top: 0;
+}
+
+.formation-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.formation-button {
+    padding: 12px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #252e40;
+    color: white;
+
+    font-weight: bold;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.formation-button:hover {
+    background: #22c55e;
+    transform: translateY(-2px);
+}
+
+.pitch {
+    min-height: 600px;
+
+    background: #166534;
+
+    border: 4px solid white;
+    border-radius: 12px;
+
+    padding: 35px 20px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+
+    position: relative;
+}
+
+.pitch-row {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+}
+
+.position {
+    width: 75px;
+    height: 75px;
+
+    border-radius: 50%;
+
+    background: #22c55e;
+
+    border: 3px solid white;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: bold;
+}
+
+.position span {
+    font-size: 16px;
+}
+
+.position small {
+    font-size: 9px;
+}
+
+.tactic-settings select {
+    width: 100%;
+
+    padding: 12px;
+    margin-bottom: 20px;
+
+    border-radius: 8px;
+
+    border: 1px solid #252e40;
+
+    background: #0b0f19;
+    color: white;
+}
+
+
+/* =========================
+   OPSTELLING
+========================= */
+
+.lineup-page {
+    min-height: calc(100vh - 70px);
+    padding: 45px 20px;
+}
+
+.lineup-page h1 {
+    text-align: center;
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.lineup-page .page-subtitle {
+    text-align: center;
+}
+
+.lineup-container {
+    max-width: 1200px;
+    margin: 40px auto;
+
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+
+    gap: 25px;
+}
+
+
+/* =========================
+   VOETBALVELD
+========================= */
+
+.lineup-pitch {
+    position: relative;
+
+    min-height: 650px;
+
+    background: #166534;
+
+    border: 4px solid white;
+    border-radius: 12px;
+
+    overflow: hidden;
+}
+
+
+/* Middenlijn */
+
+.lineup-pitch::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    top: 50%;
+
+    height: 2px;
+
+    background: white;
+}
+
+
+/* Middencirkel */
+
+.lineup-pitch::after {
+    content: "";
+
+    position: absolute;
+
+    width: 150px;
+    height: 150px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    border: 2px solid white;
+    border-radius: 50%;
+}
+
+
+/* =========================
+   4-3-3 POSITIES
+========================= */
+
+.formation-position {
+    position: absolute;
+
+    width: 82px;
+    height: 82px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #252e40;
+
+    border: 3px dashed white;
+    border-radius: 50%;
+
+    color: white;
+    font-weight: bold;
+
+    z-index: 5;
+
+    transition: 0.2s;
+}
+
+.formation-position:hover {
+    background: #22c55e;
+}
+
+
+/* Aanval */
+
+.position-lw {
+    left: 18%;
+    top: 10%;
+}
+
+.position-sp {
+    left: 50%;
+    top: 7%;
+    transform: translateX(-50%);
+}
+
+.position-rw {
+    right: 18%;
+    top: 10%;
+}
+
+
+/* Middenveld */
+
+.position-cm-left {
+    left: 28%;
+    top: 32%;
+}
+
+.position-cam {
+    left: 50%;
+    top: 28%;
+    transform: translateX(-50%);
+}
+
+.position-cm-right {
+    right: 28%;
+    top: 32%;
+}
+
+
+/* Verdediging */
+
+.position-lb {
+    left: 10%;
+    top: 57%;
+}
+
+.position-cb-left {
+    left: 34%;
+    top: 57%;
+}
+
+.position-cb-right {
+    right: 34%;
+    top: 57%;
+}
+
+.position-rb {
+    right: 10%;
+    top: 57%;
+}
+
+
+/* Keeper */
+
+.position-gk {
+    left: 50%;
+    bottom: 5%;
+    transform: translateX(-50%);
+}
+
+
+/* =========================
+   OPSTELLING SPELERS
+========================= */
+
+.lineup-player-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    max-height: 520px;
+
+    overflow-y: auto;
+}
+
+.bench-player {
+    padding: 12px;
+
+    background: #252e40;
+
+    border: 1px solid #323d52;
+    border-radius: 8px;
+
+    cursor: grab;
+
+    transition: 0.2s;
+}
+
+.bench-player:hover {
+    background: #323d52;
+    transform: translateX(3px);
+}
+
+.bench-player:active {
+    cursor: grabbing;
+}
+
+.bench-player strong {
+    display: block;
+}
+
+.bench-player span {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #9ca6b5;
+    font-size: 13px;
+}
+
+
+/* Gevulde positie */
+
+.formation-position.drop-hover {
+    background: #22c55e;
+    border-style: solid;
+}
+
+.formation-position.filled {
+    background: #22c55e;
+    border-style: solid;
+
+    flex-direction: column;
+    text-align: center;
+}
+
+.formation-position.filled strong {
+    font-size: 11px;
+
+    max-width: 70px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.formation-position.filled small {
+    font-size: 10px;
+    margin-top: 3px;
+}
+
+
+/* =========================
    MOBIEL
 ========================= */
 
-@media (max-width: 800px) {
+@media (max-width: 900px) {
 
     .club-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -330,135 +986,29 @@ h1 {
         justify-content: center;
         flex-wrap: wrap;
     }
+
+    .selection-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .tactics-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .pitch {
+        order: -1;
+        min-height: 550px;
+    }
+
+    .lineup-container {
+        grid-template-columns: 1fr;
+    }
 }
 
 
-@media (max-width: 550px) {
-
-    h1 {
-        font-size: 45px;
-    }
-
-    .subtitle {
-        font-size: 19px;
-    }
-
-    .description {
-        font-size: 15px;
-    }
-
-    .logo {
-        font-size: 55px;
-    }
-
-    .club-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .clubs-page {
-        padding: 40px 15px;
-    }
-
-    .dashboard {
-        padding: 35px 15px;
-    }
-
-    .dashboard h1 {
-        font-size: 34px;
-    }
 /* =========================
-   SELECTIE
+   KLEIN MOBIEL
 ========================= */
-
-.selection-page {
-    min-height: calc(100vh - 70px);
-    padding: 50px 20px;
-}
-
-.selection-page h1 {
-    text-align: center;
-    font-size: 42px;
-}
-
-.selection-page .page-subtitle {
-    text-align: center;
-}
-
-.player-list {
-    max-width: 1000px;
-    margin: 40px auto 0;
-
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.player-card {
-    display: grid;
-    grid-template-columns: 70px 1fr 100px 100px 150px;
-    align-items: center;
-    gap: 20px;
-
-    padding: 18px 22px;
-
-    background: #151b29;
-    border: 1px solid #252e40;
-    border-radius: 12px;
-
-    transition: 0.2s;
-}
-
-.player-card:hover {
-    border-color: #22c55e;
-    transform: translateX(3px);
-}
-
-.player-avatar {
-    width: 55px;
-    height: 55px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #252e40;
-    border-radius: 50%;
-
-    font-size: 27px;
-}
-
-.player-info h2 {
-    margin: 0 0 5px;
-    font-size: 19px;
-}
-
-.player-info p {
-    margin: 0;
-    color: #9ca6b5;
-}
-
-.player-stat {
-    text-align: center;
-}
-
-.player-stat strong {
-    display: block;
-    font-size: 18px;
-}
-
-.player-stat span {
-    display: block;
-    margin-top: 4px;
-    color: #9ca6b5;
-    font-size: 13px;
-}
-
-
-/* Selectie mobiel */
 
 @media (max-width: 700px) {
 
@@ -474,6 +1024,257 @@ h1 {
     .player-info h2 {
         font-size: 16px;
     }
+
+    .selection-page {
+        padding: 35px 15px;
+    }
+
+    .player-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group select {
+        width: 100%;
+    }
 }
 
-}   
+
+/* =========================
+   TELEFOON
+========================= */
+
+@media (max-width: 550px) {
+
+    h1 {
+        font-size: 45px;
+    }
+
+    .subtitle {
+        font-size: 19px;
+    }
+
+
+/* =========================
+   STATISTIEKEN
+========================= */
+
+.statistics-page {
+    max-width: 1200px;
+    min-height: calc(100vh - 70px);
+
+    margin: 0 auto;
+    padding: 50px 25px;
+}
+
+.statistics-page h1 {
+    text-align: center;
+    font-size: 42px;
+    margin-bottom: 8px;
+}
+
+.statistics-page .page-subtitle {
+    text-align: center;
+    margin-top: 0;
+}
+
+
+/* OVERZICHT */
+
+.statistics-overview {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 16px;
+
+    margin-top: 35px;
+}
+
+.statistics-card {
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 20px;
+
+    background: #151b29;
+
+    border: 1px solid #252e40;
+    border-radius: 12px;
+
+    transition: 0.2s;
+}
+
+.statistics-card:hover {
+    border-color: #22c55e;
+    transform: translateY(-3px);
+}
+
+.statistics-icon {
+    font-size: 30px;
+}
+
+.statistics-card strong {
+    display: block;
+
+    font-size: 22px;
+}
+
+.statistics-card p {
+    margin: 4px 0 0;
+
+    color: #9ca6b5;
+
+    font-size: 13px;
+}
+
+
+/* SECTIES */
+
+.statistics-section {
+    margin-top: 30px;
+
+    padding: 22px;
+
+    background: #151b29;
+
+    border: 1px solid #252e40;
+    border-radius: 12px;
+}
+
+.statistics-section h2 {
+    margin-top: 0;
+    margin-bottom: 18px;
+}
+
+
+/* BESTE SPELER */
+
+.best-player {
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 15px;
+
+    background: #0b0f19;
+
+    border: 1px solid #252e40;
+    border-radius: 10px;
+}
+
+.best-player-rating {
+    width: 55px;
+    height: 55px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #22c55e;
+
+    border-radius: 10px;
+
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.best-player h3 {
+    margin: 0 0 5px;
+}
+
+.best-player p {
+    margin: 0;
+
+    color: #9ca6b5;
+}
+
+
+/* TABEL */
+
+.statistics-table {
+    width: 100%;
+}
+
+.statistics-row {
+    display: grid;
+
+    grid-template-columns:
+        2fr
+        1.2fr
+        1fr
+        0.7fr
+        1.4fr;
+
+    gap: 15px;
+
+    align-items: center;
+
+    padding: 14px 12px;
+
+    border-bottom: 1px solid #252e40;
+}
+
+.statistics-row:last-child {
+    border-bottom: none;
+}
+
+.statistics-header {
+    color: #727d8d;
+
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.statistics-row span {
+    color: #9ca6b5;
+
+    font-size: 14px;
+}
+
+.statistics-row strong {
+    font-size: 14px;
+}
+
+
+/* MOBIEL */
+
+@media (max-width: 900px) {
+
+    .statistics-overview {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .statistics-page {
+        padding: 35px 15px;
+    }
+
+    .statistics-page h1 {
+        font-size: 34px;
+    }
+
+    .statistics-overview {
+        grid-template-columns: 1fr;
+    }
+
+    .statistics-table {
+        overflow-x: auto;
+    }
+
+    .statistics-row {
+        min-width: 650px;
+    }
+
+}
+
+
+}

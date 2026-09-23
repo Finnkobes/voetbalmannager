@@ -1,0 +1,39 @@
+<nav class="navbar">
+
+    <a href="{{ url_for('home') }}" class="nav-logo">
+        ⚽ ClubMaster
+    </a>
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('dashboard') }}">
+            Dashboard
+        </a>
+
+       <details class="nav-dropdown">
+    <summary class="dropdown-button">
+        Team ▾
+    </summary>
+
+    <div class="dropdown-menu">
+        <a href="{{ url_for('selection') }}">👥 Selectie</a>
+       <a href="{{ url_for('lineup') }}">⚽ Opstelling</a>
+        <a href="{{ url_for('tactics') }}">🎯 Tactieken</a>
+    <a href="{{ url_for('statistics') }}">📊 Statistieken</a>
+    </div>
+</details>
+        <a href="#">
+            Transfers
+        </a>
+
+        <a href="#">
+            Wedstrijden
+        </a>
+
+        <a href="#">
+            Competitie
+        </a>
+
+    </div>
+
+</nav>

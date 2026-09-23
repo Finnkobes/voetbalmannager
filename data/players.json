@@ -375,5 +375,715 @@
         "marktwaarde": 5000000,
         "rating": 75
     }
+],
+
+"Feyenoord": [
+    {
+        "naam": "Tjark Ernst",
+        "positie": "Keeper",
+        "leeftijd": 23,
+        "marktwaarde": 3000000,
+        "rating": 73
+    },
+    {
+        "naam": "Florian Kastenmeier",
+        "positie": "Keeper",
+        "leeftijd": 29,
+        "marktwaarde": 5000000,
+        "rating": 76
+    },
+    {
+        "naam": "Liam Bossin",
+        "positie": "Keeper",
+        "leeftijd": 29,
+        "marktwaarde": 1000000,
+        "rating": 70
+    },
+    {
+        "naam": "Mannou Berger",
+        "positie": "Keeper",
+        "leeftijd": 21,
+        "marktwaarde": 1500000,
+        "rating": 68
+    },
+    {
+        "naam": "Bart Nieuwkoop",
+        "positie": "Verdediger",
+        "leeftijd": 30,
+        "marktwaarde": 3500000,
+        "rating": 75
+    },
+    {
+        "naam": "Thomas Beelen",
+        "positie": "Verdediger",
+        "leeftijd": 25,
+        "marktwaarde": 7000000,
+        "rating": 77
+    },
+    {
+        "naam": "Tsuyoshi Watanabe",
+        "positie": "Verdediger",
+        "leeftijd": 29,
+        "marktwaarde": 7000000,
+        "rating": 77
+    },
+    {
+        "naam": "Gijs Smal",
+        "positie": "Verdediger",
+        "leeftijd": 28,
+        "marktwaarde": 4000000,
+        "rating": 74
+    },
+    {
+        "naam": "Jeremiah St. Juste",
+        "positie": "Verdediger",
+        "leeftijd": 29,
+        "marktwaarde": 5000000,
+        "rating": 77
+    },
+    {
+        "naam": "Jordan Bos",
+        "positie": "Verdediger",
+        "leeftijd": 23,
+        "marktwaarde": 6000000,
+        "rating": 75
+    },
+    {
+        "naam": "Javi López",
+        "positie": "Verdediger",
+        "leeftijd": 24,
+        "marktwaarde": 5000000,
+        "rating": 74
+    },
+    {
+        "naam": "Mats Deijl",
+        "positie": "Verdediger",
+        "leeftijd": 28,
+        "marktwaarde": 3000000,
+        "rating": 73
+    },
+    {
+        "naam": "Thijs Kraaijeveld",
+        "positie": "Verdediger",
+        "leeftijd": 19,
+        "marktwaarde": 2000000,
+        "rating": 69
+    },
+    {
+        "naam": "Givairo Read",
+        "positie": "Verdediger",
+        "leeftijd": 20,
+        "marktwaarde": 15000000,
+        "rating": 78
+    },
+    {
+        "naam": "Mika Mármol",
+        "positie": "Verdediger",
+        "leeftijd": 24,
+        "marktwaarde": 10000000,
+        "rating": 77
+    },
+    {
+        "naam": "Jakub Moder",
+        "positie": "Middenvelder",
+        "leeftijd": 27,
+        "marktwaarde": 9000000,
+        "rating": 78
+    },
+    {
+        "naam": "Gjivai Zechiël",
+        "positie": "Middenvelder",
+        "leeftijd": 22,
+        "marktwaarde": 8000000,
+        "rating": 77
+    },
+    {
+        "naam": "Luciano Valente",
+        "positie": "Middenvelder",
+        "leeftijd": 22,
+        "marktwaarde": 12000000,
+        "rating": 79
+    },
+    {
+        "naam": "Sem Steijn",
+        "positie": "Middenvelder",
+        "leeftijd": 24,
+        "marktwaarde": 15000000,
+        "rating": 80
+    },
+    {
+        "naam": "Tobias van den Elshout",
+        "positie": "Middenvelder",
+        "leeftijd": 20,
+        "marktwaarde": 2000000,
+        "rating": 69
+    },
+    {
+        "naam": "Oussama Targhalline",
+        "positie": "Middenvelder",
+        "leeftijd": 24,
+        "marktwaarde": 7000000,
+        "rating": 75
+    },
+    {
+        "naam": "Charles Vanhoutte",
+        "positie": "Middenvelder",
+        "leeftijd": 27,
+        "marktwaarde": 5000000,
+        "rating": 74
+    },
+    {
+        "naam": "Gonçalo Borges",
+        "positie": "Aanvaller",
+        "leeftijd": 25,
+        "marktwaarde": 8000000,
+        "rating": 76
+    },
+    {
+        "naam": "Reiss Nelson",
+        "positie": "Aanvaller",
+        "leeftijd": 26,
+        "marktwaarde": 12000000,
+        "rating": 78
+    },
+    {
+        "naam": "Anis Hadj Moussa",
+        "positie": "Aanvaller",
+        "leeftijd": 24,
+        "marktwaarde": 10000000,
+        "rating": 78
+    },
+    {
+        "naam": "Gaoussou Diarra",
+        "positie": "Aanvaller",
+        "leeftijd": 22,
+        "marktwaarde": 6000000,
+        "rating": 73
+    },
+    {
+        "naam": "Nacho Ferri",
+        "positie": "Aanvaller",
+        "leeftijd": 21,
+        "marktwaarde": 7000000,
+        "rating": 74
+    },
+    {
+        "naam": "Shaqueel van Persie",
+        "positie": "Aanvaller",
+        "leeftijd": 19,
+        "marktwaarde": 3000000,
+        "rating": 70
+    }
+],
+"FC Twente": [
+    {
+        "naam": "Remko Pasveer",
+        "positie": "Keeper",
+        "leeftijd": 42,
+        "marktwaarde": 250000,
+        "rating": 74
+    },
+    {
+        "naam": "Joël Drommel",
+        "positie": "Keeper",
+        "leeftijd": 29,
+        "marktwaarde": 1500000,
+        "rating": 72
+    },
+    {
+        "naam": "Ruud Nijstad",
+        "positie": "Verdediger",
+        "leeftijd": 19,
+        "marktwaarde": 2500000,
+        "rating": 70
+    },
+    {
+        "naam": "Bart van Rooij",
+        "positie": "Verdediger",
+        "leeftijd": 25,
+        "marktwaarde": 7000000,
+        "rating": 76
+    },
+    {
+        "naam": "Stav Lemkin",
+        "positie": "Verdediger",
+        "leeftijd": 23,
+        "marktwaarde": 4500000,
+        "rating": 73
+    },
+    {
+        "naam": "Mees Hilgers",
+        "positie": "Verdediger",
+        "leeftijd": 25,
+        "marktwaarde": 5000000,
+        "rating": 74
+    },
+    {
+        "naam": "Aske Adelgaard",
+        "positie": "Verdediger",
+        "leeftijd": 22,
+        "marktwaarde": 3000000,
+        "rating": 71
+    },
+    {
+        "naam": "Krzysztof Kurowski",
+        "positie": "Verdediger",
+        "leeftijd": 19,
+        "marktwaarde": 2000000,
+        "rating": 68
+    },
+    {
+        "naam": "Michal Rosiak",
+        "positie": "Middenvelder",
+        "leeftijd": 20,
+        "marktwaarde": 2500000,
+        "rating": 69
+    },
+    {
+        "naam": "Daouda Weidmann",
+        "positie": "Middenvelder",
+        "leeftijd": 23,
+        "marktwaarde": 5000000,
+        "rating": 74
+    },
+    {
+        "naam": "Michal Sadilek",
+        "positie": "Middenvelder",
+        "leeftijd": 27,
+        "marktwaarde": 7000000,
+        "rating": 76
+    },
+    {
+        "naam": "Younes Taha",
+        "positie": "Middenvelder",
+        "leeftijd": 24,
+        "marktwaarde": 5000000,
+        "rating": 73
+    },
+    {
+        "naam": "Naci Ünüvar",
+        "positie": "Middenvelder",
+        "leeftijd": 23,
+        "marktwaarde": 4000000,
+        "rating": 73
+    },
+    {
+        "naam": "Jordy Bawuah",
+        "positie": "Middenvelder",
+        "leeftijd": 19,
+        "marktwaarde": 1500000,
+        "rating": 67
+    },
+    {
+        "naam": "Daan Rots",
+        "positie": "Aanvaller",
+        "leeftijd": 24,
+        "marktwaarde": 6000000,
+        "rating": 75
+    },
+    {
+        "naam": "Sam Lammers",
+        "positie": "Aanvaller",
+        "leeftijd": 29,
+        "marktwaarde": 6000000,
+        "rating": 76
+    },
+    {
+        "naam": "Wout Weghorst",
+        "positie": "Aanvaller",
+        "leeftijd": 33,
+        "marktwaarde": 3000000,
+        "rating": 78
+    },
+    {
+        "naam": "Sayfallah Ltaief",
+        "positie": "Aanvaller",
+        "leeftijd": 25,
+        "marktwaarde": 4500000,
+        "rating": 73
+    }
+],
+
+"AZ": [
+    {
+        "naam": "Rome-Jayden Owusu-Oduro",
+        "positie": "Keeper",
+        "leeftijd": 22,
+        "marktwaarde": 8000000,
+        "rating": 78
+    },
+    {
+        "naam": "Hobie Verhulst",
+        "positie": "Keeper",
+        "leeftijd": 33,
+        "marktwaarde": 500000,
+        "rating": 72
+    },
+    {
+        "naam": "Jari De Busser",
+        "positie": "Keeper",
+        "leeftijd": 26,
+        "marktwaarde": 4000000,
+        "rating": 77
+    },
+    {
+        "naam": "Jeroen Zoet",
+        "positie": "Keeper",
+        "leeftijd": 35,
+        "marktwaarde": 500000,
+        "rating": 71
+    },
+    {
+        "naam": "Seiya Maikuma",
+        "positie": "Verdediger",
+        "leeftijd": 28,
+        "marktwaarde": 7000000,
+        "rating": 76
+    },
+    {
+        "naam": "Wouter Goes",
+        "positie": "Verdediger",
+        "leeftijd": 21,
+        "marktwaarde": 12000000,
+        "rating": 78
+    },
+    {
+        "naam": "Lewis Schouten",
+        "positie": "Verdediger",
+        "leeftijd": 22,
+        "marktwaarde": 5000000,
+        "rating": 73
+    },
+    {
+        "naam": "Mateo Chávez",
+        "positie": "Verdediger",
+        "leeftijd": 21,
+        "marktwaarde": 10000000,
+        "rating": 77
+    },
+    {
+        "naam": "Andrea Natali",
+        "positie": "Verdediger",
+        "leeftijd": 23,
+        "marktwaarde": 5000000,
+        "rating": 72
+    },
+    {
+        "naam": "Elijah Dijkstra",
+        "positie": "Verdediger",
+        "leeftijd": 20,
+        "marktwaarde": 2500000,
+        "rating": 69
+    },
+    {
+        "naam": "Wesley Hoedt",
+        "positie": "Verdediger",
+        "leeftijd": 32,
+        "marktwaarde": 1500000,
+        "rating": 74
+    },
+    {
+        "naam": "Denso Kasius",
+        "positie": "Verdediger",
+        "leeftijd": 23,
+        "marktwaarde": 5000000,
+        "rating": 73
+    },
+    {
+        "naam": "Rion Ichihara",
+        "positie": "Verdediger",
+        "leeftijd": 24,
+        "marktwaarde": 2500000,
+        "rating": 69
+    },
+    {
+        "naam": "Mees de Wit",
+        "positie": "Verdediger",
+        "leeftijd": 28,
+        "marktwaarde": 2500000,
+        "rating": 72
+    },
+    {
+        "naam": "Peer Koopmeiners",
+        "positie": "Middenvelder",
+        "leeftijd": 26,
+        "marktwaarde": 4000000,
+        "rating": 73
+    },
+    {
+        "naam": "Jordy Clasie",
+        "positie": "Middenvelder",
+        "leeftijd": 35,
+        "marktwaarde": 1500000,
+        "rating": 77
+    },
+    {
+        "naam": "Kees Smit",
+        "positie": "Middenvelder",
+        "leeftijd": 20,
+        "marktwaarde": 18000000,
+        "rating": 80
+    },
+    {
+        "naam": "Stije Resink",
+        "positie": "Middenvelder",
+        "leeftijd": 26,
+        "marktwaarde": 5000000,
+        "rating": 74
+    },
+    {
+        "naam": "Valdemar Byskov",
+        "positie": "Middenvelder",
+        "leeftijd": 20,
+        "marktwaarde": 6000000,
+        "rating": 73
+    },
+    {
+        "naam": "Dave Kwakman",
+        "positie": "Middenvelder",
+        "leeftijd": 22,
+        "marktwaarde": 7000000,
+        "rating": 75
+    },
+    {
+        "naam": "Weslley Patati",
+        "positie": "Aanvaller",
+        "leeftijd": 23,
+        "marktwaarde": 5000000,
+        "rating": 73
+    },
+    {
+        "naam": "Mexx Meerdink",
+        "positie": "Aanvaller",
+        "leeftijd": 22,
+        "marktwaarde": 10000000,
+        "rating": 77
+    },
+    {
+        "naam": "Ro-Zangelo Daal",
+        "positie": "Aanvaller",
+        "leeftijd": 21,
+        "marktwaarde": 7000000,
+        "rating": 74
+    },
+    {
+        "naam": "Calvin Stengs",
+        "positie": "Aanvaller",
+        "leeftijd": 27,
+        "marktwaarde": 12000000,
+        "rating": 79
+    },
+    {
+        "naam": "Jizz Hornkamp",
+        "positie": "Aanvaller",
+        "leeftijd": 27,
+        "marktwaarde": 3000000,
+        "rating": 72
+    },
+    {
+        "naam": "Ayoub Oufkir",
+        "positie": "Aanvaller",
+        "leeftijd": 21,
+        "marktwaarde": 3000000,
+        "rating": 70
+    },
+    {
+        "naam": "Wassim Bouziane",
+        "positie": "Aanvaller",
+        "leeftijd": 19,
+        "marktwaarde": 1500000,
+        "rating": 67
+    },
+    {
+        "naam": "Bendegúz Kovács",
+        "positie": "Aanvaller",
+        "leeftijd": 19,
+        "marktwaarde": 2500000,
+        "rating": 68
+    }
+],
+"FC Utrecht": [
+    {
+        "naam": "Vasilis Barkas",
+        "positie": "Keeper",
+        "leeftijd": 32,
+        "marktwaarde": 1500000,
+        "rating": 77
+    },
+    {
+        "naam": "Michael Brouwer",
+        "positie": "Keeper",
+        "leeftijd": 33,
+        "marktwaarde": 500000,
+        "rating": 70
+    },
+    {
+        "naam": "Kevin Gadellaa",
+        "positie": "Keeper",
+        "leeftijd": 23,
+        "marktwaarde": 1500000,
+        "rating": 71
+    },
+    {
+        "naam": "Siebe Horemans",
+        "positie": "Verdediger",
+        "leeftijd": 28,
+        "marktwaarde": 5000000,
+        "rating": 75
+    },
+    {
+        "naam": "Matisse Didden",
+        "positie": "Verdediger",
+        "leeftijd": 25,
+        "marktwaarde": 4000000,
+        "rating": 74
+    },
+    {
+        "naam": "Niklas Vesterlund",
+        "positie": "Verdediger",
+        "leeftijd": 26,
+        "marktwaarde": 5000000,
+        "rating": 75
+    },
+    {
+        "naam": "Kevin Paredes",
+        "positie": "Verdediger",
+        "leeftijd": 23,
+        "marktwaarde": 8000000,
+        "rating": 77
+    },
+    {
+        "naam": "Emeka Adiele",
+        "positie": "Verdediger",
+        "leeftijd": 19,
+        "marktwaarde": 2000000,
+        "rating": 68
+    },
+    {
+        "naam": "Alonzo Engwanda",
+        "positie": "Verdediger",
+        "leeftijd": 23,
+        "marktwaarde": 3500000,
+        "rating": 71
+    },
+    {
+        "naam": "Arthur Zagré",
+        "positie": "Verdediger",
+        "leeftijd": 24,
+        "marktwaarde": 3000000,
+        "rating": 72
+    },
+    {
+        "naam": "Guus Offerhaus",
+        "positie": "Verdediger",
+        "leeftijd": 21,
+        "marktwaarde": 1500000,
+        "rating": 68
+    },
+    {
+        "naam": "Jamie Schuldes",
+        "positie": "Verdediger",
+        "leeftijd": 19,
+        "marktwaarde": 1000000,
+        "rating": 66
+    },
+    {
+        "naam": "Dani de Wit",
+        "positie": "Middenvelder",
+        "leeftijd": 28,
+        "marktwaarde": 5000000,
+        "rating": 76
+    },
+    {
+        "naam": "Victor Jensen",
+        "positie": "Middenvelder",
+        "leeftijd": 26,
+        "marktwaarde": 5000000,
+        "rating": 75
+    },
+    {
+        "naam": "Joris van Overeem",
+        "positie": "Middenvelder",
+        "leeftijd": 32,
+        "marktwaarde": 2000000,
+        "rating": 73
+    },
+    {
+        "naam": "Zidane Iqbal",
+        "positie": "Middenvelder",
+        "leeftijd": 23,
+        "marktwaarde": 7000000,
+        "rating": 75
+    },
+    {
+        "naam": "Davy van den Berg",
+        "positie": "Middenvelder",
+        "leeftijd": 26,
+        "marktwaarde": 5000000,
+        "rating": 74
+    },
+    {
+        "naam": "Oualid Agougil",
+        "positie": "Middenvelder",
+        "leeftijd": 20,
+        "marktwaarde": 1500000,
+        "rating": 68
+    },
+    {
+        "naam": "David Min",
+        "positie": "Aanvaller",
+        "leeftijd": 27,
+        "marktwaarde": 5000000,
+        "rating": 74
+    },
+    {
+        "naam": "Yoann Cathline",
+        "positie": "Aanvaller",
+        "leeftijd": 24,
+        "marktwaarde": 9000000,
+        "rating": 78
+    },
+    {
+        "naam": "Ángel Alarcón",
+        "positie": "Aanvaller",
+        "leeftijd": 22,
+        "marktwaarde": 5000000,
+        "rating": 73
+    },
+    {
+        "naam": "Adrian Blake",
+        "positie": "Aanvaller",
+        "leeftijd": 21,
+        "marktwaarde": 4000000,
+        "rating": 72
+    },
+    {
+        "naam": "Artem Stepanov",
+        "positie": "Aanvaller",
+        "leeftijd": 18,
+        "marktwaarde": 6000000,
+        "rating": 72
+    },
+    {
+        "naam": "Miliano Jonathans",
+        "positie": "Aanvaller",
+        "leeftijd": 22,
+        "marktwaarde": 5000000,
+        "rating": 73
+    },
+    {
+        "naam": "Noah Ohio",
+        "positie": "Aanvaller",
+        "leeftijd": 23,
+        "marktwaarde": 4000000,
+        "rating": 72
+    },
+    {
+        "naam": "Emmanuel Chigozie Owen",
+        "positie": "Aanvaller",
+        "leeftijd": 19,
+        "marktwaarde": 1500000,
+        "rating": 67
+    }
 ]
 }
