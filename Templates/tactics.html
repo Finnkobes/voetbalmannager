@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tactieken - ClubMaster</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    {% include "navbar.html" %}
+
+    <main class="tactics-page">
+
+        <h1>Tactieken</h1>
+
+        <p class="page-subtitle">
+            {{ club.naam }} • Bepaal jouw speelstijl
+        </p>
+
+
+        <section class="tactics-panel">
+
+            <div class="formation-section">
+
+                <h2>Formatie</h2>
+
+                <div class="formation-buttons">
+
+                    {% for formation in formations %}
+
+                        <button class="formation-button">
+                            {{ formation }}
+                        </button>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+
+            <div class="pitch">
+
+                <div class="pitch-row">
+
+                    <div class="position">
+                        <span>GK</span>
+                        <small>Keeper</small>
+                    </div>
+
+                </div>
+
+
+                <div class="pitch-row">
+
+                    <div class="position">
+                        <span>LB</span>
+                        <small>Verdediger</small>
+                    </div>
+
+                    <div class="position">
+                        <span>CB</span>
+                        <small>Verdediger</small>
+                    </div>
+
+                    <div class="position">
+                        <span>CB</span>
+                        <small>Verdediger</small>
+                    </div>
+
+                    <div class="position">
+                        <span>RB</span>
+                        <small>Verdediger</small>
+                    </div>
+
+                </div>
+
+
+                <div class="pitch-row">
+
+                    <div class="position">
+                        <span>CM</span>
+                        <small>Middenveld</small>
+                    </div>
+
+                    <div class="position">
+                        <span>CM</span>
+                        <small>Middenveld</small>
+                    </div>
+
+                    <div class="position">
+                        <span>CM</span>
+                        <small>Middenveld</small>
+                    </div>
+
+                </div>
+
+
+                <div class="pitch-row">
+
+                    <div class="position">
+                        <span>LW</span>
+                        <small>Aanvaller</small>
+                    </div>
+
+                    <div class="position">
+                        <span>ST</span>
+                        <small>Aanvaller</small>
+                    </div>
+
+                    <div class="position">
+                        <span>RW</span>
+                        <small>Aanvaller</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="tactic-settings">
+
+                <h2>Speelstijl</h2>
+
+                <select>
+                    <option>Gebalanceerd</option>
+                    <option>Aanvallend</option>
+                    <option>Verdedigend</option>
+                    <option>Counter</option>
+                    <option>Balbezit</option>
+                </select>
+
+
+                <h2>Druk zetten</h2>
+
+                <select>
+                    <option>Normaal</option>
+                    <option>Laag</option>
+                    <option>Hoog</option>
+                </select>
+
+
+                <h2>Tempo</h2>
+
+                <select>
+                    <option>Normaal</option>
+                    <option>Laag</option>
+                    <option>Hoog</option>
+                </select>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

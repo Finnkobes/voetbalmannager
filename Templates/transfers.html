@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Transfers - ClubMaster</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    {% include "navbar.html" %}
+
+    <main class="transfers-page">
+
+        <h1>Transfermarkt</h1>
+
+        <p class="page-subtitle">
+            Bekijk spelers van andere clubs en versterk je selectie.
+        </p>
+
+        <div class="transfer-grid">
+
+            {% for player in players %}
+
+            <div class="transfer-card">
+
+                <div class="transfer-club">
+
+                    <img
+                        src="{{ url_for('static', filename='images/clubs/' + player.club_logo) }}"
+                        alt="Logo {{ player.club_naam }}"
+                    >
+
+                    <span>{{ player.club_naam }}</span>
+
+                </div>
+
+                <div class="transfer-card-top">
+
+                    <div>
+
+                        <h2>{{ player.naam }}</h2>
+
+                        <span class="player-position">
+                            {{ player.positie }}
+                        </span>
+
+                    </div>
+
+                    <div class="player-rating">
+                        {{ player.rating }}
+                    </div>
+
+                </div>
+
+                <div class="transfer-info">
+
+                    <div>
+                        <span>Leeftijd</span>
+                        <strong>
+                            {{ player.leeftijd }} jaar
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Marktwaarde</span>
+                        <strong>
+                            €{{ "{:,.0f}".format(player.marktwaarde).replace(",", ".") }}
+                        </strong>
+                    </div>
+
+                </div>
+
+              <a
+    href="{{ url_for('player_detail', player_id=player.id) }}"
+    class="club-button"
+>
+    Speler bekijken
+</a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

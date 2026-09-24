@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Opstelling - ClubMaster</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    {% include "navbar.html" %}
+
+    <main class="lineup-page">
+
+        <h1>Opstelling</h1>
+
+        <p class="page-subtitle">
+            {{ club.naam }} • 4-3-3
+        </p>
+
+        <div class="lineup-container">
+
+            <section class="lineup-pitch" id="pitch">
+
+                <!-- AANVAL -->
+
+                <div class="formation-position position-lw"
+                     data-position="LW">
+                    <span>LW</span>
+                </div>
+
+                <div class="formation-position position-sp"
+                     data-position="SP">
+                    <span>SP</span>
+                </div>
+
+                <div class="formation-position position-rw"
+                     data-position="RW">
+                    <span>RW</span>
+                </div>
+
+
+                <!-- MIDDENVELD -->
+
+                <div class="formation-position position-cm-left"
+                     data-position="CM">
+                    <span>CM</span>
+                </div>
+
+                <div class="formation-position position-cam"
+                     data-position="CAM">
+                    <span>CAM</span>
+                </div>
+
+                <div class="formation-position position-cm-right"
+                     data-position="CM">
+                    <span>CM</span>
+                </div>
+
+
+                <!-- VERDEDIGING -->
+
+                <div class="formation-position position-lb"
+                     data-position="LB">
+                    <span>LB</span>
+                </div>
+
+                <div class="formation-position position-cb-left"
+                     data-position="CB">
+                    <span>CB</span>
+                </div>
+
+                <div class="formation-position position-cb-right"
+                     data-position="CB">
+                    <span>CB</span>
+                </div>
+
+                <div class="formation-position position-rb"
+                     data-position="RB">
+                    <span>RB</span>
+                </div>
+
+
+                <!-- KEEPER -->
+
+                <div class="formation-position position-gk"
+                     data-position="GK">
+                    <span>GK</span>
+                </div>
+
+            </section>
+
+
+            <aside class="lineup-settings">
+
+                <h2>Formatie</h2>
+
+                <select id="formation">
+                    <option selected>4-3-3</option>
+                    <option>4-4-2</option>
+                    <option>4-2-3-1</option>
+                    <option>3-5-2</option>
+                </select>
+
+                <h2>Selectie</h2>
+
+                <div class="lineup-player-list">
+
+                    {% for player in players %}
+
+                    <div
+                        class="bench-player"
+                        draggable="true"
+                        data-player="{{ player.naam }}"
+                        data-rating="{{ player.rating }}"
+                    >
+                        <strong>{{ player.naam }}</strong>
+                        <span>{{ player.positie }} • {{ player.rating }}</span>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
+
