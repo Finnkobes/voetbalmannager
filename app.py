@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, session, request
 import sqlite3
 import webbrowser
@@ -14,17 +13,25 @@ BASE_DIR = Path(__file__).resolve().parent
 DATABASE = BASE_DIR / "database" / "football.db"
 
 
+# =========================
+# DATABASE VERBINDING
+# =========================
+
 def get_connection():
     connection = sqlite3.connect(DATABASE)
     connection.row_factory = sqlite3.Row
     return connection
 
 
+# =========================
+# CLUBS
+# =========================
+
 def get_clubs():
     connection = get_connection()
 
     clubs = connection.execute("""
-        SELECT id, naam, stad, rating
+        SELECT id, naam, stad, rating, logo, budget
         FROM clubs
         ORDER BY rating DESC
     """).fetchall()
@@ -33,6 +40,10 @@ def get_clubs():
 
     return clubs
 
+
+# =========================
+# SPELERS
+# =========================
 
 def get_players_for_club(club_id):
     connection = get_connection()
@@ -49,10 +60,18 @@ def get_players_for_club(club_id):
     return players
 
 
+# =========================
+# HOME
+# =========================
+
 @app.route("/")
 def home():
     return render_template("index.html")
 
+
+# =========================
+# CLUB KIEZEN
+# =========================
 
 @app.route("/clubs")
 def clubs_page():
@@ -69,7 +88,7 @@ def choose_club(club_name):
     connection = get_connection()
 
     club = connection.execute("""
-        SELECT id, naam, stad, rating
+        SELECT id, naam, stad, rating, logo, budget
         FROM clubs
         WHERE naam = ?
     """, (club_name,)).fetchone()
@@ -85,7 +104,9 @@ def choose_club(club_name):
         "id": club["id"],
         "naam": club["naam"],
         "stad": club["stad"],
-        "rating": club["rating"]
+        "rating": club["rating"],
+        "logo": club["logo"],
+        "budget": club["budget"]
     }
 
     return render_template(
@@ -93,6 +114,10 @@ def choose_club(club_name):
         club=session["club"]
     )
 
+
+# =========================
+# DASHBOARD
+# =========================
 
 @app.route("/dashboard")
 def dashboard():
@@ -104,6 +129,9 @@ def dashboard():
     )
 
 
+# =========================
+# SELECTIE
+# =========================
 
 @app.route("/selection")
 def selection():
@@ -114,6 +142,69 @@ def selection():
             "dashboard.html",
             club=None
         )
+
+    positie_filter = request.args.get("positie", "alle")
+    sorteer = request.args.get("sorteer", "rating_desc")
+
+    connection = get_connection()
+
+    query = """
+    SELECT
+        id,
+        naam,
+        positie,
+        leeftijd,
+        marktwaarde,
+        rating,
+        salaris,
+        contractduur
+    FROM players
+    WHERE club_id = ?
+"""
+    parameters = [club["id"]]
+
+    if positie_filter != "alle":
+        query += " AND positie = ?"
+        parameters.append(positie_filter)
+
+    if sorteer == "rating_desc":
+        query += " ORDER BY rating DESC"
+
+    elif sorteer == "rating_asc":
+        query += " ORDER BY rating ASC"
+
+    elif sorteer == "waarde_desc":
+        query += " ORDER BY marktwaarde DESC"
+
+    elif sorteer == "waarde_asc":
+        query += " ORDER BY marktwaarde ASC"
+
+    elif sorteer == "leeftijd_asc":
+        query += " ORDER BY leeftijd ASC"
+
+    elif sorteer == "leeftijd_desc":
+        query += " ORDER BY leeftijd DESC"
+
+    spelers = connection.execute(
+        query,
+        parameters
+    ).fetchall()
+
+    connection.close()
+
+    return render_template(
+        "selection.html",
+        club=club,
+        players=spelers,
+        positie_filter=positie_filter,
+        sorteer=sorteer
+    )
+
+
+# =========================
+# STATISTIEKEN
+# =========================
+
 @app.route("/statistics")
 def statistics():
     club = session.get("club")
@@ -157,7 +248,96 @@ def statistics():
         totale_waarde=totale_waarde,
         hoogste_rating=hoogste_rating
     )
-    
+
+
+# =========================
+# TRANSFERMARKT
+# =========================
+
+@app.route("/transfers")
+def transfers():
+    club = session.get("club")
+
+    if club is None:
+        return render_template(
+            "dashboard.html",
+            club=None
+        )
+
+    connection = get_connection()
+
+    spelers = connection.execute("""
+        SELECT
+            players.id,
+            players.naam,
+            players.positie,
+            players.leeftijd,
+            players.marktwaarde,
+            players.rating,
+            clubs.naam AS club_naam,
+            clubs.logo AS club_logo
+        FROM players
+        JOIN clubs ON players.club_id = clubs.id
+        WHERE players.club_id != ?
+        ORDER BY RANDOM()
+        LIMIT 9
+    """, (club["id"],)).fetchall()
+
+    connection.close()
+
+    return render_template(
+        "transfers.html",
+        club=club,
+        players=spelers
+    )
+
+
+# =========================
+# SPELER BEKIJKEN
+# =========================
+
+@app.route("/player/<int:player_id>")
+def player_detail(player_id):
+    club = session.get("club")
+
+    if club is None:
+        return render_template(
+            "dashboard.html",
+            club=None
+        )
+
+    connection = get_connection()
+
+    player = connection.execute("""
+        SELECT
+            players.id,
+            players.naam,
+            players.positie,
+            players.leeftijd,
+            players.marktwaarde,
+            players.rating,
+            clubs.naam AS club_naam,
+            clubs.logo AS club_logo
+        FROM players
+        JOIN clubs ON players.club_id = clubs.id
+        WHERE players.id = ?
+    """, (player_id,)).fetchone()
+
+    connection.close()
+
+    if player is None:
+        return "Speler niet gevonden", 404
+
+    return render_template(
+        "player.html",
+        club=club,
+        player=player
+    )
+
+
+# =========================
+# TACTIEKEN
+# =========================
 
 @app.route("/tactics")
 def tactics():
@@ -186,6 +366,10 @@ def tactics():
     )
 
 
+# =========================
+# OPSTELLING
+# =========================
+
 @app.route("/lineup")
 def lineup():
     club = session.get("club")
@@ -205,11 +389,22 @@ def lineup():
     )
 
 
+# =========================
+# BROWSER AUTOMATISCH OPENEN
+# =========================
+
 def open_browser():
     webbrowser.open_new("http://127.0.0.1:5000")
 
 
+# =========================
+# START FLASK
+# =========================
+
 if __name__ == "__main__":
     Timer(1, open_browser).start()
-    app.run(debug=True, use_reloader=False)
 
+    app.run(
+        debug=True,
+        use_reloader=False
+    )

@@ -1,5 +1,7 @@
+
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +15,6 @@
 
     {% include "navbar.html" %}
 
-
     <main class="dashboard">
 
         {% if club %}
@@ -23,7 +24,6 @@
             <p class="dashboard-subtitle">
                 Je bent manager van {{ club.naam }}
             </p>
-
 
             <div class="dashboard-grid">
 
@@ -37,7 +37,6 @@
 
                 </div>
 
-
                 <div class="dashboard-card">
 
                     <span class="card-icon">⭐</span>
@@ -48,17 +47,15 @@
 
                 </div>
 
-
                 <div class="dashboard-card">
 
                     <span class="card-icon">💰</span>
 
-                    <h2>€10.000.000</h2>
+                    <h2>€{{ "{:,.0f}".format(club.budget).replace(",", ".") }}</h2>
 
                     <p>Transferbudget</p>
 
                 </div>
-
 
                 <div class="dashboard-card">
 
@@ -85,4 +82,6 @@
     </main>
 
 </body>
+
 </html>
+

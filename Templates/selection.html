@@ -145,19 +145,38 @@
                 </div>
 
 
-                <div class="player-info">
+              <div class="player-info">
 
-                    <div>
+    <div>
+        <span>Leeftijd</span>
+        <strong>{{ player.leeftijd }} jaar</strong>
+    </div>
 
-                        <span>
-                            Leeftijd
-                        </span>
+    <div>
+        <span>Rating</span>
+        <strong>⭐ {{ player.rating }}</strong>
+    </div>
 
-                        <strong>
-                            {{ player.leeftijd }} jaar
-                        </strong>
+    <div>
+        <span>Marktwaarde</span>
+        <strong>
+            €{{ "{:,.0f}".format(player.marktwaarde).replace(",", ".") }}
+        </strong>
+    </div>
 
-                    </div>
+    <div>
+        <span>Salaris</span>
+        <strong>
+            €{{ "{:,.0f}".format(player.salaris).replace(",", ".") }}
+        </strong>
+    </div>
+
+    <div>
+        <span>Contract</span>
+        <strong>{{ player.contractduur }} jaar</strong>
+    </div>
+
+</div>
 
 
                     <div>
