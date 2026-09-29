@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Live wedstrijd - ClubMaster</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <script type="application/json" id="live-match-data">
+        {{ live_match | tojson | safe }}
+    </script>
+
+    <script>
+        window.liveMatchData = JSON.parse(
+            document.getElementById('live-match-data').textContent
+        );
+    </script>
+
+    <script
+        src="{{ url_for('static', filename='live_match.js') }}"
+        defer
+    ></script>
+</head>
+
+<body>
+
+{% include "navbar.html" %}
+
+<main class="live-match-page">
+
+    <div class="live-match-header">
+
+        <span class="live-badge">
+            🔴 LIVE
+        </span>
+
+        <h1>⚽ Wedstrijd</h1>
+
+        <p>
+            Bekijk de wedstrijd live terwijl alle gebeurtenissen plaatsvinden.
+        </p>
+
+    </div>
+
+
+    <!-- SCOREBORD -->
+
+    <section class="live-scoreboard">
+
+        <div class="live-team">
+
+            {% if live_match.home.logo %}
+                <img
+                    src="{{ url_for('static', filename='images/clubs/' + live_match.home.logo) }}"
+                    alt="{{ live_match.home.name }}"
+                >
+            {% endif %}
+
+            <strong>
+                {{ live_match.home.name }}
+            </strong>
+
+        </div>
+
+
+        <div class="live-score-center">
+
+            <div
+                id="match-minute"
+                class="match-minute"
+            >
+                00:00
+            </div>
+
+            <div class="live-score">
+
+                <span id="home-score">
+                    0
+                </span>
+
+                <span class="score-divider">
+                    -
+                </span>
+
+                <span id="away-score">
+                    0
+                </span>
+
+            </div>
+
+            <span
+                id="match-status"
+                class="match-status-live"
+            >
+                1e helft
+            </span>
+
+        </div>
+
+
+        <div class="live-team">
+
+            {% if live_match.away.logo %}
+                <img
+                    src="{{ url_for('static', filename='images/clubs/' + live_match.away.logo) }}"
+                    alt="{{ live_match.away.name }}"
+                >
+            {% endif %}
+
+            <strong>
+                {{ live_match.away.name }}
+            </strong>
+
+        </div>
+
+    </section>
+
+
+    <!-- PROGRESS -->
+
+    <section class="live-progress-wrapper">
+
+        <div class="live-progress-background">
+
+            <div
+                id="live-progress"
+                class="live-progress"
+            ></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- STATISTIEKEN -->
+
+    <section class="live-stats">
+
+        <div class="live-stat">
+
+            <span>⚔️ Aanvallen</span>
+
+            <strong id="home-attacks">
+                0
+            </strong>
+
+            <span>-</span>
+
+            <strong id="away-attacks">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="live-stat">
+
+            <span>🎯 Schoten</span>
+
+            <strong id="home-shots">
+                0
+            </strong>
+
+            <span>-</span>
+
+            <strong id="away-shots">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="live-stat">
+
+            <span>🏳️ Corners</span>
+
+            <strong id="home-corners">
+                0
+            </strong>
+
+            <span>-</span>
+
+            <strong id="away-corners">
+                0
+            </strong>
+
+        </div>
+
+    </section>
+
+
+    <!-- LIVE FEED -->
+
+    <section class="live-events-card">
+
+        <div class="live-events-header">
+
+            <h2>
+                Wedstrijdgebeurtenissen
+            </h2>
+
+            <span id="event-count">
+                0 events
+            </span>
+
+        </div>
+
+
+        <div
+            id="live-events"
+            class="live-events"
+        >
+
+            <div class="live-start-message">
+                🔔 De scheidsrechter staat klaar. De wedstrijd gaat bijna beginnen...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- EINDE -->
+
+    <div
+        id="match-finished"
+        class="match-finished hidden"
+    >
+
+        <h2>
+            🏁 Wedstrijd afgelopen
+        </h2>
+
+        <p id="final-result"></p>
+
+        <a
+            href="{{ url_for('matches') }}"
+            class="club-button"
+        >
+            Naar wedstrijden
+        </a>
+
+    </div>
+
+</main>
+
+</body>
+</html>

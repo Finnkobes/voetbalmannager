@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Competitie - ClubMaster</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    {% include "navbar.html" %}
+
+    <main class="competition-page">
+
+        <h1>🏆 Competitie</h1>
+
+        <p class="page-subtitle">
+            Bekijk de huidige stand van de competitie.
+        </p>
+
+        <section class="competition-card">
+
+            <div class="competition-table">
+
+                <div class="competition-row competition-header">
+                    <span>#</span>
+                    <span>Club</span>
+                    <span>GS</span>
+                    <span>W</span>
+                    <span>G</span>
+                    <span>V</span>
+                    <span>DS</span>
+                    <span>P</span>
+                </div>
+
+                {% for team in standings %}
+
+                <div
+                    class="competition-row
+                    {% if team.id == club.id %}my-club{% endif %}"
+                >
+
+                    <span class="position-number">
+                        {{ loop.index }}
+                    </span>
+
+                    <div class="competition-club">
+
+                        <img
+                            src="{{ url_for(
+                                'static',
+                                filename='images/clubs/' + team.logo
+                            ) }}"
+                            alt="Logo {{ team.naam }}"
+                        >
+
+                        <strong>{{ team.naam }}</strong>
+
+                    </div>
+
+                    <span>{{ team.gespeeld }}</span>
+
+                    <span>{{ team.gewonnen }}</span>
+
+                    <span>{{ team.gelijk }}</span>
+
+                    <span>{{ team.verloren }}</span>
+
+                    <span>
+                        {{ team.doelsaldo }}
+                    </span>
+
+                    <strong>{{ team.punten }}</strong>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

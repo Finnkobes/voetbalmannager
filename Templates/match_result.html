@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Wedstrijdresultaat - ClubMaster</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    {% include "navbar.html" %}
+
+    <main class="matches-page">
+
+        <h1>🏆 Wedstrijdresultaat</h1>
+
+        <p class="page-subtitle">
+            Speelronde {{ match.speelronde }}
+        </p>
+
+        <div class="match-result-card">
+
+            <div class="result-team">
+                <strong>{{ match.home_naam }}</strong>
+            </div>
+
+            <div class="result-score">
+                <strong>
+                    {{ home_score }} - {{ away_score }}
+                </strong>
+            </div>
+
+            <div class="result-team">
+                <strong>{{ match.away_naam }}</strong>
+            </div>
+
+        </div>
+
+        <div class="result-info">
+            <p>✅ Wedstrijd is gespeeld</p>
+            <p>📊 De competitie is bijgewerkt</p>
+        </div>
+
+        <a
+            href="{{ url_for('matches') }}"
+            class="club-button"
+        >
+            ← Terug naar wedstrijden
+        </a>
+
+        <a
+            href="{{ url_for('competition') }}"
+            class="back-button"
+        >
+            🏆 Bekijk competitie
+        </a>
+
+    </main>
+
+</body>
+</html>

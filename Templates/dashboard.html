@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 
@@ -25,6 +24,8 @@
                 Je bent manager van {{ club.naam }}
             </p>
 
+            <!-- BASIS INFORMATIE -->
+
             <div class="dashboard-grid">
 
                 <div class="dashboard-card">
@@ -37,6 +38,7 @@
 
                 </div>
 
+
                 <div class="dashboard-card">
 
                     <span class="card-icon">⭐</span>
@@ -47,27 +49,139 @@
 
                 </div>
 
+
                 <div class="dashboard-card">
 
                     <span class="card-icon">💰</span>
 
-                    <h2>€{{ "{:,.0f}".format(club.budget).replace(",", ".") }}</h2>
+                    <h2>
+                        €{{ "{:,.0f}".format(club.budget).replace(",", ".") }}
+                    </h2>
 
                     <p>Transferbudget</p>
 
                 </div>
 
+
                 <div class="dashboard-card">
 
                     <span class="card-icon">🏆</span>
 
-                    <h2>0</h2>
+                    <h2>{{ competitie.punten if competitie else 0 }}</h2>
 
                     <p>Punten</p>
 
                 </div>
 
             </div>
+
+
+            <!-- COMPETITIE -->
+
+            {% if competitie %}
+
+            <section class="dashboard-section">
+
+                <div class="dashboard-section-header">
+
+                    <div>
+                        <h2>🏆 Competitie</h2>
+
+                        <p>
+                            Jouw huidige positie in de competitie
+                        </p>
+                    </div>
+
+                    <a href="{{ url_for('competition') }}" class="dashboard-link">
+                        Bekijk competitie →
+                    </a>
+
+                </div>
+
+
+                <div class="competition-overview">
+
+                    <div class="competition-overview-card">
+
+                        <span>Positie</span>
+
+                        <strong>
+                            #{{ positie }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="competition-overview-card">
+
+                        <span>Gespeeld</span>
+
+                        <strong>
+                            {{ competitie.gespeeld }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="competition-overview-card">
+
+                        <span>Gewonnen</span>
+
+                        <strong>
+                            {{ competitie.gewonnen }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="competition-overview-card">
+
+                        <span>Gelijk</span>
+
+                        <strong>
+                            {{ competitie.gelijk }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="competition-overview-card">
+
+                        <span>Verloren</span>
+
+                        <strong>
+                            {{ competitie.verloren }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="competition-overview-card">
+
+                        <span>Doelsaldo</span>
+
+                        <strong>
+                            {{ "+" if competitie.doelsaldo > 0 else "" }}{{ competitie.doelsaldo }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="competition-overview-card">
+
+                        <span>Punten</span>
+
+                        <strong>
+                            {{ competitie.punten }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            {% endif %}
 
         {% else %}
 
@@ -84,4 +198,3 @@
 </body>
 
 </html>
-
