@@ -11,7 +11,10 @@
         href="{{ url_for('static', filename='style.css') }}"
     >
 
-<script type="application/json" id="saved-lineup-data">{{ opstelling | tojson }}</script>
+    <script
+        type="application/json"
+        id="saved-lineup-data"
+    >{{ opstelling | tojson }}</script>
 
     <script
         src="{{ url_for('static', filename='lineup.js') }}"
@@ -58,8 +61,15 @@
                     >
 
                         <div class="player-info">
-                            <strong>{{ player.naam }}</strong>
-                            <span>{{ player.positie }}</span>
+
+                            <strong class="player-name">
+                                {{ player.naam }}
+                            </strong>
+
+                            <span class="player-position">
+                                {{ player.positie }}
+                            </span>
+
                         </div>
 
                         <div class="player-rating">
@@ -88,9 +98,14 @@
                             data-slot="aanvaller_1"
                             data-allowed="attack"
                         >
-                            <div class="position-label">LW</div>
+                            <div class="position-label">
+                                LW
+                            </div>
+
                             <div class="drop-zone">
-                                <span class="empty-position">Sleep speler</span>
+                                <span class="empty-position">
+                                    Sleep speler
+                                </span>
                             </div>
                         </div>
 
@@ -100,9 +115,14 @@
                             data-slot="aanvaller_2"
                             data-allowed="attack"
                         >
-                            <div class="position-label">SP</div>
+                            <div class="position-label">
+                                SP
+                            </div>
+
                             <div class="drop-zone">
-                                <span class="empty-position">Sleep speler</span>
+                                <span class="empty-position">
+                                    Sleep speler
+                                </span>
                             </div>
                         </div>
 
@@ -112,9 +132,14 @@
                             data-slot="aanvaller_3"
                             data-allowed="attack"
                         >
-                            <div class="position-label">RW</div>
+                            <div class="position-label">
+                                RW
+                            </div>
+
                             <div class="drop-zone">
-                                <span class="empty-position">Sleep speler</span>
+                                <span class="empty-position">
+                                    Sleep speler
+                                </span>
                             </div>
                         </div>
 
@@ -129,9 +154,14 @@
                             data-slot="middenvelder_1"
                             data-allowed="midfield"
                         >
-                            <div class="position-label">CM</div>
+                            <div class="position-label">
+                                CM
+                            </div>
+
                             <div class="drop-zone">
-                                <span class="empty-position">Sleep speler</span>
+                                <span class="empty-position">
+                                    Sleep speler
+                                </span>
                             </div>
                         </div>
 
@@ -141,9 +171,14 @@
                             data-slot="middenvelder_2"
                             data-allowed="midfield"
                         >
-                            <div class="position-label">CAM</div>
+                            <div class="position-label">
+                                CAM
+                            </div>
+
                             <div class="drop-zone">
-                                <span class="empty-position">Sleep speler</span>
+                                <span class="empty-position">
+                                    Sleep speler
+                                </span>
                             </div>
                         </div>
 
@@ -153,9 +188,14 @@
                             data-slot="middenvelder_3"
                             data-allowed="midfield"
                         >
-                            <div class="position-label">CM</div>
+                            <div class="position-label">
+                                CM
+                            </div>
+
                             <div class="drop-zone">
-                                <span class="empty-position">Sleep speler</span>
+                                <span class="empty-position">
+                                    Sleep speler
+                                </span>
                             </div>
                         </div>
 
@@ -170,9 +210,14 @@
                             data-slot="verdediger_1"
                             data-allowed="defender"
                         >
-                            <div class="position-label">LB</div>
+                            <div class="position-label">
+                                LB
+                            </div>
+
                             <div class="drop-zone">
-                                <span class="empty-position">Sleep speler</span>
+                                <span class="empty-position">
+                                    Sleep speler
+                                </span>
                             </div>
                         </div>
 
@@ -182,9 +227,14 @@
                             data-slot="verdediger_2"
                             data-allowed="defender"
                         >
-                            <div class="position-label">CB</div>
+                            <div class="position-label">
+                                CB
+                            </div>
+
                             <div class="drop-zone">
-                                <span class="empty-position">Sleep speler</span>
+                                <span class="empty-position">
+                                    Sleep speler
+                                </span>
                             </div>
                         </div>
 
@@ -194,9 +244,14 @@
                             data-slot="verdediger_3"
                             data-allowed="defender"
                         >
-                            <div class="position-label">CB</div>
+                            <div class="position-label">
+                                CB
+                            </div>
+
                             <div class="drop-zone">
-                                <span class="empty-position">Sleep speler</span>
+                                <span class="empty-position">
+                                    Sleep speler
+                                </span>
                             </div>
                         </div>
 
@@ -206,9 +261,14 @@
                             data-slot="verdediger_4"
                             data-allowed="defender"
                         >
-                            <div class="position-label">RB</div>
+                            <div class="position-label">
+                                RB
+                            </div>
+
                             <div class="drop-zone">
-                                <span class="empty-position">Sleep speler</span>
+                                <span class="empty-position">
+                                    Sleep speler
+                                </span>
                             </div>
                         </div>
 
@@ -223,9 +283,14 @@
                             data-slot="keeper"
                             data-allowed="keeper"
                         >
-                            <div class="position-label">GK</div>
+                            <div class="position-label">
+                                GK
+                            </div>
+
                             <div class="drop-zone">
-                                <span class="empty-position">Sleep speler</span>
+                                <span class="empty-position">
+                                    Sleep speler
+                                </span>
                             </div>
                         </div>
 
@@ -241,20 +306,71 @@
         <!-- HIDDEN INPUTS -->
         <div id="lineup-inputs">
 
-            <input type="hidden" name="keeper" id="input-keeper">
+            <input
+                type="hidden"
+                name="keeper"
+                id="input-keeper"
+            >
 
-            <input type="hidden" name="verdediger_1" id="input-verdediger_1">
-            <input type="hidden" name="verdediger_2" id="input-verdediger_2">
-            <input type="hidden" name="verdediger_3" id="input-verdediger_3">
-            <input type="hidden" name="verdediger_4" id="input-verdediger_4">
+            <input
+                type="hidden"
+                name="verdediger_1"
+                id="input-verdediger_1"
+            >
 
-            <input type="hidden" name="middenvelder_1" id="input-middenvelder_1">
-            <input type="hidden" name="middenvelder_2" id="input-middenvelder_2">
-            <input type="hidden" name="middenvelder_3" id="input-middenvelder_3">
+            <input
+                type="hidden"
+                name="verdediger_2"
+                id="input-verdediger_2"
+            >
 
-            <input type="hidden" name="aanvaller_1" id="input-aanvaller_1">
-            <input type="hidden" name="aanvaller_2" id="input-aanvaller_2">
-            <input type="hidden" name="aanvaller_3" id="input-aanvaller_3">
+            <input
+                type="hidden"
+                name="verdediger_3"
+                id="input-verdediger_3"
+            >
+
+            <input
+                type="hidden"
+                name="verdediger_4"
+                id="input-verdediger_4"
+            >
+
+            <input
+                type="hidden"
+                name="middenvelder_1"
+                id="input-middenvelder_1"
+            >
+
+            <input
+                type="hidden"
+                name="middenvelder_2"
+                id="input-middenvelder_2"
+            >
+
+            <input
+                type="hidden"
+                name="middenvelder_3"
+                id="input-middenvelder_3"
+            >
+
+            <input
+                type="hidden"
+                name="aanvaller_1"
+                id="input-aanvaller_1"
+            >
+
+            <input
+                type="hidden"
+                name="aanvaller_2"
+                id="input-aanvaller_2"
+            >
+
+            <input
+                type="hidden"
+                name="aanvaller_3"
+                id="input-aanvaller_3"
+            >
 
         </div>
 

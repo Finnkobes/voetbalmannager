@@ -1,48 +1,92 @@
 import sqlite3
 from pathlib import Path
 
+
 BASE_DIR = Path(__file__).resolve().parent
-DATABASE = BASE_DIR / "database" / "football.db"
 
-connection = sqlite3.connect(DATABASE)
-connection.row_factory = sqlite3.Row
+DATABASE = (
+    BASE_DIR
+    / "database"
+    / "football.db"
+)
 
-# Eerste wedstrijd ophalen
-wedstrijd = connection.execute("""
-    SELECT
-        id,
-        home_club_id,
-        away_club_id,
-        gespeeld,
-        home_score,
-        away_score
-    FROM matches
-    ORDER BY speelronde ASC, id ASC
-    LIMIT 1
-""").fetchone()
 
-if wedstrijd is None:
-    print("Geen wedstrijd gevonden.")
-else:
+def reset_database():
 
-    print(
-        f"Eerste wedstrijd: ID {wedstrijd['id']} "
-        f"({wedstrijd['home_score']} - {wedstrijd['away_score']})"
+    if not DATABASE.exists():
+
+        print("Database niet gevonden:")
+        print(DATABASE)
+
+        return
+
+
+    connection = sqlite3.connect(
+        DATABASE
     )
 
-    # Eerste wedstrijd resetten
-    connection.execute("""
+    cursor = connection.cursor()
+
+
+    # =========================
+    # STATISTIEK TABELLEN
+    # =========================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS player_stats (
+            player_id INTEGER NOT NULL,
+            maand TEXT NOT NULL,
+            wedstrijden INTEGER NOT NULL DEFAULT 0,
+            doelpunten INTEGER NOT NULL DEFAULT 0,
+            motm INTEGER NOT NULL DEFAULT 0,
+            PRIMARY KEY (player_id, maand)
+        )
+    """)
+
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS match_awards (
+            match_id INTEGER PRIMARY KEY,
+            player_id INTEGER,
+            player_name TEXT,
+            club_id INTEGER,
+            club_name TEXT,
+            datum TEXT
+        )
+    """)
+
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS interviews (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            match_id INTEGER,
+            datum TEXT,
+            spreker TEXT,
+            rol TEXT,
+            club_name TEXT,
+            tekst TEXT
+        )
+    """)
+
+
+    # =========================
+    # WEDSTRIJDEN RESETTEN
+    # =========================
+
+    cursor.execute("""
         UPDATE matches
         SET
             home_score = 0,
             away_score = 0,
             gespeeld = 0
-        WHERE id = ?
-    """, (wedstrijd["id"],))
+    """)
 
-    # Competitiestatistieken van beide clubs terug naar 0.
-    # Dit is bedoeld voor onze eerste testwedstrijd.
-    connection.execute("""
+
+    # =========================
+    # COMPETITIE RESETTEN
+    # =========================
+
+    cursor.execute("""
         UPDATE competition
         SET
             gespeeld = 0,
@@ -52,16 +96,45 @@ else:
             doelpunten_voor = 0,
             doelpunten_tegen = 0,
             punten = 0
-        WHERE club_id IN (?, ?)
-    """, (
-        wedstrijd["home_club_id"],
-        wedstrijd["away_club_id"]
-    ))
+    """)
+
+
+    # =========================
+    # STATISTIEKEN WISSEN
+    # =========================
+
+    cursor.execute("""
+        DELETE FROM player_stats
+    """)
+
+
+    cursor.execute("""
+        DELETE FROM match_awards
+    """)
+
+
+    cursor.execute("""
+        DELETE FROM interviews
+    """)
+
 
     connection.commit()
+    connection.close()
 
-    print("Eerste wedstrijd is succesvol gereset.")
-    print("Score: 0 - 0")
-    print("Status: nog niet gespeeld")
 
-connection.close()
+    print()
+    print("==============================")
+    print("      CLUBMASTER RESET")
+    print("==============================")
+    print("Wedstrijden: niet gespeeld")
+    print("Scores: 0 - 0")
+    print("Competitie: gereset")
+    print("Topscorers: gewist")
+    print("MOTM: gewist")
+    print("Interviews: gewist")
+    print("==============================")
+    print()
+
+
+if __name__ == "__main__":
+    reset_database()
