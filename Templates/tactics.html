@@ -1,12 +1,22 @@
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Tactieken - ClubMaster</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
 </head>
 
 <body>
@@ -15,148 +25,156 @@
 
     <main class="tactics-page">
 
-        <h1>Tactieken</h1>
+        <h1>🎯 Tactieken</h1>
 
         <p class="page-subtitle">
-            {{ club.naam }} • Bepaal jouw speelstijl
+            Bepaal hoe jouw team speelt.
         </p>
 
 
-        <section class="tactics-panel">
+        <form method="POST">
 
-            <div class="formation-section">
 
-                <h2>Formatie</h2>
+            <!-- FORMATIE -->
 
-                <div class="formation-buttons">
+            <section class="tactics-card">
 
-                    {% for formation in formations %}
+                <h2>⚽ Formatie</h2>
 
-                        <button class="formation-button">
-                            {{ formation }}
-                        </button>
+                <p>
+                    Kies hoe je spelers over het veld worden verdeeld.
+                </p>
+
+                <div class="tactics-options">
+
+                    {% for formatie in formations %}
+
+                        <label class="tactic-option">
+
+                            <input
+                                type="radio"
+                                name="formatie"
+                                value="{{ formatie }}"
+                                {% if tactieken.formation == formatie or tactieken.formatie == formatie %}checked{% endif %}
+                            >
+
+                            <span>
+                                {{ formatie }}
+                            </span>
+
+                        </label>
 
                     {% endfor %}
 
                 </div>
 
-            </div>
+            </section>
 
 
-            <div class="pitch">
+            <!-- SPEELSTIJL -->
 
-                <div class="pitch-row">
+            <section class="tactics-card">
 
-                    <div class="position">
-                        <span>GK</span>
-                        <small>Keeper</small>
-                    </div>
+                <h2>🎮 Speelstijl</h2>
 
-                </div>
+                <p>
+                    Bepaal hoe jouw team probeert te voetballen.
+                </p>
 
+                <select
+                    name="speelstijl"
+                    class="tactics-select"
+                >
 
-                <div class="pitch-row">
+                    {% for stijl in speelstijlen %}
 
-                    <div class="position">
-                        <span>LB</span>
-                        <small>Verdediger</small>
-                    </div>
+                        <option
+                            value="{{ stijl }}"
+                            {% if tactieken.speelstijl == stijl %}selected{% endif %}
+                        >
+                            {{ stijl }}
+                        </option>
 
-                    <div class="position">
-                        <span>CB</span>
-                        <small>Verdediger</small>
-                    </div>
+                    {% endfor %}
 
-                    <div class="position">
-                        <span>CB</span>
-                        <small>Verdediger</small>
-                    </div>
-
-                    <div class="position">
-                        <span>RB</span>
-                        <small>Verdediger</small>
-                    </div>
-
-                </div>
-
-
-                <div class="pitch-row">
-
-                    <div class="position">
-                        <span>CM</span>
-                        <small>Middenveld</small>
-                    </div>
-
-                    <div class="position">
-                        <span>CM</span>
-                        <small>Middenveld</small>
-                    </div>
-
-                    <div class="position">
-                        <span>CM</span>
-                        <small>Middenveld</small>
-                    </div>
-
-                </div>
-
-
-                <div class="pitch-row">
-
-                    <div class="position">
-                        <span>LW</span>
-                        <small>Aanvaller</small>
-                    </div>
-
-                    <div class="position">
-                        <span>ST</span>
-                        <small>Aanvaller</small>
-                    </div>
-
-                    <div class="position">
-                        <span>RW</span>
-                        <small>Aanvaller</small>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="tactic-settings">
-
-                <h2>Speelstijl</h2>
-
-                <select>
-                    <option>Gebalanceerd</option>
-                    <option>Aanvallend</option>
-                    <option>Verdedigend</option>
-                    <option>Counter</option>
-                    <option>Balbezit</option>
                 </select>
 
+            </section>
 
-                <h2>Druk zetten</h2>
 
-                <select>
-                    <option>Normaal</option>
-                    <option>Laag</option>
-                    <option>Hoog</option>
+            <!-- MENTALITEIT -->
+
+            <section class="tactics-card">
+
+                <h2>🧠 Mentaliteit</h2>
+
+                <p>
+                    Kies hoe aanvallend jouw team speelt.
+                </p>
+
+                <select
+                    name="mentaliteit"
+                    class="tactics-select"
+                >
+
+                    {% for optie in mentaliteiten %}
+
+                        <option
+                            value="{{ optie }}"
+                            {% if tactieken.mentaliteit == optie %}selected{% endif %}
+                        >
+                            {{ optie }}
+                        </option>
+
+                    {% endfor %}
+
                 </select>
 
+            </section>
 
-                <h2>Tempo</h2>
 
-                <select>
-                    <option>Normaal</option>
-                    <option>Laag</option>
-                    <option>Hoog</option>
+            <!-- DRUK -->
+
+            <section class="tactics-card">
+
+                <h2>🔥 Druk zetten</h2>
+
+                <p>
+                    Bepaal hoeveel druk je team op de tegenstander zet.
+                </p>
+
+                <select
+                    name="druk"
+                    class="tactics-select"
+                >
+
+                    {% for optie in druk %}
+
+                        <option
+                            value="{{ optie }}"
+                            {% if tactieken.druk == optie %}selected{% endif %}
+                        >
+                            {{ optie }}
+                        </option>
+
+                    {% endfor %}
+
                 </select>
 
-            </div>
+            </section>
 
-        </section>
+
+            <button
+                type="submit"
+                class="club-button tactics-save"
+            >
+                💾 Tactieken opslaan
+            </button>
+
+        </form>
 
     </main>
 
 </body>
+
 </html>

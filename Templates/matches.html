@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedstrijden - ClubMaster</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    {% include "navbar.html" %}
+
+    <main class="matches-page">
+
+        <h1>⚽ Wedstrijden</h1>
+        <p class="page-subtitle">
+            Bekijk en speel de wedstrijden van de competitie.
+        </p>
+
+        <div class="matches-list">
+
+            {% for match in matches %}
+
+                <div class="match-card">
+
+                    <div class="match-team">
+                        <img
+                            src="{{ url_for('static', filename='images/clubs/' + match.home_logo) }}"
+                            alt="{{ match.home_naam }}"
+                        >
+                        <strong>{{ match.home_naam }}</strong>
+                    </div>
+
+                    <div class="match-score">
+                        {% if match.gespeeld %}
+                            <strong>
+                                {{ match.home_score }} - {{ match.away_score }}
+                            </strong>
+                        {% else %}
+                            <span>VS</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="match-team">
+                        <img
+                            src="{{ url_for('static', filename='images/clubs/' + match.away_logo) }}"
+                            alt="{{ match.away_naam }}"
+                        >
+                        <strong>{{ match.away_naam }}</strong>
+                    </div>
+
+                    <div class="match-status">
+
+                        <strong>
+                            Speelronde {{ match.speelronde }}
+                        </strong>
+
+                        <span>
+                            {{ match.datum }}
+                        </span>
+
+                        {% if match.gespeeld %}
+
+                            <span>✅ Gespeeld</span>
+
+                        {% elif match.beschikbaar %}
+
+                            <a
+                                href="{{ url_for('play_match', match_id=match.id) }}"
+                                class="club-button"
+                            >
+                                ⚽ Wedstrijd spelen
+                            </a>
+
+                        {% else %}
+
+                            <span>
+                                🔒 Beschikbaar vanaf 19:00
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% else %}
+
+                <div class="no-matches">
+                    Er zijn nog geen wedstrijden.
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </main>
+
+</body>
+</html>

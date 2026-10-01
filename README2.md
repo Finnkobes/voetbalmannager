@@ -3,7 +3,7 @@
 ## Sprintperiode
 
 * **Startdatum:** 28-09-2026
-* **Einddatum:** 01-10-2026
+* **Einddatum:** 05-10-2026
 
 ## Doel
 

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html lang="nl">
+
+<head>
+
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+    {{ club.naam }} - ClubMaster
+</title>
+
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}"
+>
+
+
+</head>
+
+<body>
+
+{% include "navbar.html" %}
+
+<main class="club-detail-page">
+
+
+<a
+    href="{{ url_for('club_viewer') }}"
+    class="club-viewer-back"
+>
+    ← Alle clubs
+</a>
+
+
+<div class="club-detail-header">
+
+    <div class="club-detail-main">
+
+        <div class="club-detail-logo">
+
+            {% if club.logo %}
+
+                <img
+                    src="{{ url_for(
+                        'static',
+                        filename='images/clubs/' + club.logo
+                    ) }}"
+                    alt="{{ club.naam }}"
+                >
+
+            {% endif %}
+
+        </div>
+
+
+        <div>
+
+            <h1>
+                {{ club.naam }}
+            </h1>
+
+            <p>
+                {{ club.stad }}
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="club-detail-stats">
+
+    <div class="club-detail-stat">
+
+        <span>
+            Club rating
+        </span>
+
+        <strong>
+            {{ club.rating }}
+        </strong>
+
+    </div>
+
+
+    <div class="club-detail-stat">
+
+        <span>
+            Aantal spelers
+        </span>
+
+        <strong>
+            {{ players|length }}
+        </strong>
+
+    </div>
+
+</div>
+
+
+<section class="club-detail-panel">
+
+    <div class="club-detail-panel-header">
+
+        <h2>
+            Selectie
+        </h2>
+
+        <span>
+            {{ players|length }} spelers
+        </span>
+
+    </div>
+
+
+    <div class="club-player-list">
+
+        {% for player in players %}
+
+            <a
+                href="{{ url_for(
+                    'player_detail',
+                    player_id=player.id
+                ) }}"
+                class="club-player-row"
+            >
+
+                <div class="club-player-number">
+                    {{ loop.index }}
+                </div>
+
+
+                <div class="club-player-name">
+
+                    <strong>
+                        {{ player.naam }}
+                    </strong>
+
+                    <span>
+                        {{ player.positie }}
+                    </span>
+
+                </div>
+
+
+                <div class="club-player-age">
+
+                    <span>
+                        Leeftijd
+                    </span>
+
+                    <strong>
+                        {{ player.leeftijd }}
+                    </strong>
+
+                </div>
+
+
+                <div class="club-player-value">
+
+                    <span>
+                        Marktwaarde
+                    </span>
+
+                    <strong>
+                        €{{ "{:,.0f}".format(
+                            player.marktwaarde
+                        ).replace(",", ".") }}
+                    </strong>
+
+                </div>
+
+
+                <div class="club-player-rating">
+
+                    <span>
+                        Rating
+                    </span>
+
+                    <strong>
+                        {{ player.rating }}
+                    </strong>
+
+                </div>
+
+            </a>
+
+        {% else %}
+
+            <p>
+                Deze club heeft nog geen spelers.
+            </p>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+</main>
+
+</body>
+</html>

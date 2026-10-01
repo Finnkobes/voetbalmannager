@@ -125,6 +125,19 @@ def create_database():
             FOREIGN KEY (club_id) REFERENCES clubs(id)
         )
     """)
+    
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS matches (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        home_club_id INTEGER NOT NULL,
+        away_club_id INTEGER NOT NULL,
+        home_score INTEGER NOT NULL DEFAULT 0,
+        away_score INTEGER NOT NULL DEFAULT 0,
+        gespeeld INTEGER NOT NULL DEFAULT 0,
+        FOREIGN KEY (home_club_id) REFERENCES clubs(id),
+        FOREIGN KEY (away_club_id) REFERENCES clubs(id)
+    )
+""")
 
     connection.commit()
     connection.close()

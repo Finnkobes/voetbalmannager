@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<html lang="nl">
+
+<head>
+
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+    Alle clubs - ClubMaster
+</title>
+
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}"
+>
+
+
+</head>
+
+<body>
+
+{% include "navbar.html" %}
+
+<main class="club-viewer-page">
+
+
+    <a
+    href="{{ url_for('dashboard') }}"
+    class="club-viewer-dashboard-button"
+>
+    ← Terug naar dashboard
+</a>
+
+<div class="club-viewer-header">
+
+    <div>
+
+        <h1>
+            Alle clubs
+        </h1>
+
+        <p>
+            Bekijk de verschillende clubs en hun selecties.
+        </p>
+
+    </div>
+
+    
+
+</div>
+
+
+<div class="club-viewer-grid">
+
+    {% for club in clubs %}
+
+        <div class="club-viewer-card">
+
+            <div class="club-viewer-logo">
+
+                {% if club.logo %}
+
+                    <img
+                        src="{{ url_for(
+                            'static',
+                            filename='images/clubs/' + club.logo
+                        ) }}"
+                        alt="{{ club.naam }}"
+                    >
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="club-viewer-info">
+
+                <h2>
+                    {{ club.naam }}
+                </h2>
+
+                <p>
+                    {{ club.stad }}
+                </p>
+
+                <div class="club-viewer-rating">
+
+                    <span>
+                        Club rating
+                    </span>
+
+                    <strong>
+                        {{ club.rating }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+           <a
+    href="{{ url_for(
+        'club_viewer_detail',
+        club_id=club.id
+    ) }}"
+    class="club-viewer-button"
+>
+    Bekijk selectie
+</a>
+
+        </div>
+
+    {% else %}
+
+        <p>
+            Er zijn geen clubs gevonden.
+        </p>
+
+    {% endfor %}
+
+</div>
+
+
+</main>
+
+</body>
+</html>

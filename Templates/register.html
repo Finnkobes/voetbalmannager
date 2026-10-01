@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Account aanmaken - ClubMaster
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<main class="auth-page">
+
+    <section class="auth-card">
+
+        <div class="auth-logo">
+            ⚽
+        </div>
+
+        <h1>
+            ClubMaster
+        </h1>
+
+        <p class="auth-subtitle">
+            Maak je manageraccount aan.
+        </p>
+
+
+        {% if error %}
+
+        <div class="auth-error">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <form
+            method="POST"
+            class="auth-form"
+        >
+
+            <label for="username">
+                Gebruikersnaam
+            </label>
+
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Kies een gebruikersnaam"
+                required
+                autocomplete="username"
+            >
+
+
+            <label for="password">
+                Wachtwoord
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Kies een wachtwoord"
+                required
+                autocomplete="new-password"
+            >
+
+
+            <label for="password2">
+                Wachtwoord herhalen
+            </label>
+
+            <input
+                type="password"
+                id="password2"
+                name="password2"
+                placeholder="Herhaal je wachtwoord"
+                required
+                autocomplete="new-password"
+            >
+
+
+            <button
+                type="submit"
+                class="club-button auth-button"
+            >
+                ⚽ Account aanmaken
+            </button>
+
+        </form>
+
+
+        <p class="auth-switch">
+            Al een account?
+            <a href="{{ url_for('login') }}">
+                Inloggen
+            </a>
+        </p>
+
+    </section>
+
+</main>
+
+</body>
+
+</html>
