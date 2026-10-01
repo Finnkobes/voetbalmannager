@@ -1,23 +1,26 @@
 <!DOCTYPE html>
+
 <html lang="nl">
 
 <head>
 
-    <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta charset="UTF-8">
 
-    <title>
-        Dashboard - ClubMaster
-    </title>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+<title>
+    Dashboard - ClubMaster
+</title>
+
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}"
+>
+
 
 </head>
 
@@ -27,290 +30,316 @@
 
 <main class="dashboard">
 
-    {% if club %}
 
-        <h1>
-            Welkom, manager!
-        </h1>
+{% if club %}
 
-        <p class="dashboard-subtitle">
-            Je bent manager van {{ club.naam }}
-        </p>
+    <div class="dashboard-topbar">
 
+        <div>
+            <h1>
+                Welkom, manager!
+            </h1>
 
-        <!-- BASIS INFORMATIE -->
+            <p class="dashboard-subtitle">
+                Je bent manager van {{ club.naam }}
+            </p>
+        </div>
 
-        <div class="dashboard-grid">
+        <div class="dashboard-actions">
 
-            <div class="dashboard-card">
+            <a
+                href="{{ url_for('club_viewer') }}"
+                class="dashboard-action-button"
+            >
+                🏟️ Alle clubs
+            </a>
 
-                <span class="card-icon">
-                    ⚽
-                </span>
+            <a
+                href="{{ url_for('logout') }}"
+                class="logout-button"
+            >
+                Uitloggen
+            </a>
 
-                <h2>
-                    {{ club.naam }}
-                </h2>
+        </div>
 
-                <p>
-                    {{ club.stad }}
-                </p>
-
-            </div>
-
-
-            <div class="dashboard-card">
-
-                <span class="card-icon">
-                    ⭐
-                </span>
-
-                <h2>
-                    {{ club.rating }}
-                </h2>
-
-                <p>
-                    Club rating
-                </p>
-
-            </div>
+    </div>
 
 
-            <div class="dashboard-card">
+    <!-- BASIS INFORMATIE -->
 
-                <span class="card-icon">
-                    💰
-                </span>
+    <div class="dashboard-grid">
 
-                <h2>
-                    €{{ "{:,.0f}".format(club.budget).replace(",", ".") }}
-                </h2>
+        <div class="dashboard-card">
 
-                <p>
-                    Transferbudget
-                </p>
+            <span class="card-icon">
+                ⚽
+            </span>
 
-            </div>
+            <h2>
+                {{ club.naam }}
+            </h2>
 
-
-            <div class="dashboard-card">
-
-                <span class="card-icon">
-                    🏆
-                </span>
-
-                <h2>
-                    {{ competitie.punten if competitie else 0 }}
-                </h2>
-
-                <p>
-                    Punten
-                </p>
-
-            </div>
+            <p>
+                {{ club.stad }}
+            </p>
 
         </div>
 
 
-        <!-- COMPETITIE -->
+        <div class="dashboard-card">
 
-        {% if competitie %}
+            <span class="card-icon">
+                ⭐
+            </span>
 
-        <section class="dashboard-section">
+            <h2>
+                {{ club.rating }}
+            </h2>
 
-            <div class="dashboard-section-header">
+            <p>
+                Club rating
+            </p>
 
-                <div>
-
-                    <h2>
-                        🏆 Competitie
-                    </h2>
-
-                    <p>
-                        Jouw huidige positie in de competitie
-                    </p>
-
-                </div>
+        </div>
 
 
-                <a
-                    href="{{ url_for('competition') }}"
-                    class="dashboard-link"
-                >
-                    Bekijk competitie →
-                </a>
+        <div class="dashboard-card">
 
-            </div>
+            <span class="card-icon">
+                💰
+            </span>
 
+            <h2>
+                €{{ "{:,.0f}".format(club.budget).replace(",", ".") }}
+            </h2>
 
-            <div class="competition-overview">
+            <p>
+                Transferbudget
+            </p>
 
-                <div class="competition-overview-card">
-                    <span>Positie</span>
-                    <strong>#{{ positie }}</strong>
-                </div>
-
-
-                <div class="competition-overview-card">
-                    <span>Gespeeld</span>
-                    <strong>{{ competitie.gespeeld }}</strong>
-                </div>
+        </div>
 
 
-                <div class="competition-overview-card">
-                    <span>Gewonnen</span>
-                    <strong>{{ competitie.gewonnen }}</strong>
-                </div>
+        <div class="dashboard-card">
+
+            <span class="card-icon">
+                🏆
+            </span>
+
+            <h2>
+                {{ competitie.punten if competitie else 0 }}
+            </h2>
+
+            <p>
+                Punten
+            </p>
+
+        </div>
+
+    </div>
 
 
-                <div class="competition-overview-card">
-                    <span>Gelijk</span>
-                    <strong>{{ competitie.gelijk }}</strong>
-                </div>
+    <!-- COMPETITIE -->
 
+    {% if competitie %}
 
-                <div class="competition-overview-card">
-                    <span>Verloren</span>
-                    <strong>{{ competitie.verloren }}</strong>
-                </div>
+    <section class="dashboard-section">
 
+        <div class="dashboard-section-header">
 
-                <div class="competition-overview-card">
-                    <span>Doelsaldo</span>
+            <div>
 
-                    <strong>
-                        {{ "+" if competitie.doelsaldo > 0 else "" }}{{ competitie.doelsaldo }}
-                    </strong>
-                </div>
+                <h2>
+                    🏆 Competitie
+                </h2>
 
-
-                <div class="competition-overview-card">
-                    <span>Punten</span>
-                    <strong>{{ competitie.punten }}</strong>
-                </div>
-
-            </div>
-
-        </section>
-
-        {% endif %}
-
-
-        <!-- INTERVIEWS -->
-
-        <section class="dashboard-section dashboard-news-section">
-
-            <div class="dashboard-section-header">
-
-                <div>
-
-                    <span class="section-kicker">
-                        CLUBMASTER NIEUWS
-                    </span>
-
-                    <h2>
-                        🎙️ Recente interviews
-                    </h2>
-
-                    <p>
-                        Reacties na de recente wedstrijden.
-                    </p>
-
-                </div>
-
-
-                <a
-                    href="{{ url_for('statistics') }}"
-                    class="dashboard-link"
-                >
-                    Alle statistieken →
-                </a>
+                <p>
+                    Jouw huidige positie in de competitie
+                </p>
 
             </div>
 
 
-            {% if interviews %}
+            <a
+                href="{{ url_for('competition') }}"
+                class="dashboard-link"
+            >
+                Bekijk competitie →
+            </a>
 
-                <div class="dashboard-interviews">
-
-                    {% for interview in interviews %}
-
-                    <article class="dashboard-interview-card">
-
-                        <div class="dashboard-interview-top">
-
-                            <div>
-
-                                <strong>
-                                    {{ interview.spreker }}
-                                </strong>
-
-                                <span>
-                                    {{ interview.rol }}
-                                    ·
-                                    {{ interview.club_name }}
-                                </span>
-
-                            </div>
+        </div>
 
 
-                            <time>
-                                {{ interview.datum }}
-                            </time>
+        <div class="competition-overview">
+
+            <div class="competition-overview-card">
+                <span>Positie</span>
+                <strong>#{{ positie }}</strong>
+            </div>
+
+
+            <div class="competition-overview-card">
+                <span>Gespeeld</span>
+                <strong>{{ competitie.gespeeld }}</strong>
+            </div>
+
+
+            <div class="competition-overview-card">
+                <span>Gewonnen</span>
+                <strong>{{ competitie.gewonnen }}</strong>
+            </div>
+
+
+            <div class="competition-overview-card">
+                <span>Gelijk</span>
+                <strong>{{ competitie.gelijk }}</strong>
+            </div>
+
+
+            <div class="competition-overview-card">
+                <span>Verloren</span>
+                <strong>{{ competitie.verloren }}</strong>
+            </div>
+
+
+            <div class="competition-overview-card">
+                <span>Doelsaldo</span>
+
+                <strong>
+                    {{ "+" if competitie.doelsaldo > 0 else "" }}{{ competitie.doelsaldo }}
+                </strong>
+            </div>
+
+
+            <div class="competition-overview-card">
+                <span>Punten</span>
+                <strong>{{ competitie.punten }}</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+    {% endif %}
+
+
+    <!-- INTERVIEWS -->
+
+    <section class="dashboard-section dashboard-news-section">
+
+        <div class="dashboard-section-header">
+
+            <div>
+
+                <span class="section-kicker">
+                    CLUBMASTER NIEUWS
+                </span>
+
+                <h2>
+                    🎙️ Recente interviews
+                </h2>
+
+                <p>
+                    Reacties na de recente wedstrijden.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('statistics') }}"
+                class="dashboard-link"
+            >
+                Alle statistieken →
+            </a>
+
+        </div>
+
+
+        {% if interviews %}
+
+            <div class="dashboard-interviews">
+
+                {% for interview in interviews %}
+
+                <article class="dashboard-interview-card">
+
+                    <div class="dashboard-interview-top">
+
+                        <div>
+
+                            <strong>
+                                {{ interview.spreker }}
+                            </strong>
+
+                            <span>
+                                {{ interview.rol }}
+                                ·
+                                {{ interview.club_name }}
+                            </span>
 
                         </div>
 
 
-                        <p>
-                            “{{ interview.tekst }}”
-                        </p>
-
-                    </article>
-
-                    {% endfor %}
-
-                </div>
-
-            {% else %}
-
-                <div class="dashboard-empty-news">
-
-                    <span>
-                        🎙️
-                    </span>
-
-                    <div>
-
-                        <strong>
-                            Nog geen interviews
-                        </strong>
-
-                        <p>
-                            Na je eerste wedstrijden verschijnen hier de reacties van spelers en trainers.
-                        </p>
+                        <time>
+                            {{ interview.datum }}
+                        </time>
 
                     </div>
 
+
+                    <p>
+                        “{{ interview.tekst }}”
+                    </p>
+
+                </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="dashboard-empty-news">
+
+                <span>
+                    🎙️
+                </span>
+
+                <div>
+
+                    <strong>
+                        Nog geen interviews
+                    </strong>
+
+                    <p>
+                        Na je eerste wedstrijden verschijnen hier de reacties van spelers en trainers.
+                    </p>
+
                 </div>
 
-            {% endif %}
+            </div>
 
-        </section>
+        {% endif %}
 
-    {% else %}
+    </section>
 
-        <h1>
-            Je hebt nog geen club gekozen.
-        </h1>
+{% else %}
 
-        <a
-            href="/clubs"
-            class="start-button"
-        >
-            Kies een club
-        </a>
+    <h1>
+        Je hebt nog geen club gekozen.
+    </h1>
 
-    {% endif %}
+    <a
+        href="{{ url_for('clubs_page') }}"
+        class="start-button"
+    >
+        Kies een club
+    </a>
+
+{% endif %}
+
 
 </main>
 

@@ -17,15 +17,22 @@ except ImportError as exc:
     ) from exc
 
 
-import sqlite3
-import webbrowser
-import random
-import time
+import json
 import math
+import random
+import sqlite3
+import time
+import webbrowser
 
-from threading import Timer
+from datetime import date, datetime, timedelta
+from functools import wraps
 from pathlib import Path
-from datetime import datetime, date, timedelta
+from threading import Timer
+
+from werkzeug.security import (
+    check_password_hash,
+    generate_password_hash,
+)
 
 
 app = Flask(__name__)
@@ -36,9 +43,9 @@ BASE_DIR = Path(__file__).resolve().parent
 DATABASE = BASE_DIR / "database" / "football.db"
 
 
-# =========================
-# DATABASE VERBINDING
-# =========================
+# =========================================================
+# DATABASE
+# =========================================================
 
 def get_connection():
     connection = sqlite3.connect(DATABASE)
@@ -46,9 +53,302 @@ def get_connection():
     return connection
 
 
-# =========================
-# COMPETITIE DATABASE
-# =========================
+# =========================================================
+# GEBRUIKERS / LOGIN
+# =========================================================
+
+def create_users_table():
+
+    connection = get_connection()
+
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password_hash TEXT NOT NULL,
+            club_id INTEGER,
+            lineup_json TEXT NOT NULL DEFAULT '{}',
+            tactics_json TEXT NOT NULL DEFAULT '{}',
+            transfer_history_json TEXT NOT NULL DEFAULT '[]',
+            transfer_offers_json TEXT NOT NULL DEFAULT '[]',
+            transfer_offer_date TEXT,
+            created_at TEXT NOT NULL
+        )
+    """)
+
+    connection.commit()
+    connection.close()
+
+
+def login_required(view):
+
+    @wraps(view)
+    def wrapped_view(*args, **kwargs):
+
+        user_id = session.get("user_id")
+
+        if user_id is None:
+            return redirect(
+                url_for("login")
+            )
+
+        connection = get_connection()
+
+        user = connection.execute("""
+            SELECT id
+            FROM users
+            WHERE id = ?
+        """, (
+            user_id,
+        )).fetchone()
+
+        connection.close()
+
+        if user is None:
+
+            session.clear()
+
+            return redirect(
+                url_for("login")
+            )
+
+        return view(*args, **kwargs)
+
+    return wrapped_view
+
+
+def get_current_user():
+
+    user_id = session.get("user_id")
+
+    if user_id is None:
+        return None
+
+    connection = get_connection()
+
+    user = connection.execute("""
+        SELECT
+            id,
+            username,
+            password_hash,
+            club_id,
+            lineup_json,
+            tactics_json,
+            transfer_history_json,
+            transfer_offers_json,
+            transfer_offer_date,
+            created_at
+        FROM users
+        WHERE id = ?
+    """, (
+        user_id,
+    )).fetchone()
+
+    connection.close()
+
+    return user
+
+
+def load_json_value(value, default):
+
+    if not value:
+        return default
+
+    try:
+        return json.loads(value)
+
+    except (
+        TypeError,
+        ValueError,
+        json.JSONDecodeError
+    ):
+        return default
+
+
+def get_user_progress():
+
+    user = get_current_user()
+
+    if user is None:
+
+        return {
+            "lineup": {},
+            "tactics": {
+                "formatie": "4-3-3",
+                "speelstijl": "Gebalanceerd",
+                "mentaliteit": "Gebalanceerd",
+                "druk": "Normaal"
+            },
+            "transfer_history": [],
+            "transfer_offers": [],
+            "transfer_offer_date": None
+        }
+
+    return {
+        "lineup": load_json_value(
+            user["lineup_json"],
+            {}
+        ),
+
+        "tactics": load_json_value(
+            user["tactics_json"],
+            {
+                "formatie": "4-3-3",
+                "speelstijl": "Gebalanceerd",
+                "mentaliteit": "Gebalanceerd",
+                "druk": "Normaal"
+            }
+        ),
+
+        "transfer_history": load_json_value(
+            user["transfer_history_json"],
+            []
+        ),
+
+        "transfer_offers": load_json_value(
+            user["transfer_offers_json"],
+            []
+        ),
+
+        "transfer_offer_date":
+            user["transfer_offer_date"]
+    }
+
+
+def save_user_progress(
+    lineup=None,
+    tactics=None,
+    transfer_history=None,
+    transfer_offers=None,
+    transfer_offer_date=None,
+    club_id=None,
+    clear_transfer_offer_date=False
+):
+
+    user_id = session.get("user_id")
+
+    if user_id is None:
+        return
+
+    current = get_user_progress()
+
+    if lineup is None:
+        lineup = current["lineup"]
+
+    if tactics is None:
+        tactics = current["tactics"]
+
+    if transfer_history is None:
+        transfer_history = current["transfer_history"]
+
+    if transfer_offers is None:
+        transfer_offers = current["transfer_offers"]
+
+    if (
+        transfer_offer_date is None
+        and
+        not clear_transfer_offer_date
+    ):
+        transfer_offer_date = (
+            current["transfer_offer_date"]
+        )
+
+    if club_id is None:
+
+        user = get_current_user()
+
+        if user:
+            club_id = user["club_id"]
+
+    connection = get_connection()
+
+    connection.execute("""
+        UPDATE users
+        SET
+            club_id = ?,
+            lineup_json = ?,
+            tactics_json = ?,
+            transfer_history_json = ?,
+            transfer_offers_json = ?,
+            transfer_offer_date = ?
+        WHERE id = ?
+    """, (
+        club_id,
+
+        json.dumps(
+            lineup,
+            ensure_ascii=False
+        ),
+
+        json.dumps(
+            tactics,
+            ensure_ascii=False
+        ),
+
+        json.dumps(
+            transfer_history,
+            ensure_ascii=False
+        ),
+
+        json.dumps(
+            transfer_offers,
+            ensure_ascii=False
+        ),
+
+        transfer_offer_date,
+
+        user_id
+    ))
+
+    connection.commit()
+    connection.close()
+
+
+# =========================================================
+# CLUB VAN GEBRUIKER
+# =========================================================
+
+def get_user_club():
+
+    user = get_current_user()
+
+    if user is None:
+        return None
+
+    if user["club_id"] is None:
+        return None
+
+    connection = get_connection()
+
+    club = connection.execute("""
+        SELECT
+            id,
+            naam,
+            stad,
+            rating,
+            logo,
+            budget
+        FROM clubs
+        WHERE id = ?
+    """, (
+        user["club_id"],
+    )).fetchone()
+
+    connection.close()
+
+    return club
+
+
+def set_user_club(club_id):
+
+    save_user_progress(
+        club_id=club_id
+    )
+
+
+# =========================================================
+# COMPETITIE
+# =========================================================
 
 def create_competition_table():
 
@@ -76,7 +376,9 @@ def create_competition_table():
     for club in clubs:
 
         connection.execute("""
-            INSERT OR IGNORE INTO competition (club_id)
+            INSERT OR IGNORE INTO competition (
+                club_id
+            )
             VALUES (?)
         """, (
             club["id"],
@@ -86,9 +388,9 @@ def create_competition_table():
     connection.close()
 
 
-# =========================
-# STATISTIEKEN DATABASE
-# =========================
+# =========================================================
+# STATISTIEKEN
+# =========================================================
 
 def create_statistics_tables():
 
@@ -101,7 +403,10 @@ def create_statistics_tables():
             wedstrijden INTEGER NOT NULL DEFAULT 0,
             doelpunten INTEGER NOT NULL DEFAULT 0,
             motm INTEGER NOT NULL DEFAULT 0,
-            PRIMARY KEY (player_id, maand)
+            PRIMARY KEY (
+                player_id,
+                maand
+            )
         )
     """)
 
@@ -132,9 +437,64 @@ def create_statistics_tables():
     connection.close()
 
 
-# =========================
+# =========================================================
+# MATCHES
+# =========================================================
+
+def create_matches_table():
+
+    connection = get_connection()
+
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS matches (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            home_club_id INTEGER NOT NULL,
+            away_club_id INTEGER NOT NULL,
+            home_score INTEGER NOT NULL DEFAULT 0,
+            away_score INTEGER NOT NULL DEFAULT 0,
+            gespeeld INTEGER NOT NULL DEFAULT 0,
+            speelronde INTEGER NOT NULL DEFAULT 1,
+            datum TEXT,
+            FOREIGN KEY (
+                home_club_id
+            ) REFERENCES clubs(id),
+            FOREIGN KEY (
+                away_club_id
+            ) REFERENCES clubs(id)
+        )
+    """)
+
+    columns = connection.execute("""
+        PRAGMA table_info(matches)
+    """).fetchall()
+
+    column_names = [
+        column["name"]
+        for column in columns
+    ]
+
+    if "speelronde" not in column_names:
+
+        connection.execute("""
+            ALTER TABLE matches
+            ADD COLUMN speelronde INTEGER
+            NOT NULL DEFAULT 1
+        """)
+
+    if "datum" not in column_names:
+
+        connection.execute("""
+            ALTER TABLE matches
+            ADD COLUMN datum TEXT
+        """)
+
+    connection.commit()
+    connection.close()
+
+
+# =========================================================
 # CLUBS
-# =========================
+# =========================================================
 
 def get_clubs():
 
@@ -157,9 +517,9 @@ def get_clubs():
     return clubs
 
 
-# =========================
+# =========================================================
 # SPELERS
-# =========================
+# =========================================================
 
 def get_players_for_club(club_id):
 
@@ -187,9 +547,9 @@ def get_players_for_club(club_id):
     return players
 
 
-# =========================
-# POSITIE HERKENNEN
-# =========================
+# =========================================================
+# POSITIE
+# =========================================================
 
 def classificeer_positie(positie):
 
@@ -252,10 +612,6 @@ def classificeer_positie(positie):
     return "overig"
 
 
-# =========================
-# PLAYER ROW NAAR DICT
-# =========================
-
 def speler_naar_dict(speler):
 
     if isinstance(speler, dict):
@@ -267,9 +623,9 @@ def speler_naar_dict(speler):
     }
 
 
-# =========================
-# BASIS ELF BOUWEN
-# =========================
+# =========================================================
+# BASIS ELF
+# =========================================================
 
 def bouw_basiself(
     spelers,
@@ -357,10 +713,6 @@ def bouw_basiself(
     gebruikte_ids = set()
     basiself = []
 
-    # =========================
-    # EERST OPGESLAGEN SPELERS
-    # =========================
-
     for slot, label, groep in slots:
 
         opgeslagen_id = (
@@ -393,7 +745,8 @@ def bouw_basiself(
 
                 if (
                     speler_id == opgeslagen_id
-                    and speler_id not in gebruikte_ids
+                    and
+                    speler_id not in gebruikte_ids
                 ):
 
                     gekozen = speler
@@ -410,10 +763,6 @@ def bouw_basiself(
             gebruikte_ids.add(
                 int(gekozen["id"])
             )
-
-    # =========================
-    # MISSENDE POSITIES INVULLEN
-    # =========================
 
     for positie in basiself:
 
@@ -485,9 +834,8 @@ def bouw_basiself(
         if geschikte_spelers:
 
             geschikte_spelers.sort(
-                key=lambda speler: int(
-                    speler["rating"]
-                ),
+                key=lambda speler:
+                int(speler["rating"]),
                 reverse=True
             )
 
@@ -505,9 +853,8 @@ def bouw_basiself(
             if vrije_spelers:
 
                 vrije_spelers.sort(
-                    key=lambda speler: int(
-                        speler["rating"]
-                    ),
+                    key=lambda speler:
+                    int(speler["rating"]),
                     reverse=True
                 )
 
@@ -528,9 +875,9 @@ def bouw_basiself(
     return basiself
 
 
-# =========================
-# VEILIGE TERUGKEER URL
-# =========================
+# =========================================================
+# URL
+# =========================================================
 
 def geldige_interne_url(url):
 
@@ -546,9 +893,9 @@ def geldige_interne_url(url):
     return url
 
 
-# =========================
-# SPEELDAG / WEDSTRIJD BESCHIKBAARHEID
-# =========================
+# =========================================================
+# WEDSTRIJD BESCHIKBAAR
+# =========================================================
 
 def get_eerste_wedstrijddatum():
 
@@ -578,8 +925,6 @@ def wedstrijd_beschikbaar(datum):
         get_eerste_wedstrijddatum()
     )
 
-    # Eerste speeldag blijft
-    # direct beschikbaar om te testen.
     if datum == eerste_datum:
         return True
 
@@ -602,59 +947,9 @@ def wedstrijd_beschikbaar(datum):
     return nu >= wedstrijd_datum
 
 
-# =========================
-# MATCHES DATABASE
-# =========================
-
-def create_matches_table():
-
-    connection = get_connection()
-
-    connection.execute("""
-        CREATE TABLE IF NOT EXISTS matches (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            home_club_id INTEGER NOT NULL,
-            away_club_id INTEGER NOT NULL,
-            home_score INTEGER NOT NULL DEFAULT 0,
-            away_score INTEGER NOT NULL DEFAULT 0,
-            gespeeld INTEGER NOT NULL DEFAULT 0,
-            speelronde INTEGER NOT NULL DEFAULT 1,
-            datum TEXT,
-            FOREIGN KEY (home_club_id) REFERENCES clubs(id),
-            FOREIGN KEY (away_club_id) REFERENCES clubs(id)
-        )
-    """)
-
-    columns = connection.execute("""
-        PRAGMA table_info(matches)
-    """).fetchall()
-
-    column_names = [
-        column["name"]
-        for column in columns
-    ]
-
-    if "speelronde" not in column_names:
-
-        connection.execute("""
-            ALTER TABLE matches
-            ADD COLUMN speelronde INTEGER NOT NULL DEFAULT 1
-        """)
-
-    if "datum" not in column_names:
-
-        connection.execute("""
-            ALTER TABLE matches
-            ADD COLUMN datum TEXT
-        """)
-
-    connection.commit()
-    connection.close()
-
-
-# =========================
+# =========================================================
 # WEDSTRIJDEN GENEREREN
-# =========================
+# =========================================================
 
 def generate_matches():
 
@@ -817,10 +1112,6 @@ def generate_matches():
     connection.close()
 
 
-# =========================
-# BESTAAND SCHEDULE DAGELIJKS
-# =========================
-
 def maak_bestaand_schema_dagelijks():
 
     connection = get_connection()
@@ -838,8 +1129,6 @@ def maak_bestaand_schema_dagelijks():
 
         connection.close()
         return
-
-    eerste_datum = None
 
     try:
 
@@ -876,9 +1165,9 @@ def maak_bestaand_schema_dagelijks():
     connection.close()
 
 
-# =========================
-# OUDE SCORE FUNCTIE
-# =========================
+# =========================================================
+# SCORE
+# =========================================================
 
 def bereken_wedstrijdscore(
     home_rating,
@@ -963,9 +1252,9 @@ def bereken_wedstrijdscore(
     )
 
 
-# =========================
+# =========================================================
 # COMPETITIE BIJWERKEN
-# =========================
+# =========================================================
 
 def update_competition(
     home_club_id,
@@ -1052,9 +1341,9 @@ def update_competition(
     connection.close()
 
 
-# =========================
-# LIVE SPELER KIEZEN
-# =========================
+# =========================================================
+# LIVE SPELER
+# =========================================================
 
 def kies_live_speler(
     spelers,
@@ -1122,10 +1411,6 @@ def kies_live_speler(
     )
 
 
-# =========================
-# POISSON
-# =========================
-
 def poisson_getal(gemiddelde):
 
     gemiddelde = max(
@@ -1151,15 +1436,14 @@ def poisson_getal(gemiddelde):
     )
 
 
-# =========================
+# =========================================================
 # LIVE MINUUT
-# =========================
+# =========================================================
 
 def live_minuut_voor_secondes(at):
 
     eerste_helft = 15
     rust = 5
-
     tweede_helft_start = (
         eerste_helft
         +
@@ -1213,10 +1497,6 @@ def live_minuut_voor_secondes(at):
     )
 
 
-# =========================
-# EVENT TIJD
-# =========================
-
 def maak_unieke_event_tijd(
     bestaande_tijden,
     tweede_helft=False
@@ -1260,9 +1540,160 @@ def maak_unieke_event_tijd(
     )
 
 
-# =========================
+# =========================================================
+# LOGISCHE WISSEL
+# =========================================================
+
+def maak_logische_wissel(
+    alle_spelers,
+    basiself_spelers
+):
+
+    alle_spelers = [
+        speler_naar_dict(speler)
+        for speler in alle_spelers
+    ]
+
+    basiself_spelers = [
+        speler_naar_dict(speler)
+        for speler in basiself_spelers
+    ]
+
+    basis_ids = {
+        int(speler["id"])
+        for speler in basiself_spelers
+    }
+
+    bank = [
+        speler
+        for speler in alle_spelers
+        if int(speler["id"]) not in basis_ids
+    ]
+
+    if not basiself_spelers or not bank:
+        return None
+
+    mogelijke_wissels = []
+
+    groepen = [
+        "keeper",
+        "verdediging",
+        "middenveld",
+        "aanval"
+    ]
+
+    for groep in groepen:
+
+        spelers_uit = [
+            speler
+            for speler in basiself_spelers
+            if classificeer_positie(
+                speler["positie"]
+            ) == groep
+        ]
+
+        spelers_in = [
+            speler
+            for speler in bank
+            if classificeer_positie(
+                speler["positie"]
+            ) == groep
+        ]
+
+        if (
+            spelers_uit
+            and
+            spelers_in
+        ):
+
+            for eruit in spelers_uit:
+
+                for erin in spelers_in:
+
+                    mogelijke_wissels.append(
+                        (
+                            eruit,
+                            erin
+                        )
+                    )
+
+    if not mogelijke_wissels:
+        return None
+
+    return random.choice(
+        mogelijke_wissels
+    )
+
+
+def voeg_logische_wissel_toe(
+    events,
+    gebruikte_tijden,
+    team,
+    alle_spelers,
+    basiself_spelers,
+    teamnaam
+):
+
+    wissel = maak_logische_wissel(
+        alle_spelers,
+        basiself_spelers
+    )
+
+    if wissel is None:
+        return
+
+    eruit, erin = wissel
+
+    tijd = maak_unieke_event_tijd(
+        gebruikte_tijden,
+        True
+    )
+
+    gebruikte_tijden.append(
+        tijd
+    )
+
+    events.append({
+        "at":
+            tijd,
+
+        "minute":
+            live_minuut_voor_secondes(
+                tijd
+            ),
+
+        "type":
+            "substitution",
+
+        "team":
+            team,
+
+        "player":
+            erin["naam"],
+
+        "player_id":
+            int(erin["id"]),
+
+        "player_out":
+            eruit["naam"],
+
+        "player_out_id":
+            int(eruit["id"]),
+
+        "title":
+            f"Wissel {teamnaam}",
+
+        "text":
+            (
+                f"{erin['naam']} komt erin "
+                f"voor {eruit['naam']}."
+            )
+    })
+
+
+# =========================================================
 # LIVE EVENTS
-# =========================
+# =========================================================
 
 def genereer_live_events(
     home_players,
@@ -1272,7 +1703,9 @@ def genereer_live_events(
     home_rating,
     away_rating,
     home_starting_lineup=None,
-    away_starting_lineup=None
+    away_starting_lineup=None,
+    tactieken=None,
+    eigen_team="home"
 ):
 
     events = []
@@ -1290,7 +1723,7 @@ def genereer_live_events(
     ]
 
     home_starting_players = [
-        item["player"]
+        speler_naar_dict(item["player"])
         for item in (
             home_starting_lineup or []
         )
@@ -1298,12 +1731,114 @@ def genereer_live_events(
     ]
 
     away_starting_players = [
-        item["player"]
+        speler_naar_dict(item["player"])
         for item in (
             away_starting_lineup or []
         )
         if item.get("player")
     ]
+
+    tactieken = tactieken or {}
+
+    home_attack_modifier = 1.0
+    home_defense_modifier = 1.0
+
+    away_attack_modifier = 1.0
+    away_defense_modifier = 1.0
+
+    speelstijl = tactieken.get(
+        "speelstijl",
+        "Gebalanceerd"
+    )
+
+    mentaliteit = tactieken.get(
+        "mentaliteit",
+        "Gebalanceerd"
+    )
+
+    druk = tactieken.get(
+        "druk",
+        "Normaal"
+    )
+
+    if speelstijl == "Aanvallend":
+
+        if eigen_team == "home":
+            home_attack_modifier += 0.15
+        else:
+            away_attack_modifier += 0.15
+
+    elif speelstijl == "Verdedigend":
+
+        if eigen_team == "home":
+
+            home_attack_modifier -= 0.10
+            home_defense_modifier += 0.15
+
+        else:
+
+            away_attack_modifier -= 0.10
+            away_defense_modifier += 0.15
+
+    elif speelstijl == "Counter":
+
+        if eigen_team == "home":
+
+            home_attack_modifier += 0.08
+            home_defense_modifier += 0.05
+
+        else:
+
+            away_attack_modifier += 0.08
+            away_defense_modifier += 0.05
+
+    if mentaliteit == "Aanvallend":
+
+        if eigen_team == "home":
+
+            home_attack_modifier += 0.12
+            home_defense_modifier -= 0.08
+
+        else:
+
+            away_attack_modifier += 0.12
+            away_defense_modifier -= 0.08
+
+    elif mentaliteit == "Voorzichtig":
+
+        if eigen_team == "home":
+
+            home_attack_modifier -= 0.10
+            home_defense_modifier += 0.10
+
+        else:
+
+            away_attack_modifier -= 0.10
+            away_defense_modifier += 0.10
+
+    if druk == "Hoog":
+
+        if eigen_team == "home":
+
+            home_attack_modifier += 0.05
+            home_defense_modifier -= 0.05
+
+        else:
+
+            away_attack_modifier += 0.05
+            away_defense_modifier -= 0.05
+
+    elif druk == "Laag":
+
+        if eigen_team == "home":
+
+            home_attack_modifier -= 0.03
+            home_defense_modifier += 0.04
+
+        else:
+
+            away_attack_modifier -= 0.03
+            away_defense_modifier += 0.04
 
     def voeg_event(
         type_,
@@ -1324,20 +1859,32 @@ def genereer_live_events(
         )
 
         events.append({
-            "at": tijd,
-            "minute": live_minuut_voor_secondes(
-                tijd
-            ),
-            "type": type_,
-            "team": team,
-            "player": speler["naam"],
-            "title": titel,
-            "text": tekst
-        })
+            "at":
+                tijd,
 
-    # =========================
-    # DOELPUNTEN
-    # =========================
+            "minute":
+                live_minuut_voor_secondes(
+                    tijd
+                ),
+
+            "type":
+                type_,
+
+            "team":
+                team,
+
+            "player":
+                speler["naam"],
+
+            "player_id":
+                int(speler.get("id", 0)),
+
+            "title":
+                titel,
+
+            "text":
+                tekst
+        })
 
     home_expected_goals = (
         1.00
@@ -1367,16 +1914,42 @@ def genereer_live_events(
         )
     )
 
+    home_expected_goals *= (
+        home_attack_modifier
+        *
+        (
+            2.0
+            -
+            away_defense_modifier
+        )
+    )
+
+    away_expected_goals *= (
+        away_attack_modifier
+        *
+        (
+            2.0
+            -
+            home_defense_modifier
+        )
+    )
+
     home_goals = min(
         poisson_getal(
-            home_expected_goals
+            max(
+                0.1,
+                home_expected_goals
+            )
         ),
         3
     )
 
     away_goals = min(
         poisson_getal(
-            away_expected_goals
+            max(
+                0.1,
+                away_expected_goals
+            )
         ),
         3
     )
@@ -1385,29 +1958,21 @@ def genereer_live_events(
         home_goals == 0
         and
         away_goals == 0
+        and
+        random.random() < 0.35
     ):
 
-        if random.random() < 0.35:
-
-            if random.random() < 0.5:
-                home_goals = 1
-            else:
-                away_goals = 1
-
-    # =========================
-    # GOALS
-    # =========================
+        if random.random() < 0.5:
+            home_goals = 1
+        else:
+            away_goals = 1
 
     for _ in range(home_goals):
 
-        bron = (
+        speler = kies_live_speler(
             home_starting_players
             or
-            home_players
-        )
-
-        speler = kies_live_speler(
-            bron,
+            home_players,
             "aanval"
         )
 
@@ -1417,21 +1982,15 @@ def genereer_live_events(
             speler,
             f"GOAL! {home_name}",
             f"{speler['naam']} schiet de bal binnen.",
-            tweede_helft=(
-                random.random() < 0.45
-            )
+            random.random() < 0.45
         )
 
     for _ in range(away_goals):
 
-        bron = (
+        speler = kies_live_speler(
             away_starting_players
             or
-            away_players
-        )
-
-        speler = kies_live_speler(
-            bron,
+            away_players,
             "aanval"
         )
 
@@ -1441,27 +2000,25 @@ def genereer_live_events(
             speler,
             f"GOAL! {away_name}",
             f"{speler['naam']} schiet de bal binnen.",
-            tweede_helft=(
-                random.random() < 0.45
-            )
+            random.random() < 0.45
         )
 
-    # =========================
-    # AANVALLEN
-    # =========================
+    aantal_aanvallen = 4
 
-    for _ in range(4):
+    if speelstijl == "Aanvallend":
+        aantal_aanvallen = 5
+
+    elif speelstijl == "Verdedigend":
+        aantal_aanvallen = 3
+
+    for _ in range(aantal_aanvallen):
 
         if random.random() < 0.5:
 
-            bron = (
+            speler = kies_live_speler(
                 home_starting_players
                 or
-                home_players
-            )
-
-            speler = kies_live_speler(
-                bron,
+                home_players,
                 "middenveld"
             )
 
@@ -1475,14 +2032,10 @@ def genereer_live_events(
 
         else:
 
-            bron = (
+            speler = kies_live_speler(
                 away_starting_players
                 or
-                away_players
-            )
-
-            speler = kies_live_speler(
-                bron,
+                away_players,
                 "middenveld"
             )
 
@@ -1494,22 +2047,14 @@ def genereer_live_events(
                 f"{speler['naam']} zoekt de ruimte."
             )
 
-    # =========================
-    # KANSEN
-    # =========================
-
     for _ in range(2):
 
         if random.random() < 0.5:
 
-            bron = (
+            speler = kies_live_speler(
                 home_starting_players
                 or
-                home_players
-            )
-
-            speler = kies_live_speler(
-                bron,
+                home_players,
                 "aanval"
             )
 
@@ -1523,14 +2068,10 @@ def genereer_live_events(
 
         else:
 
-            bron = (
+            speler = kies_live_speler(
                 away_starting_players
                 or
-                away_players
-            )
-
-            speler = kies_live_speler(
-                bron,
+                away_players,
                 "aanval"
             )
 
@@ -1542,22 +2083,14 @@ def genereer_live_events(
                 f"{speler['naam']} komt gevaarlijk voor het doel."
             )
 
-    # =========================
-    # SCHOTEN
-    # =========================
-
     for _ in range(2):
 
         if random.random() < 0.5:
 
-            bron = (
+            speler = kies_live_speler(
                 home_starting_players
                 or
-                home_players
-            )
-
-            speler = kies_live_speler(
-                bron,
+                home_players,
                 "aanval"
             )
 
@@ -1571,14 +2104,10 @@ def genereer_live_events(
 
         else:
 
-            bron = (
+            speler = kies_live_speler(
                 away_starting_players
                 or
-                away_players
-            )
-
-            speler = kies_live_speler(
-                bron,
+                away_players,
                 "aanval"
             )
 
@@ -1590,22 +2119,14 @@ def genereer_live_events(
                 f"{speler['naam']} haalt uit."
             )
 
-    # =========================
-    # CORNERS
-    # =========================
-
     for _ in range(2):
 
         if random.random() < 0.5:
 
-            bron = (
+            speler = kies_live_speler(
                 home_starting_players
                 or
                 home_players
-            )
-
-            speler = kies_live_speler(
-                bron
             )
 
             voeg_event(
@@ -1618,14 +2139,10 @@ def genereer_live_events(
 
         else:
 
-            bron = (
+            speler = kies_live_speler(
                 away_starting_players
                 or
                 away_players
-            )
-
-            speler = kies_live_speler(
-                bron
             )
 
             voeg_event(
@@ -1635,10 +2152,6 @@ def genereer_live_events(
                 f"Corner voor {away_name}",
                 f"{speler['naam']} legt de bal voor."
             )
-
-    # =========================
-    # REDDINGEN
-    # =========================
 
     for _ in range(2):
 
@@ -1690,10 +2203,6 @@ def genereer_live_events(
                 f"{keeper['naam']} stopt het schot van {schutter['naam']}."
             )
 
-    # =========================
-    # KAARTEN
-    # =========================
-
     aantal_kaarten = random.randint(
         1,
         3
@@ -1715,14 +2224,10 @@ def genereer_live_events(
 
         if random.random() < 0.5:
 
-            bron = (
+            speler = kies_live_speler(
                 home_starting_players
                 or
-                home_players
-            )
-
-            speler = kies_live_speler(
-                bron,
+                home_players,
                 "verdediging"
             )
 
@@ -1730,14 +2235,10 @@ def genereer_live_events(
 
         else:
 
-            bron = (
+            speler = kies_live_speler(
                 away_starting_players
                 or
-                away_players
-            )
-
-            speler = kies_live_speler(
-                bron,
+                away_players,
                 "verdediging"
             )
 
@@ -1781,73 +2282,30 @@ def genereer_live_events(
             speler,
             titel,
             tekst,
-            tweede_helft=(
-                random.random() < 0.5
-            )
+            random.random() < 0.5
         )
 
-    # =========================
-    # WISSELS
-    # =========================
+    # -----------------------------------------------------
+    # LOGISCHE WISSELS
+    # -----------------------------------------------------
 
-    for team, alle_spelers, basiself_spelers, teamnaam in [
+    voeg_logische_wissel_toe(
+        events,
+        gebruikte_tijden,
+        "home",
+        home_players,
+        home_starting_players,
+        home_name
+    )
 
-        (
-            "home",
-            home_players,
-            home_starting_players,
-            home_name
-        ),
-
-        (
-            "away",
-            away_players,
-            away_starting_players,
-            away_name
-        )
-    ]:
-
-        basis_ids = {
-            int(speler["id"])
-            for speler in basiself_spelers
-        }
-
-        bank = [
-            speler
-            for speler in alle_spelers
-            if int(speler["id"])
-            not in basis_ids
-        ]
-
-        if (
-            len(basiself_spelers) >= 1
-            and
-            len(bank) >= 1
-        ):
-
-            eruit = random.choice(
-                basiself_spelers
-            )
-
-            erin = random.choice(
-                bank
-            )
-
-            voeg_event(
-                "substitution",
-                team,
-                erin,
-                f"Wissel {teamnaam}",
-                (
-                    f"{erin['naam']} komt erin "
-                    f"voor {eruit['naam']}."
-                ),
-                tweede_helft=True
-            )
-
-    # =========================
-    # BLESSURE
-    # =========================
+    voeg_logische_wissel_toe(
+        events,
+        gebruikte_tijden,
+        "away",
+        away_players,
+        away_starting_players,
+        away_name
+    )
 
     if random.random() < 0.30:
 
@@ -1882,10 +2340,6 @@ def genereer_live_events(
                 f"Blessure bij {away_name}",
                 f"{speler['naam']} heeft verzorging nodig."
             )
-
-    # =========================
-    # BUITENSPEL
-    # =========================
 
     if random.random() < 0.50:
 
@@ -1930,9 +2384,105 @@ def genereer_live_events(
     return events
 
 
-# =========================
-# MAN OF THE MATCH
-# =========================
+# =========================================================
+# SPELERS DIE ECHT GESPEELD HEBBEN
+# =========================================================
+
+def get_played_player_ids(
+    live_match,
+    team
+):
+
+    ids = set()
+
+    team_data = live_match.get(
+        team,
+        {}
+    )
+
+    for item in team_data.get(
+        "starting_lineup",
+        []
+    ):
+
+        speler = item.get(
+            "player"
+        )
+
+        if not speler:
+            continue
+
+        try:
+
+            ids.add(
+                int(speler["id"])
+            )
+
+        except (
+            TypeError,
+            ValueError
+        ):
+            continue
+
+    for event in live_match.get(
+        "events",
+        []
+    ):
+
+        if event.get("team") != team:
+            continue
+
+        if event.get("type") != "substitution":
+            continue
+
+        player_id = event.get(
+            "player_id"
+        )
+
+        if player_id is None:
+            continue
+
+        try:
+
+            ids.add(
+                int(player_id)
+            )
+
+        except (
+            TypeError,
+            ValueError
+        ):
+            continue
+
+    return ids
+
+
+def get_played_players(
+    live_match,
+    team,
+    all_players
+):
+
+    all_players = [
+        speler_naar_dict(speler)
+        for speler in all_players
+    ]
+
+    played_ids = get_played_player_ids(
+        live_match,
+        team
+    )
+
+    return [
+        speler
+        for speler in all_players
+        if int(speler["id"]) in played_ids
+    ]
+
+
+# =========================================================
+# MOTM
+# =========================================================
 
 def bepaal_motm(
     live_match,
@@ -1957,24 +2507,39 @@ def bepaal_motm(
         ("away", away_players)
     ]:
 
+        played_ids = get_played_player_ids(
+            live_match,
+            team
+        )
+
         for speler in spelers:
+
+            if int(speler["id"]) not in played_ids:
+                continue
 
             kandidaten[
                 (
                     team,
-                    speler["naam"]
+                    int(speler["id"])
                 )
             ] = {
-                "player_id": int(
-                    speler["id"]
-                ),
-                "name": speler["naam"],
-                "team": team,
-                "goals": 0,
-                "points": 0,
-                "rating": int(
-                    speler["rating"]
-                )
+                "player_id":
+                    int(speler["id"]),
+
+                "name":
+                    speler["naam"],
+
+                "team":
+                    team,
+
+                "goals":
+                    0,
+
+                "points":
+                    0,
+
+                "rating":
+                    int(speler["rating"])
             }
 
     for event in live_match.get(
@@ -1982,9 +2547,53 @@ def bepaal_motm(
         []
     ):
 
+        team = event.get(
+            "team"
+        )
+
+        player_id = event.get(
+            "player_id"
+        )
+
+        try:
+
+            if player_id is not None:
+                player_id = int(
+                    player_id
+                )
+            else:
+                raise ValueError
+
+        except (
+            TypeError,
+            ValueError
+        ):
+
+            speler_naam = event.get(
+                "player"
+            )
+
+            player_id = None
+
+            for key, kandidaat in kandidaten.items():
+
+                if (
+                    key[0] == team
+                    and
+                    kandidaat["name"]
+                    ==
+                    speler_naam
+                ):
+
+                    player_id = key[1]
+                    break
+
+            if player_id is None:
+                continue
+
         key = (
-            event.get("team"),
-            event.get("player")
+            team,
+            player_id
         )
 
         speler = kandidaten.get(
@@ -2035,35 +2644,9 @@ def bepaal_motm(
 
             speler["points"] -= 1
 
-    basis_ids = set()
-
-    for team in [
-        "home",
-        "away"
-    ]:
-
-        for item in live_match[
-            team
-        ].get(
-            "starting_lineup",
-            []
-        ):
-
-            if not item.get("player"):
-                continue
-
-            basis_ids.add(
-                (
-                    team,
-                    item["player"]["naam"]
-                )
-            )
-
-    geldige_kandidaten = [
-        speler
-        for key, speler in kandidaten.items()
-        if key in basis_ids
-    ]
+    geldige_kandidaten = list(
+        kandidaten.values()
+    )
 
     if not geldige_kandidaten:
         return None
@@ -2080,9 +2663,142 @@ def bepaal_motm(
     return geldige_kandidaten[0]
 
 
-# =========================
+# =========================================================
+# INTERVIEWS
+# =========================================================
+
+def maak_interviewteksten(
+    clubnaam,
+    tegenstander,
+    winst,
+    gelijk,
+    motm,
+    extra_speler
+):
+
+    resultaten = []
+
+    if winst:
+
+        speler_teksten = [
+            f"Dit was een lekkere overwinning voor {clubnaam}. We bleven rustig en maakten onze kansen goed af.",
+            f"Ik denk dat we vandaag als team hebben laten zien wat we kunnen. De drie punten zijn het belangrijkste.",
+            f"Het voelde alsof we steeds controle hielden. We mogen tevreden zijn met deze wedstrijd.",
+            f"We hebben hard gewerkt voor dit resultaat. Nu moeten we dezelfde instelling meenemen naar de volgende wedstrijd.",
+            f"Een mooie wedstrijd voor ons. Iedereen heeft zijn steentje bijgedragen en dat zie je terug in het resultaat."
+        ]
+
+        trainer_teksten = [
+            f"Ik ben tevreden met hoe {clubnaam} de wedstrijd heeft aangepakt. We hebben op de belangrijke momenten toegeslagen.",
+            f"De spelers hebben vandaag goed geluisterd en uitgevoerd wat we hadden afgesproken.",
+            f"Tegen {tegenstander} was het belangrijk om geduldig te blijven. Dat hebben we goed gedaan.",
+            f"De ploeg heeft karakter getoond. We bleven ons eigen spel spelen en zijn daarvoor beloond.",
+            f"Dit resultaat geeft vertrouwen. We gaan de wedstrijd rustig analyseren en daarna vooruitkijken."
+        ]
+
+    elif gelijk:
+
+        speler_teksten = [
+            f"Tegen {tegenstander} was het zwaar. We hadden graag gewonnen, maar we pakken dit punt mee.",
+            f"Er waren momenten waarop we de wedstrijd konden beslissen. Helaas lukte dat vandaag niet.",
+            f"We hebben gevochten tot het einde. Het is geen perfecte uitslag, maar we blijven positief.",
+            f"Het was een wedstrijd waarin beide teams kansen kregen. We moeten vooral naar de goede dingen kijken.",
+            f"Een punt is niet waar we vooraf voor kwamen, maar we hebben in ieder geval niet opgegeven."
+        ]
+
+        trainer_teksten = [
+            f"Ik vond dat {clubnaam} vandaag hard heeft gewerkt. We moeten alleen efficiënter worden.",
+            f"Het was een gelijkwaardige wedstrijd. We nemen het punt mee en gaan verder.",
+            f"We hadden graag meer uit deze wedstrijd gehaald, maar de spelers hebben tot het einde gestreden.",
+            f"Tegen {tegenstander} kregen we niet alles cadeau. Het team bleef georganiseerd en dat vond ik goed.",
+            f"We moeten vooral leren van de momenten waarop we kansen lieten liggen."
+        ]
+
+    else:
+
+        speler_teksten = [
+            f"Dit is natuurlijk niet het resultaat dat we wilden. We moeten nu snel reageren.",
+            f"We hebben geprobeerd terug te komen in de wedstrijd, maar het zat vandaag niet mee.",
+            f"Dit doet pijn, zeker omdat we hard hebben gewerkt. Volgende wedstrijd moet het beter.",
+            f"We moeten deze nederlaag achter ons laten en focussen op wat hierna komt.",
+            f"Vandaag kregen we het niet voor elkaar. Daar moeten we eerlijk over zijn."
+        ]
+
+        trainer_teksten = [
+            f"De uitslag tegen {tegenstander} is teleurstellend. We moeten kritisch naar onze eigen wedstrijd kijken.",
+            f"We hadden vandaag te weinig controle. Daar gaan we de komende dagen aan werken.",
+            f"De ploeg bleef proberen, maar we waren niet goed genoeg op de beslissende momenten.",
+            f"Dit was niet onze beste wedstrijd. We moeten herstellen en zorgen dat we de volgende wedstrijd beter voor de dag komen.",
+            f"Ik neem de verantwoordelijkheid voor deze wedstrijd. We analyseren wat beter moet."
+        ]
+
+    extra_teksten = [
+        f"{extra_speler} vond dat de ploeg vooral samen moest blijven spelen en elkaar moest blijven helpen.",
+        f"{extra_speler} was tevreden over de inzet van het team en keek direct vooruit naar de volgende wedstrijd.",
+        f"{extra_speler} benadrukte dat de sfeer in de groep goed blijft, ongeacht het resultaat.",
+        f"{extra_speler} zag vooral ruimte voor verbetering en verwacht een reactie van de ploeg.",
+        f"{extra_speler} vond dat de spelers veel energie hebben gegeven gedurende de hele wedstrijd."
+    ]
+
+    resultaten.append(
+        (
+            motm["name"],
+            "Speler",
+            clubnaam,
+            random.choice(
+                speler_teksten
+            )
+        )
+    )
+
+    resultaten.append(
+        (
+            "ClubMaster trainer",
+            "Trainer",
+            clubnaam,
+            random.choice(
+                trainer_teksten
+            )
+        )
+    )
+
+    if extra_speler:
+
+        resultaten.append(
+            (
+                extra_speler,
+                "Speler",
+                clubnaam,
+                random.choice(
+                    extra_teksten
+                )
+            )
+        )
+
+    unieke = []
+    gebruikte_teksten = set()
+
+    for interview in resultaten:
+
+        spreker, rol, club, tekst = interview
+
+        if tekst in gebruikte_teksten:
+            continue
+
+        gebruikte_teksten.add(
+            tekst
+        )
+
+        unieke.append(
+            interview
+        )
+
+    return unieke[:3]
+
+
+# =========================================================
 # SPELERSTATISTIEKEN OPSLAAN
-# =========================
+# =========================================================
 
 def verwerk_spelerstatistieken(
     match_id,
@@ -2100,10 +2816,20 @@ def verwerk_spelerstatistieken(
         )
     )
 
+    home_players = [
+        speler_naar_dict(speler)
+        for speler in home_players
+    ]
+
+    away_players = [
+        speler_naar_dict(speler)
+        for speler in away_players
+    ]
+
     all_players = {
         (
             "home",
-            speler["naam"]
+            int(speler["id"])
         ): speler
         for speler in home_players
     }
@@ -2111,10 +2837,52 @@ def verwerk_spelerstatistieken(
     all_players.update({
         (
             "away",
-            speler["naam"]
+            int(speler["id"])
         ): speler
         for speler in away_players
     })
+
+    # -----------------------------------------------------
+    # WIE HEEFT ECHT GESPEELD?
+    # -----------------------------------------------------
+
+    played_players = []
+
+    for team in [
+        "home",
+        "away"
+    ]:
+
+        team_players = (
+            home_players
+            if team == "home"
+            else away_players
+        )
+
+        played_ids = get_played_player_ids(
+            live_match,
+            team
+        )
+
+        for player_id in played_ids:
+
+            speler = all_players.get(
+                (
+                    team,
+                    player_id
+                )
+            )
+
+            if speler:
+
+                played_players.append({
+                    "team": team,
+                    "player": speler
+                })
+
+    # -----------------------------------------------------
+    # GOALS
+    # -----------------------------------------------------
 
     goal_counts = {}
 
@@ -2126,9 +2894,54 @@ def verwerk_spelerstatistieken(
         if event.get("type") != "goal":
             continue
 
+        team = event.get(
+            "team"
+        )
+
+        player_id = event.get(
+            "player_id"
+        )
+
+        if player_id is None:
+
+            speler_naam = event.get(
+                "player"
+            )
+
+            gevonden = None
+
+            for key, speler in all_players.items():
+
+                if (
+                    key[0] == team
+                    and
+                    speler["naam"] == speler_naam
+                ):
+
+                    gevonden = key[1]
+                    break
+
+            if gevonden is None:
+                continue
+
+            player_id = gevonden
+
+        try:
+
+            player_id = int(
+                player_id
+            )
+
+        except (
+            TypeError,
+            ValueError
+        ):
+
+            continue
+
         key = (
-            event.get("team"),
-            event.get("player")
+            team,
+            player_id
         )
 
         goal_counts[key] = (
@@ -2136,34 +2949,13 @@ def verwerk_spelerstatistieken(
                 key,
                 0
             )
-            + 1
+            +
+            1
         )
 
-    basis_players = []
-
-    for team in [
-        "home",
-        "away"
-    ]:
-
-        for item in live_match[
-            team
-        ].get(
-            "starting_lineup",
-            []
-        ):
-
-            speler = item.get(
-                "player"
-            )
-
-            if not speler:
-                continue
-
-            basis_players.append({
-                "team": team,
-                "player": speler
-            })
+    # -----------------------------------------------------
+    # MOTM
+    # -----------------------------------------------------
 
     motm = bepaal_motm(
         live_match,
@@ -2204,63 +2996,23 @@ def verwerk_spelerstatistieken(
 
     connection = get_connection()
 
-    # =========================
-    # ALLE SPELERS MET GOALS
-    # =========================
+    # -----------------------------------------------------
+    # SPELERS DIE GESPEELD HEBBEN
+    # -----------------------------------------------------
 
-    for key, aantal_goals in goal_counts.items():
+    for item in played_players:
 
-        speler = all_players.get(
-            key
-        )
-
-        if not speler:
-            continue
-
-        player_id = int(
-            speler["id"]
-        )
-
-        connection.execute("""
-            INSERT INTO player_stats (
-                player_id,
-                maand,
-                wedstrijden,
-                doelpunten,
-                motm
-            )
-            VALUES (?, ?, 0, ?, 0)
-
-            ON CONFLICT(
-                player_id,
-                maand
-            )
-
-            DO UPDATE SET
-                doelpunten =
-                    doelpunten + excluded.doelpunten
-        """, (
-            player_id,
-            maand,
-            aantal_goals
-        ))
-
-    # =========================
-    # WEDSTRIJDEN + MOTM
-    # =========================
-
-    for item in basis_players:
-
+        team = item["team"]
         speler = item["player"]
 
         player_id = int(
             speler["id"]
         )
 
-        goals = goal_counts.get(
+        aantal_goals = goal_counts.get(
             (
-                item["team"],
-                speler["naam"]
+                team,
+                player_id
             ),
             0
         )
@@ -2279,7 +3031,9 @@ def verwerk_spelerstatistieken(
                 doelpunten,
                 motm
             )
-            VALUES (?, ?, 1, ?, ?)
+            VALUES (
+                ?, ?, 1, ?, ?
+            )
 
             ON CONFLICT(
                 player_id,
@@ -2289,20 +3043,26 @@ def verwerk_spelerstatistieken(
             DO UPDATE SET
                 wedstrijden =
                     wedstrijden + 1,
+
                 doelpunten =
-                    doelpunten + excluded.doelpunten,
+                    doelpunten
+                    +
+                    excluded.doelpunten,
+
                 motm =
-                    motm + excluded.motm
+                    motm
+                    +
+                    excluded.motm
         """, (
             player_id,
             maand,
-            goals,
+            aantal_goals,
             speler_motm
         ))
 
-    # =========================
+    # -----------------------------------------------------
     # MOTM OPSLAAN
-    # =========================
+    # -----------------------------------------------------
 
     connection.execute("""
         INSERT OR REPLACE INTO match_awards (
@@ -2323,9 +3083,9 @@ def verwerk_spelerstatistieken(
         match_datum
     ))
 
-    # =========================
-    # SCORE BEREKENEN
-    # =========================
+    # -----------------------------------------------------
+    # SCORE
+    # -----------------------------------------------------
 
     home_score = 0
     away_score = 0
@@ -2339,126 +3099,144 @@ def verwerk_spelerstatistieken(
             continue
 
         if event.get("team") == "home":
-
             home_score += 1
 
         elif event.get("team") == "away":
-
             away_score += 1
 
-    # =========================
-    # SPELER INTERVIEW
-    # =========================
+    # -----------------------------------------------------
+    # INTERVIEWS
+    # Alleen spelers die echt gespeeld hebben.
+    # -----------------------------------------------------
+
+    connection.execute("""
+        DELETE FROM interviews
+        WHERE match_id = ?
+    """, (
+        match_id,
+    ))
 
     if motm:
 
-        if motm["goals"] > 0:
+        if motm["team"] == "home":
 
-            speler_quote = (
-                "Ik ben blij dat ik belangrijk "
-                "kon zijn voor het team. "
-                "We hebben samen hard gewerkt."
+            eigen_club = (
+                live_match["home"]["name"]
             )
+
+            tegenstander = (
+                live_match["away"]["name"]
+            )
+
+            eigen_team = "home"
 
         else:
 
-            speler_quote = (
-                "Ik ben vooral blij met de "
-                "prestatie van het hele team. "
-                "We hebben goed samengewerkt."
+            eigen_club = (
+                live_match["away"]["name"]
             )
 
-        connection.execute("""
-            INSERT INTO interviews (
-                match_id,
-                datum,
-                spreker,
-                rol,
-                club_name,
-                tekst
+            tegenstander = (
+                live_match["home"]["name"]
             )
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (
-            match_id,
-            match_datum,
-            motm["name"],
-            "Speler",
-            motm_club_name,
-            speler_quote
-        ))
 
-    # =========================
-    # TRAINER INTERVIEW
-    # =========================
+            eigen_team = "away"
 
-    if home_score > away_score:
-
-        trainer_club = (
-            live_match["home"]["name"]
+        winst = (
+            (
+                eigen_team == "home"
+                and
+                home_score > away_score
+            )
+            or
+            (
+                eigen_team == "away"
+                and
+                away_score > home_score
+            )
         )
 
-        trainer_quote = (
-            "We hebben vandaag goed "
-            "gecontroleerd en als team "
-            "hard gewerkt."
+        gelijk = (
+            home_score == away_score
         )
 
-    elif away_score > home_score:
-
-        trainer_club = (
-            live_match["away"]["name"]
+        eigen_spelers_die_gespeeld_hebben = (
+            get_played_players(
+                live_match,
+                eigen_team,
+                (
+                    home_players
+                    if eigen_team == "home"
+                    else away_players
+                )
+            )
         )
 
-        trainer_quote = (
-            "De ploeg heeft hard gewerkt "
-            "en is blijven geloven in het "
-            "resultaat."
+        mogelijke_extra_spelers = [
+            speler["naam"]
+            for speler in
+            eigen_spelers_die_gespeeld_hebben
+            if int(speler["id"])
+            !=
+            int(motm["player_id"])
+        ]
+
+        extra_speler = (
+            random.choice(
+                mogelijke_extra_spelers
+            )
+            if mogelijke_extra_spelers
+            else None
         )
 
-    else:
-
-        trainer_club = (
-            live_match["home"]["name"]
+        interviews = maak_interviewteksten(
+            eigen_club,
+            tegenstander,
+            winst,
+            gelijk,
+            motm,
+            extra_speler
         )
 
-        trainer_quote = (
-            "Het was een spannende wedstrijd. "
-            "We nemen het punt mee en kijken "
-            "vooruit naar de volgende wedstrijd."
-        )
-
-    connection.execute("""
-        INSERT INTO interviews (
-            match_id,
-            datum,
+        for (
             spreker,
             rol,
             club_name,
             tekst
-        )
-        VALUES (?, ?, ?, ?, ?, ?)
-    """, (
-        match_id,
-        match_datum,
-        "ClubMaster trainer",
-        "Trainer",
-        trainer_club,
-        trainer_quote
-    ))
+        ) in interviews:
+
+            connection.execute("""
+                INSERT INTO interviews (
+                    match_id,
+                    datum,
+                    spreker,
+                    rol,
+                    club_name,
+                    tekst
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                match_id,
+                match_datum,
+                spreker,
+                rol,
+                club_name,
+                tekst
+            ))
 
     connection.commit()
     connection.close()
 
 
-# =========================
+# =========================================================
 # AI WEDSTRIJDEN
-# =========================
+# =========================================================
 
 def speel_ai_wedstrijden():
 
-    gebruiker_club = session.get("club")
+    user_club = get_user_club()
 
-    if gebruiker_club is None:
+    if user_club is None:
         return
 
     connection = get_connection()
@@ -2470,8 +3248,6 @@ def speel_ai_wedstrijden():
             matches.away_club_id,
             matches.gespeeld,
             matches.datum,
-            matches.home_score,
-            matches.away_score,
 
             home.naam AS home_naam,
             home.logo AS home_logo,
@@ -2500,9 +3276,7 @@ def speel_ai_wedstrijden():
 
     for match in wedstrijden:
 
-        # Eigen wedstrijden blijven voor
-        # de speler zelf.
-        if gebruiker_club["id"] in [
+        if user_club["id"] in [
             match["home_club_id"],
             match["away_club_id"]
         ]:
@@ -2529,20 +3303,12 @@ def speel_ai_wedstrijden():
             away_players
         )
 
-        # =========================
-        # AI SCORE
-        # =========================
-
         home_score, away_score = (
             bereken_wedstrijdscore(
                 match["home_rating"],
                 match["away_rating"]
             )
         )
-
-        # =========================
-        # GOAL EVENTS
-        # =========================
 
         events = []
         gebruikte_tijden = []
@@ -2564,42 +3330,41 @@ def speel_ai_wedstrijden():
             )
 
             events.append({
-                "at": tijd,
-                "minute": live_minuut_voor_secondes(
-                    tijd
-                ),
-                "type": "goal",
-                "team": team,
-                "player": speler["naam"],
-                "title": f"GOAL! {clubnaam}",
-                "text": (
-                    f"{speler['naam']} "
-                    f"schiet de bal binnen."
-                )
+                "at":
+                    tijd,
+
+                "minute":
+                    live_minuut_voor_secondes(
+                        tijd
+                    ),
+
+                "type":
+                    "goal",
+
+                "team":
+                    team,
+
+                "player":
+                    speler["naam"],
+
+                "player_id":
+                    int(speler["id"]),
+
+                "title":
+                    f"GOAL! {clubnaam}",
+
+                "text":
+                    f"{speler['naam']} schiet de bal binnen."
             })
 
         for _ in range(home_score):
 
-            aanvallers = [
-                item["player"]
-                for item in home_lineup
-                if (
-                    item.get("player")
-                    and
-                    classificeer_positie(
-                        item["player"]["positie"]
-                    ) == "aanval"
-                )
-            ]
-
-            bron = (
-                aanvallers
-                if aanvallers
-                else home_players
-            )
-
             speler = kies_live_speler(
-                bron,
+                [
+                    item["player"]
+                    for item in home_lineup
+                    if item.get("player")
+                ],
                 "aanval"
             )
 
@@ -2612,26 +3377,12 @@ def speel_ai_wedstrijden():
 
         for _ in range(away_score):
 
-            aanvallers = [
-                item["player"]
-                for item in away_lineup
-                if (
-                    item.get("player")
-                    and
-                    classificeer_positie(
-                        item["player"]["positie"]
-                    ) == "aanval"
-                )
-            ]
-
-            bron = (
-                aanvallers
-                if aanvallers
-                else away_players
-            )
-
             speler = kies_live_speler(
-                bron,
+                [
+                    item["player"]
+                    for item in away_lineup
+                    if item.get("player")
+                ],
                 "aanval"
             )
 
@@ -2641,6 +3392,36 @@ def speel_ai_wedstrijden():
                 match["away_naam"],
                 random.random() < 0.45
             )
+
+        # -------------------------------------------------
+        # LOGISCHE AI-WISSELS
+        # -------------------------------------------------
+
+        voeg_logische_wissel_toe(
+            events,
+            gebruikte_tijden,
+            "home",
+            home_players,
+            [
+                item["player"]
+                for item in home_lineup
+                if item.get("player")
+            ],
+            match["home_naam"]
+        )
+
+        voeg_logische_wissel_toe(
+            events,
+            gebruikte_tijden,
+            "away",
+            away_players,
+            [
+                item["player"]
+                for item in away_lineup
+                if item.get("player")
+            ],
+            match["away_naam"]
+        )
 
         events.sort(
             key=lambda event: event["at"]
@@ -2694,10 +3475,6 @@ def speel_ai_wedstrijden():
                 events
         }
 
-        # =========================
-        # WEDSTRIJD OPSLAAN
-        # =========================
-
         connection = get_connection()
 
         connection.execute("""
@@ -2716,10 +3493,6 @@ def speel_ai_wedstrijden():
         connection.commit()
         connection.close()
 
-        # =========================
-        # STATISTIEKEN
-        # =========================
-
         verwerk_spelerstatistieken(
             match["id"],
             match["datum"],
@@ -2727,10 +3500,6 @@ def speel_ai_wedstrijden():
             home_players,
             away_players
         )
-
-        # =========================
-        # COMPETITIE
-        # =========================
 
         update_competition(
             match["home_club_id"],
@@ -2740,23 +3509,396 @@ def speel_ai_wedstrijden():
         )
 
 
-# =========================
-# HOME
-# =========================
+# =========================================================
+# AI TRANSFERBIEDINGEN
+# =========================================================
+
+def genereer_ai_transferbiedingen():
+
+    club = get_user_club()
+
+    if club is None:
+        return []
+
+    progress = get_user_progress()
+
+    vandaag = date.today().isoformat()
+
+    if (
+        progress["transfer_offer_date"]
+        ==
+        vandaag
+    ):
+
+        return progress["transfer_offers"]
+
+    spelers = get_players_for_club(
+        club["id"]
+    )
+
+    if not spelers:
+
+        save_user_progress(
+            transfer_offers=[],
+            transfer_offer_date=vandaag
+        )
+
+        return []
+
+    connection = get_connection()
+
+    ai_clubs = connection.execute("""
+        SELECT
+            id,
+            naam,
+            logo,
+            budget,
+            rating
+        FROM clubs
+        WHERE id != ?
+    """, (
+        club["id"],
+    )).fetchall()
+
+    connection.close()
+
+    if not ai_clubs:
+
+        save_user_progress(
+            transfer_offers=[],
+            transfer_offer_date=vandaag
+        )
+
+        return []
+
+    aantal_biedingen = random.randint(
+        1,
+        min(
+            3,
+            len(spelers),
+            len(ai_clubs)
+        )
+    )
+
+    gekozen_spelers = random.sample(
+        spelers,
+        aantal_biedingen
+    )
+
+    gekozen_clubs = random.sample(
+        ai_clubs,
+        min(
+            aantal_biedingen,
+            len(ai_clubs)
+        )
+    )
+
+    biedingen = []
+
+    for index, speler in enumerate(
+        gekozen_spelers
+    ):
+
+        ai_club = gekozen_clubs[
+            index % len(gekozen_clubs)
+        ]
+
+        marktwaarde = int(
+            speler["marktwaarde"]
+        )
+
+        if int(speler["rating"]) >= 80:
+
+            minimum_factor = 1.00
+            maximum_factor = 1.30
+
+        elif int(speler["rating"]) >= 75:
+
+            minimum_factor = 0.95
+            maximum_factor = 1.20
+
+        else:
+
+            minimum_factor = 0.85
+            maximum_factor = 1.15
+
+        bod = int(
+            marktwaarde
+            *
+            random.uniform(
+                minimum_factor,
+                maximum_factor
+            )
+        )
+
+        bod = max(
+            100000,
+            round(
+                bod / 10000
+            )
+            *
+            10000
+        )
+
+        if bod > int(ai_club["budget"]):
+            continue
+
+        biedingen.append({
+            "id":
+                f"{vandaag}-{speler['id']}-{ai_club['id']}",
+
+            "player_id":
+                int(speler["id"]),
+
+            "player_name":
+                speler["naam"],
+
+            "position":
+                speler["positie"],
+
+            "rating":
+                int(speler["rating"]),
+
+            "market_value":
+                marktwaarde,
+
+            "from_club":
+                club["naam"],
+
+            "to_club":
+                ai_club["naam"],
+
+            "to_club_id":
+                int(ai_club["id"]),
+
+            "offer":
+                bod,
+
+            "date":
+                datetime.now().strftime(
+                    "%d-%m-%Y %H:%M"
+                )
+        })
+
+    save_user_progress(
+        transfer_offers=biedingen,
+        transfer_offer_date=vandaag
+    )
+
+    return biedingen
+
+
+# =========================================================
+# HOME / LOGIN
+# =========================================================
 
 @app.route("/")
 def home():
 
-    return render_template(
-        "index.html"
+    if session.get("user_id"):
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+    return redirect(
+        url_for("login")
     )
 
 
-# =========================
+@app.route(
+    "/login",
+    methods=["GET", "POST"]
+)
+def login():
+
+    if session.get("user_id"):
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+    error = None
+
+    if request.method == "POST":
+
+        username = request.form.get(
+            "username",
+            ""
+        ).strip()
+
+        password = request.form.get(
+            "password",
+            ""
+        )
+
+        connection = get_connection()
+
+        user = connection.execute("""
+            SELECT *
+            FROM users
+            WHERE username = ?
+        """, (
+            username,
+        )).fetchone()
+
+        connection.close()
+
+        if (
+            user is None
+            or
+            not check_password_hash(
+                user["password_hash"],
+                password
+            )
+        ):
+
+            error = (
+                "Gebruikersnaam of wachtwoord is onjuist."
+            )
+
+        else:
+
+            session.clear()
+
+            session["user_id"] = (
+                user["id"]
+            )
+
+            session["username"] = (
+                user["username"]
+            )
+
+            return redirect(
+                url_for("dashboard")
+            )
+
+    return render_template(
+        "login.html",
+        error=error
+    )
+
+
+@app.route(
+    "/register",
+    methods=["GET", "POST"]
+)
+def register():
+
+    if session.get("user_id"):
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+    error = None
+
+    if request.method == "POST":
+
+        username = request.form.get(
+            "username",
+            ""
+        ).strip()
+
+        password = request.form.get(
+            "password",
+            ""
+        )
+
+        password2 = request.form.get(
+            "password2",
+            ""
+        )
+
+        if len(username) < 3:
+
+            error = (
+                "Gebruikersnaam moet minimaal 3 tekens zijn."
+            )
+
+        elif len(password) < 6:
+
+            error = (
+                "Wachtwoord moet minimaal 6 tekens zijn."
+            )
+
+        elif password != password2:
+
+            error = (
+                "De wachtwoorden komen niet overeen."
+            )
+
+        else:
+
+            connection = get_connection()
+
+            try:
+
+                cursor = connection.execute("""
+                    INSERT INTO users (
+                        username,
+                        password_hash,
+                        created_at
+                    )
+                    VALUES (?, ?, ?)
+                """, (
+                    username,
+                    generate_password_hash(
+                        password
+                    ),
+                    datetime.now().isoformat()
+                ))
+
+                connection.commit()
+
+                user_id = cursor.lastrowid
+
+                session.clear()
+
+                session["user_id"] = (
+                    user_id
+                )
+
+                session["username"] = (
+                    username
+                )
+
+                connection.close()
+
+                return redirect(
+                    url_for("clubs_page")
+                )
+
+            except sqlite3.IntegrityError:
+
+                connection.close()
+
+                error = (
+                    "Deze gebruikersnaam bestaat al."
+                )
+
+    return render_template(
+        "register.html",
+        error=error
+    )
+
+
+@app.route("/logout")
+def logout():
+
+    session.clear()
+
+    return redirect(
+        url_for("login")
+    )
+
+
+# =========================================================
 # CLUB KIEZEN
-# =========================
+# =========================================================
 
 @app.route("/clubs")
+@login_required
 def clubs_page():
 
     clubs = get_clubs()
@@ -2767,7 +3909,10 @@ def clubs_page():
     )
 
 
-@app.route("/choose/<club_name>")
+@app.route(
+    "/choose/<club_name>"
+)
+@login_required
 def choose_club(club_name):
 
     connection = get_connection()
@@ -2789,40 +3934,56 @@ def choose_club(club_name):
     connection.close()
 
     if club is None:
+
         return "Club niet gevonden", 404
 
-    session.clear()
-
-    session["club"] = {
-        "id": club["id"],
-        "naam": club["naam"],
-        "stad": club["stad"],
-        "rating": club["rating"],
-        "logo": club["logo"],
-        "budget": club["budget"]
+    nieuwe_opstelling = {
+        "keeper": "",
+        "verdediger_1": "",
+        "verdediger_2": "",
+        "verdediger_3": "",
+        "verdediger_4": "",
+        "middenvelder_1": "",
+        "middenvelder_2": "",
+        "middenvelder_3": "",
+        "aanvaller_1": "",
+        "aanvaller_2": "",
+        "aanvaller_3": ""
     }
 
-    session["transfer_testmodus"] = True
-    session["test_aankopen"] = []
-    session["transfer_history"] = []
+    nieuwe_tactieken = {
+        "formatie": "4-3-3",
+        "speelstijl": "Gebalanceerd",
+        "mentaliteit": "Gebalanceerd",
+        "druk": "Normaal"
+    }
+
+    save_user_progress(
+        lineup=nieuwe_opstelling,
+        tactics=nieuwe_tactieken,
+        transfer_history=[],
+        transfer_offers=[],
+        transfer_offer_date=None,
+        club_id=club["id"],
+        clear_transfer_offer_date=True
+    )
 
     return redirect(
         url_for("dashboard")
     )
 
 
-# =========================
+# =========================================================
 # DASHBOARD
-# =========================
+# =========================================================
 
 @app.route("/dashboard")
+@login_required
 def dashboard():
 
-    # AI speelt automatisch wedstrijden
-    # die voor vandaag beschikbaar zijn.
     speel_ai_wedstrijden()
 
-    club = session.get("club")
+    club = get_user_club()
 
     if club is None:
 
@@ -2831,6 +3992,8 @@ def dashboard():
             club=None,
             interviews=[]
         )
+
+    genereer_ai_transferbiedingen()
 
     connection = get_connection()
 
@@ -2891,7 +4054,7 @@ def dashboard():
             tekst
         FROM interviews
         ORDER BY id DESC
-        LIMIT 4
+        LIMIT 3
     """).fetchall()
 
     connection.close()
@@ -2905,20 +4068,20 @@ def dashboard():
     )
 
 
-# =========================
+# =========================================================
 # SELECTIE
-# =========================
+# =========================================================
 
 @app.route("/selection")
+@login_required
 def selection():
 
-    club = session.get("club")
+    club = get_user_club()
 
     if club is None:
 
-        return render_template(
-            "dashboard.html",
-            club=None
+        return redirect(
+            url_for("clubs_page")
         )
 
     positie_filter = request.args.get(
@@ -3013,20 +4176,20 @@ def selection():
     )
 
 
-# =========================
+# =========================================================
 # STATISTIEKEN
-# =========================
+# =========================================================
 
 @app.route("/statistics")
+@login_required
 def statistics():
 
-    club = session.get("club")
+    club = get_user_club()
 
     if club is None:
 
-        return render_template(
-            "dashboard.html",
-            club=None
+        return redirect(
+            url_for("clubs_page")
         )
 
     connection = get_connection()
@@ -3121,38 +4284,6 @@ def statistics():
         LIMIT 10
     """).fetchall()
 
-    huidige_maand = date.today().strftime(
-        "%Y-%m"
-    )
-
-    player_of_month = connection.execute("""
-        SELECT
-            p.id,
-            p.naam,
-            p.positie,
-            p.rating,
-            c.naam AS club_naam,
-            c.logo AS club_logo,
-            s.wedstrijden,
-            s.doelpunten,
-            s.motm
-        FROM player_stats s
-        JOIN players p
-            ON p.id = s.player_id
-        JOIN clubs c
-            ON c.id = p.club_id
-        WHERE s.maand = ?
-        ORDER BY
-            s.doelpunten DESC,
-            s.motm DESC,
-            s.wedstrijden DESC,
-            p.rating DESC,
-            p.naam ASC
-        LIMIT 1
-    """, (
-        huidige_maand,
-    )).fetchone()
-
     recente_motm = connection.execute("""
         SELECT
             match_awards.match_id,
@@ -3194,26 +4325,25 @@ def statistics():
         totale_waarde=totale_waarde,
         hoogste_rating=hoogste_rating,
         topscorers=topscorers,
-        player_of_month=player_of_month,
         recente_motm=recente_motm,
         interviews=interviews
     )
 
 
-# =========================
+# =========================================================
 # COMPETITIE
-# =========================
+# =========================================================
 
 @app.route("/competition")
+@login_required
 def competition():
 
-    club = session.get("club")
+    club = get_user_club()
 
     if club is None:
 
-        return render_template(
-            "dashboard.html",
-            club=None
+        return redirect(
+            url_for("clubs_page")
         )
 
     connection = get_connection()
@@ -3255,30 +4385,37 @@ def competition():
     )
 
 
-# =========================
+# =========================================================
 # WEDSTRIJDEN
-# =========================
+# =========================================================
 
 @app.route("/matches")
+@login_required
 def matches():
 
-    # AI-wedstrijden automatisch afhandelen.
-    speel_ai_wedstrijden()
+    # Na een reset mag de AI niet direct
+    # de wedstrijden weer spelen.
+    if not session.pop(
+        "skip_ai_after_reset",
+        False
+    ):
+        speel_ai_wedstrijden()
 
-    club = session.get("club")
+    club = get_user_club()
 
     if club is None:
 
-        return render_template(
-            "dashboard.html",
-            club=None
+        return redirect(
+            url_for("clubs_page")
         )
 
     connection = get_connection()
 
-    matches = connection.execute("""
+    wedstrijden_db = connection.execute("""
         SELECT
             matches.id,
+            matches.home_club_id,
+            matches.away_club_id,
             home.naam AS home_naam,
             home.logo AS home_logo,
             away.naam AS away_naam,
@@ -3302,7 +4439,7 @@ def matches():
 
     wedstrijden = []
 
-    for match in matches:
+    for match in wedstrijden_db:
 
         wedstrijd = dict(
             match
@@ -3316,12 +4453,8 @@ def matches():
 
         wedstrijd["eigen_wedstrijd"] = (
             club["id"] in [
-                match["home_club_id"]
-                if "home_club_id" in match.keys()
-                else -1,
+                match["home_club_id"],
                 match["away_club_id"]
-                if "away_club_id" in match.keys()
-                else -1
             ]
         )
 
@@ -3336,16 +4469,17 @@ def matches():
     )
 
 
-# =========================
+# =========================================================
 # LIVE WEDSTRIJD OPENEN
-# =========================
+# =========================================================
 
 @app.route(
     "/play_match/<int:match_id>"
 )
+@login_required
 def play_match(match_id):
 
-    club = session.get("club")
+    club = get_user_club()
 
     if club is None:
 
@@ -3390,11 +4524,9 @@ def play_match(match_id):
     connection.close()
 
     if match is None:
-
         return "Wedstrijd niet gevonden", 404
 
     if match["gespeeld"]:
-
         return redirect(
             url_for("matches")
         )
@@ -3424,9 +4556,14 @@ def play_match(match_id):
         match["away_club_id"]
     )
 
-    opgeslagen_opstelling = session.get(
-        "opstelling",
-        {}
+    progress = get_user_progress()
+
+    opgeslagen_opstelling = (
+        progress["lineup"]
+    )
+
+    tactieken = (
+        progress["tactics"]
     )
 
     if club["id"] == match["home_club_id"]:
@@ -3440,6 +4577,8 @@ def play_match(match_id):
             away_players
         )
 
+        eigen_team = "home"
+
     else:
 
         home_lineup = bouw_basiself(
@@ -3451,15 +4590,13 @@ def play_match(match_id):
             opgeslagen_opstelling
         )
 
+        eigen_team = "away"
+
     bestaande_live = session.get(
         "live_match"
     )
 
-    # =========================
-    # NIEUWE / NOG NIET GESTARTE
-    # WEDSTRIJD
-    # =========================
-
+    # Voor de aftrap altijd opnieuw bouwen.
     if (
         bestaande_live is None
         or
@@ -3469,7 +4606,7 @@ def play_match(match_id):
         or
         bestaande_live.get(
             "started_at"
-        ) is not None
+        ) is None
     ):
 
         events = genereer_live_events(
@@ -3480,7 +4617,9 @@ def play_match(match_id):
             match["home_rating"],
             match["away_rating"],
             home_lineup,
-            away_lineup
+            away_lineup,
+            tactieken,
+            eigen_team
         )
 
         bestaande_live = {
@@ -3528,7 +4667,10 @@ def play_match(match_id):
             },
 
             "events":
-                events
+                events,
+
+            "tactieken":
+                tactieken
         }
 
         session["live_match"] = (
@@ -3536,24 +4678,6 @@ def play_match(match_id):
         )
 
         session.modified = True
-
-    # Actuele tactieken meegeven.
-    tactieken = session.get(
-        "tactieken",
-        {
-            "formatie":
-                "4-3-3",
-
-            "speelstijl":
-                "Gebalanceerd",
-
-            "mentaliteit":
-                "Gebalanceerd",
-
-            "druk":
-                "Normaal"
-        }
-    )
 
     return render_template(
         "live_match.html",
@@ -3563,17 +4687,18 @@ def play_match(match_id):
     )
 
 
-# =========================
-# LIVE WEDSTRIJD STARTEN
-# =========================
+# =========================================================
+# LIVE START
+# =========================================================
 
 @app.route(
     "/play_match/<int:match_id>/start",
     methods=["POST"]
 )
+@login_required
 def start_live_match(match_id):
 
-    club = session.get("club")
+    club = get_user_club()
 
     if club is None:
 
@@ -3611,8 +4736,6 @@ def start_live_match(match_id):
             "live_match",
             None
         )
-
-        session.modified = True
 
         return jsonify({
             "success": False,
@@ -3668,14 +4791,15 @@ def start_live_match(match_id):
     })
 
 
-# =========================
-# LIVE WEDSTRIJD AFSLUITEN
-# =========================
+# =========================================================
+# LIVE AFSLUITEN
+# =========================================================
 
 @app.route(
     "/play_match/<int:match_id>/finish",
     methods=["POST"]
 )
+@login_required
 def finish_played_match(match_id):
 
     live_match = session.get(
@@ -3722,8 +4846,6 @@ def finish_played_match(match_id):
             None
         )
 
-        session.modified = True
-
         return jsonify({
             "success": False,
             "error": "Wedstrijd niet gevonden."
@@ -3738,16 +4860,11 @@ def finish_played_match(match_id):
             None
         )
 
-        session.modified = True
-
         return jsonify({
             "success": True,
-            "redirect": url_for("matches")
+            "redirect":
+                url_for("matches")
         })
-
-    # =========================
-    # SCORE UIT GOALS
-    # =========================
 
     home_score = 0
     away_score = 0
@@ -3761,11 +4878,9 @@ def finish_played_match(match_id):
             continue
 
         if event.get("team") == "home":
-
             home_score += 1
 
         elif event.get("team") == "away":
-
             away_score += 1
 
     home_score = min(
@@ -3777,10 +4892,6 @@ def finish_played_match(match_id):
         away_score,
         10
     )
-
-    # =========================
-    # WEDSTRIJD OPSLAAN
-    # =========================
 
     connection.execute("""
         UPDATE matches
@@ -3798,10 +4909,6 @@ def finish_played_match(match_id):
     connection.commit()
     connection.close()
 
-    # =========================
-    # SPELERSTATISTIEKEN
-    # =========================
-
     home_players = get_players_for_club(
         match["home_club_id"]
     )
@@ -3818,10 +4925,6 @@ def finish_played_match(match_id):
         away_players
     )
 
-    # =========================
-    # COMPETITIE
-    # =========================
-
     update_competition(
         match["home_club_id"],
         match["away_club_id"],
@@ -3829,33 +4932,29 @@ def finish_played_match(match_id):
         away_score
     )
 
-    # =========================
-    # LIVE SESSION WEG
-    # =========================
-
     session.pop(
         "live_match",
         None
     )
 
-    session.modified = True
-
     return jsonify({
         "success": True,
         "home_score": home_score,
         "away_score": away_score,
-        "redirect": url_for("matches")
+        "redirect":
+            url_for("matches")
     })
 
 
-# =========================
+# =========================================================
 # TRANSFERMARKT
-# =========================
+# =========================================================
 
 @app.route("/transfers")
+@login_required
 def transfers():
 
-    club = session.get("club")
+    club = get_user_club()
 
     if club is None:
 
@@ -3863,45 +4962,15 @@ def transfers():
             url_for("clubs_page")
         )
 
-    testmodus = session.get(
-        "transfer_testmodus",
-        True
+    transfer_offers = (
+        genereer_ai_transferbiedingen()
     )
 
-    raw_test_aankopen = session.get(
-        "test_aankopen",
-        []
-    )
-
-    test_aankopen = []
-
-    for player_id in raw_test_aankopen:
-
-        try:
-
-            test_aankopen.append(
-                int(player_id)
-            )
-
-        except (
-            TypeError,
-            ValueError
-        ):
-
-            pass
-
-    session["test_aankopen"] = (
-        test_aankopen
-    )
-
-    transfer_history = session.get(
-        "transfer_history",
-        []
-    )
+    progress = get_user_progress()
 
     connection = get_connection()
 
-    alle_spelers = connection.execute("""
+    spelers = connection.execute("""
         SELECT
             players.id,
             players.naam,
@@ -3921,81 +4990,31 @@ def transfers():
         club["id"],
     )).fetchall()
 
-    spelers = [
-        player
-        for player in alle_spelers
-        if int(player["id"])
-        not in test_aankopen
-    ]
-
-    test_players = []
-
-    if test_aankopen:
-
-        placeholders = ",".join(
-            ["?"] * len(test_aankopen)
-        )
-
-        test_players = connection.execute(
-            f"""
-                SELECT
-                    players.id,
-                    players.naam,
-                    players.positie,
-                    players.leeftijd,
-                    players.marktwaarde,
-                    players.rating,
-                    clubs.naam AS club_naam,
-                    clubs.logo AS club_logo
-                FROM players
-                JOIN clubs
-                    ON players.club_id = clubs.id
-                WHERE players.id IN ({placeholders})
-                ORDER BY players.rating DESC
-            """,
-            test_aankopen
-        ).fetchall()
-
     connection.close()
 
     return render_template(
         "transfers.html",
         club=club,
         players=spelers,
-        test_players=test_players,
-        testmodus=testmodus,
-        test_aankopen=test_aankopen,
-        transfer_history=transfer_history
+        transfer_history=
+            progress["transfer_history"],
+        transfer_offers=
+            transfer_offers
     )
 
+
+# =========================================================
+# AI BOD ACCEPTEREN
+# =========================================================
 
 @app.route(
-    "/transfers/toggle-testmode",
+    "/transfers/offer/<offer_id>/accept",
     methods=["POST"]
 )
-def toggle_transfer_testmode():
+@login_required
+def accept_transfer_offer(offer_id):
 
-    huidige_status = session.get(
-        "transfer_testmodus",
-        True
-    )
-
-    session["transfer_testmodus"] = (
-        not huidige_status
-    )
-
-    return redirect(
-        url_for("transfers")
-    )
-
-
-@app.route(
-    "/transfers/buy/<int:player_id>",
-    methods=["POST"]
-)
-def buy_transfer(player_id):
-
-    club = session.get("club")
+    club = get_user_club()
 
     if club is None:
 
@@ -4003,36 +5022,235 @@ def buy_transfer(player_id):
             url_for("clubs_page")
         )
 
-    testmodus = session.get(
-        "transfer_testmodus",
-        True
+    progress = get_user_progress()
+
+    offers = progress[
+        "transfer_offers"
+    ]
+
+    offer = next(
+        (
+            item
+            for item in offers
+            if item.get("id") == offer_id
+        ),
+        None
     )
 
-    raw_test_aankopen = session.get(
-        "test_aankopen",
-        []
+    if offer is None:
+
+        return redirect(
+            url_for("transfers")
+        )
+
+    player_id = int(
+        offer["player_id"]
     )
 
-    test_aankopen = []
+    connection = get_connection()
 
-    for old_id in raw_test_aankopen:
+    player = connection.execute("""
+        SELECT
+            id,
+            naam,
+            club_id
+        FROM players
+        WHERE id = ?
+    """, (
+        player_id,
+    )).fetchone()
 
-        try:
+    if player is None:
 
-            test_aankopen.append(
-                int(old_id)
-            )
+        connection.close()
 
-        except (
-            TypeError,
-            ValueError
-        ):
+        return redirect(
+            url_for("transfers")
+        )
 
-            pass
+    if int(player["club_id"]) != int(
+        club["id"]
+    ):
 
-    transfer_history = session.get(
-        "transfer_history",
-        []
+        connection.close()
+
+        return redirect(
+            url_for("transfers")
+        )
+
+    ai_club = connection.execute("""
+        SELECT
+            id,
+            naam,
+            budget
+        FROM clubs
+        WHERE id = ?
+    """, (
+        offer["to_club_id"],
+    )).fetchone()
+
+    if ai_club is None:
+
+        connection.close()
+
+        return redirect(
+            url_for("transfers")
+        )
+
+    transferprijs = int(
+        offer["offer"]
+    )
+
+    if int(ai_club["budget"]) < transferprijs:
+
+        connection.close()
+
+        offers = [
+            item
+            for item in offers
+            if item.get("id") != offer_id
+        ]
+
+        save_user_progress(
+            transfer_offers=offers
+        )
+
+        return redirect(
+            url_for("transfers")
+        )
+
+    connection.execute("""
+        UPDATE players
+        SET club_id = ?
+        WHERE id = ?
+    """, (
+        ai_club["id"],
+        player_id
+    ))
+
+    connection.execute("""
+        UPDATE clubs
+        SET
+            budget = budget + ?
+        WHERE id = ?
+    """, (
+        transferprijs,
+        club["id"]
+    ))
+
+    connection.execute("""
+        UPDATE clubs
+        SET
+            budget = budget - ?
+        WHERE id = ?
+    """, (
+        transferprijs,
+        ai_club["id"]
+    ))
+
+    connection.commit()
+    connection.close()
+
+    offers = [
+        item
+        for item in offers
+        if item.get("id") != offer_id
+    ]
+
+    history = progress[
+        "transfer_history"
+    ]
+
+    history.insert(
+        0,
+        {
+            "player_name":
+                offer["player_name"],
+
+            "position":
+                offer["position"],
+
+            "rating":
+                offer["rating"],
+
+            "from_club":
+                club["naam"],
+
+            "to_club":
+                offer["to_club"],
+
+            "price":
+                transferprijs,
+
+            "date":
+                offer["date"],
+
+            "test":
+                False
+        }
+    )
+
+    save_user_progress(
+        transfer_history=history[:50],
+        transfer_offers=offers
+    )
+
+    return redirect(
+        url_for("transfers")
+    )
+
+
+# =========================================================
+# AI BOD AFWIJZEN
+# =========================================================
+
+@app.route(
+    "/transfers/offer/<offer_id>/reject",
+    methods=["POST"]
+)
+@login_required
+def reject_transfer_offer(offer_id):
+
+    progress = get_user_progress()
+
+    offers = [
+        item
+        for item in progress["transfer_offers"]
+        if item.get("id") != offer_id
+    ]
+
+    save_user_progress(
+        transfer_offers=offers
+    )
+
+    return redirect(
+        url_for("transfers")
+    )
+
+
+# =========================================================
+# SPELER KOPEN
+# =========================================================
+
+@app.route(
+    "/transfers/buy/<int:player_id>",
+    methods=["POST"]
+)
+@login_required
+def buy_transfer(player_id):
+
+    club = get_user_club()
+
+    if club is None:
+
+        return redirect(
+            url_for("clubs_page")
+        )
+
+    progress = get_user_progress()
+
+    transfer_history = (
+        progress["transfer_history"]
     )
 
     connection = get_connection()
@@ -4073,71 +5291,6 @@ def buy_transfer(player_id):
             url_for("transfers")
         )
 
-    # =========================
-    # TESTMODUS
-    # =========================
-
-    if testmodus:
-
-        if player_id not in test_aankopen:
-
-            test_aankopen.append(
-                player_id
-            )
-
-            session["test_aankopen"] = (
-                test_aankopen
-            )
-
-            transfer_history.insert(
-                0,
-                {
-                    "player_name":
-                        player["naam"],
-
-                    "position":
-                        player["positie"],
-
-                    "rating":
-                        int(
-                            player["rating"]
-                        ),
-
-                    "from_club":
-                        player["club_naam"],
-
-                    "to_club":
-                        club["naam"],
-
-                    "price":
-                        int(
-                            player["marktwaarde"]
-                        ),
-
-                    "date":
-                        datetime.now().strftime(
-                            "%d-%m-%Y %H:%M"
-                        ),
-
-                    "test":
-                        True
-                }
-            )
-
-            session["transfer_history"] = (
-                transfer_history[:50]
-            )
-
-        connection.close()
-
-        return redirect(
-            url_for("transfers")
-        )
-
-    # =========================
-    # ECHTE TRANSFER
-    # =========================
-
     transferprijs = int(
         player["marktwaarde"]
     )
@@ -4168,6 +5321,10 @@ def buy_transfer(player_id):
             url_for("transfers")
         )
 
+    oude_club_id = int(
+        player["club_id"]
+    )
+
     connection.execute("""
         UPDATE players
         SET club_id = ?
@@ -4177,19 +5334,24 @@ def buy_transfer(player_id):
         player_id
     ))
 
-    nieuw_budget = (
-        int(huidige_club["budget"])
-        -
-        transferprijs
-    )
+    connection.execute("""
+        UPDATE clubs
+        SET
+            budget = budget - ?
+        WHERE id = ?
+    """, (
+        transferprijs,
+        club["id"]
+    ))
 
     connection.execute("""
         UPDATE clubs
-        SET budget = ?
+        SET
+            budget = budget + ?
         WHERE id = ?
     """, (
-        nieuw_budget,
-        club["id"]
+        transferprijs,
+        oude_club_id
     ))
 
     connection.commit()
@@ -4228,57 +5390,19 @@ def buy_transfer(player_id):
         }
     )
 
-    session["transfer_history"] = (
-        transfer_history[:50]
-    )
+    offers = [
+        offer
+        for offer in progress["transfer_offers"]
+        if int(
+            offer.get("player_id", -1)
+        ) != player_id
+    ]
 
-    club["budget"] = (
-        nieuw_budget
-    )
-
-    session["club"] = club
-
-    return redirect(
-        url_for("transfers")
-    )
-
-
-@app.route(
-    "/transfers/test-sell/<int:player_id>",
-    methods=["POST"]
-)
-def test_sell_transfer(player_id):
-
-    raw_test_aankopen = session.get(
-        "test_aankopen",
-        []
-    )
-
-    test_aankopen = []
-
-    for old_id in raw_test_aankopen:
-
-        try:
-
-            old_id = int(
-                old_id
-            )
-
-            if old_id != player_id:
-
-                test_aankopen.append(
-                    old_id
-                )
-
-        except (
-            TypeError,
-            ValueError
-        ):
-
-            pass
-
-    session["test_aankopen"] = (
-        test_aankopen
+    save_user_progress(
+        transfer_history=
+            transfer_history[:50],
+        transfer_offers=
+            offers
     )
 
     return redirect(
@@ -4286,22 +5410,22 @@ def test_sell_transfer(player_id):
     )
 
 
-# =========================
-# SPELER BEKIJKEN
-# =========================
+# =========================================================
+# SPELER DETAIL
+# =========================================================
 
 @app.route(
     "/player/<int:player_id>"
 )
+@login_required
 def player_detail(player_id):
 
-    club = session.get("club")
+    club = get_user_club()
 
     if club is None:
 
-        return render_template(
-            "dashboard.html",
-            club=None
+        return redirect(
+            url_for("clubs_page")
         )
 
     connection = get_connection()
@@ -4337,23 +5461,123 @@ def player_detail(player_id):
     )
 
 
-# =========================
+# =========================================================
+# CLUB VIEWER
+# =========================================================
+
+@app.route("/club-viewer")
+@login_required
+def club_viewer():
+
+    eigen_club = get_user_club()
+
+    if eigen_club is None:
+
+        return redirect(
+            url_for("clubs_page")
+        )
+
+    connection = get_connection()
+
+    clubs = connection.execute("""
+        SELECT
+            id,
+            naam,
+            stad,
+            rating,
+            logo,
+            budget
+        FROM clubs
+        ORDER BY rating DESC, naam ASC
+    """).fetchall()
+
+    connection.close()
+
+    return render_template(
+        "club_viewer.html",
+        eigen_club=eigen_club,
+        clubs=clubs
+    )
+
+
+@app.route(
+    "/club-viewer/<int:club_id>"
+)
+@login_required
+def club_viewer_detail(club_id):
+
+    eigen_club = get_user_club()
+
+    if eigen_club is None:
+
+        return redirect(
+            url_for("clubs_page")
+        )
+
+    connection = get_connection()
+
+    club = connection.execute("""
+        SELECT
+            id,
+            naam,
+            stad,
+            rating,
+            logo,
+            budget
+        FROM clubs
+        WHERE id = ?
+    """, (
+        club_id,
+    )).fetchone()
+
+    players = connection.execute("""
+        SELECT
+            id,
+            naam,
+            positie,
+            leeftijd,
+            marktwaarde,
+            rating,
+            salaris,
+            contractduur
+        FROM players
+        WHERE club_id = ?
+        ORDER BY rating DESC, naam ASC
+    """, (
+        club_id,
+    )).fetchall()
+
+    connection.close()
+
+    if club is None:
+
+        return "Club niet gevonden", 404
+
+    return render_template(
+        "club_viewer_detail.html",
+        eigen_club=eigen_club,
+        club=club,
+        players=players
+    )
+
+
+# =========================================================
 # TACTIEKEN
-# =========================
+# =========================================================
 
 @app.route(
     "/tactics",
     methods=["GET", "POST"]
 )
+@login_required
 def tactics():
 
-    club = session.get("club")
+    club = get_user_club()
 
     if club is None:
 
-        return render_template(
-            "dashboard.html",
-            club=None
+        return redirect(
+            url_for("clubs_page")
         )
 
     formaties = [
@@ -4416,7 +5640,8 @@ def tactics():
         if druk_zetten not in druk:
             druk_zetten = "Normaal"
 
-        session["tactieken"] = {
+        nieuwe_tactieken = {
+
             "formatie":
                 formatie,
 
@@ -4430,13 +5655,25 @@ def tactics():
                 druk_zetten
         }
 
-        terug_naar = session.pop(
-            "_tactics_next",
-            None
+        save_user_progress(
+            tactics=nieuwe_tactieken
         )
 
-        terug_naar = geldige_interne_url(
-            terug_naar
+        terug_naar = (
+            request.args.get("next")
+        )
+
+        if not terug_naar:
+
+            terug_naar = session.pop(
+                "_tactics_next",
+                None
+            )
+
+        terug_naar = (
+            geldige_interne_url(
+                terug_naar
+            )
         )
 
         if terug_naar:
@@ -4459,22 +5696,11 @@ def tactics():
             next_url
         )
 
-    tactieken = session.get(
-        "tactieken",
-        {
-            "formatie":
-                "4-3-3",
+    progress = get_user_progress()
 
-            "speelstijl":
-                "Gebalanceerd",
-
-            "mentaliteit":
-                "Gebalanceerd",
-
-            "druk":
-                "Normaal"
-        }
-    )
+    tactieken = progress[
+        "tactics"
+    ]
 
     return render_template(
         "tactics.html",
@@ -4487,23 +5713,23 @@ def tactics():
     )
 
 
-# =========================
+# =========================================================
 # OPSTELLING
-# =========================
+# =========================================================
 
 @app.route(
     "/lineup",
     methods=["GET", "POST"]
 )
+@login_required
 def lineup():
 
-    club = session.get("club")
+    club = get_user_club()
 
     if club is None:
 
-        return render_template(
-            "dashboard.html",
-            club=None
+        return redirect(
+            url_for("clubs_page")
         )
 
     spelers = get_players_for_club(
@@ -4570,17 +5796,25 @@ def lineup():
                 )
         }
 
-        session["opstelling"] = (
-            opstelling
+        save_user_progress(
+            lineup=opstelling
         )
 
-        terug_naar = session.pop(
-            "_lineup_next",
-            None
+        terug_naar = (
+            request.args.get("next")
         )
 
-        terug_naar = geldige_interne_url(
-            terug_naar
+        if not terug_naar:
+
+            terug_naar = session.pop(
+                "_lineup_next",
+                None
+            )
+
+        terug_naar = (
+            geldige_interne_url(
+                terug_naar
+            )
         )
 
         if terug_naar:
@@ -4603,9 +5837,15 @@ def lineup():
             next_url
         )
 
-    opstelling = session.get(
-        "opstelling",
-        {
+    progress = get_user_progress()
+
+    opstelling = progress[
+        "lineup"
+    ]
+
+    if not opstelling:
+
+        opstelling = {
             "keeper": "",
             "verdediger_1": "",
             "verdediger_2": "",
@@ -4618,7 +5858,6 @@ def lineup():
             "aanvaller_2": "",
             "aanvaller_3": ""
         }
-    )
 
     return render_template(
         "lineup.html",
@@ -4628,19 +5867,17 @@ def lineup():
     )
 
 
-# =========================
-# TEST RESET
-# =========================
+# =========================================================
+# RESET
+# =========================================================
 
 @app.route("/reset-test")
+@login_required
 def reset_test_route():
 
     connection = get_connection()
 
-    # =========================
-    # WEDSTRIJDEN
-    # =========================
-
+    # ALLE wedstrijden resetten
     connection.execute("""
         UPDATE matches
         SET
@@ -4649,10 +5886,7 @@ def reset_test_route():
             gespeeld = 0
     """)
 
-    # =========================
-    # COMPETITIE
-    # =========================
-
+    # Competitie resetten
     connection.execute("""
         UPDATE competition
         SET
@@ -4665,18 +5899,17 @@ def reset_test_route():
             punten = 0
     """)
 
-    # =========================
-    # STATISTIEKEN
-    # =========================
-
+    # Alle spelerstatistieken resetten
     connection.execute("""
         DELETE FROM player_stats
     """)
 
+    # Alle MOTM-awards resetten
     connection.execute("""
         DELETE FROM match_awards
     """)
 
+    # Alle interviews resetten
     connection.execute("""
         DELETE FROM interviews
     """)
@@ -4684,86 +5917,22 @@ def reset_test_route():
     connection.commit()
     connection.close()
 
+    # Eventuele live wedstrijd verwijderen
     session.pop(
         "live_match",
         None
     )
 
-    session.modified = True
+    # AI mag na de reset niet direct wedstrijden spelen
+    session["skip_ai_after_reset"] = True
 
-    return """
-    <!DOCTYPE html>
+    return redirect(
+        url_for("matches")
+    )
 
-    <html lang="nl">
-
-    <head>
-
-        <meta charset="UTF-8">
-
-        <title>
-            ClubMaster reset
-        </title>
-
-        <style>
-
-            body {
-                background: #0b0f19;
-                color: white;
-                font-family: Arial, sans-serif;
-                text-align: center;
-                padding-top: 100px;
-            }
-
-            a {
-                display: inline-block;
-                margin-top: 20px;
-                padding: 12px 20px;
-                background: #22c55e;
-                color: white;
-                text-decoration: none;
-                border-radius: 8px;
-                font-weight: bold;
-            }
-
-        </style>
-
-    </head>
-
-    <body>
-
-        <h1>
-            ClubMaster is gereset
-        </h1>
-
-        <p>
-            Wedstrijden zijn teruggezet naar 0 gespeeld.
-        </p>
-
-        <p>
-            Scores en competitie zijn gereset.
-        </p>
-
-        <p>
-            Topscoorders, MOTM en interviews zijn gewist.
-        </p>
-
-        <p>
-            De oude live wedstrijd is verwijderd.
-        </p>
-
-        <a href="/matches">
-            Naar wedstrijden
-        </a>
-
-    </body>
-
-    </html>
-    """
-
-
-# =========================
-# BROWSER AUTOMATISCH OPENEN
-# =========================
+# =========================================================
+# BROWSER
+# =========================================================
 
 def open_browser():
 
@@ -4772,11 +5941,13 @@ def open_browser():
     )
 
 
-# =========================
+# =========================================================
 # START
-# =========================
+# =========================================================
 
 if __name__ == "__main__":
+
+    create_users_table()
 
     create_competition_table()
 

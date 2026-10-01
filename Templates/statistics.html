@@ -1,23 +1,26 @@
 <!DOCTYPE html>
+
 <html lang="nl">
 
 <head>
 
-    <meta charset="UTF-8">
+```
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>
-        Statistieken - ClubMaster
-    </title>
+<title>
+    Statistieken - ClubMaster
+</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}"
+>
+```
 
 </head>
 
@@ -27,107 +30,159 @@
 
 <main class="statistics-page">
 
-    <h1>
-        {{ club.naam }} - Statistieken
-    </h1>
+```
+<div class="statistics-heading">
 
-    <p class="page-subtitle">
-        Bekijk de belangrijkste statistieken van ClubMaster.
-    </p>
+    <div>
+
+        <span class="section-kicker">
+            CLUBMASTER
+        </span>
+
+        <h1>
+            {{ club.naam }} - Statistieken
+        </h1>
+
+        <p class="page-subtitle">
+            Bekijk de belangrijkste statistieken van jouw club en de competitie.
+        </p>
+
+    </div>
+
+</div>
 
 
-    <!-- OVERZICHT -->
+<!-- OVERZICHT -->
 
-    <section class="statistics-overview">
+<section class="statistics-overview">
 
-        <div class="statistics-card">
-            <span class="statistics-icon">👥</span>
+    <div class="statistics-card">
+
+        <span class="statistics-icon">
+            👥
+        </span>
+
+        <div>
+
+            <strong>
+                {{ totaal_spelers }}
+            </strong>
+
+            <p>
+                Spelers
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="statistics-card">
+
+        <span class="statistics-icon">
+            ⭐
+        </span>
+
+        <div>
+
+            <strong>
+                {{ gemiddelde_rating }}
+            </strong>
+
+            <p>
+                Gemiddelde rating
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="statistics-card">
+
+        <span class="statistics-icon">
+            💰
+        </span>
+
+        <div>
+
+            <strong>
+                €{{ "{:,.0f}".format(totale_waarde).replace(",", ".") }}
+            </strong>
+
+            <p>
+                Totale marktwaarde
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="statistics-card">
+
+        <span class="statistics-icon">
+            🏆
+        </span>
+
+        <div>
+
+            <strong>
+
+                {% if hoogste_rating %}
+                    {{ hoogste_rating.rating }}
+                {% else %}
+                    -
+                {% endif %}
+
+            </strong>
+
+            <p>
+                Hoogste rating
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- STATISTIEKEN -->
+
+<section class="statistics-main-grid">
+
+
+    <!-- TOPSCORERS -->
+
+    <div class="statistics-panel statistics-topscorers-panel">
+
+        <div class="statistics-panel-header">
 
             <div>
-                <strong>{{ totaal_spelers }}</strong>
-                <p>Spelers</p>
+
+                <span class="section-kicker">
+                    COMPETITIE
+                </span>
+
+                <h2>
+                    ⚽ Topscorers
+                </h2>
+
             </div>
+
+            <span class="statistics-panel-count">
+                Top 10
+            </span>
+
         </div>
 
 
-        <div class="statistics-card">
-            <span class="statistics-icon">⭐</span>
+        {% if topscorers %}
 
-            <div>
-                <strong>{{ gemiddelde_rating }}</strong>
-                <p>Gemiddelde rating</p>
-            </div>
-        </div>
+            <div class="topscorer-list">
 
-
-        <div class="statistics-card">
-            <span class="statistics-icon">💰</span>
-
-            <div>
-                <strong>
-                    €{{ "{:,.0f}".format(totale_waarde).replace(",", ".") }}
-                </strong>
-
-                <p>
-                    Totale marktwaarde
-                </p>
-            </div>
-        </div>
-
-
-        <div class="statistics-card">
-            <span class="statistics-icon">🏆</span>
-
-            <div>
-
-                <strong>
-
-                    {% if hoogste_rating %}
-                        {{ hoogste_rating.rating }}
-                    {% else %}
-                        -
-                    {% endif %}
-
-                </strong>
-
-                <p>
-                    Hoogste rating
-                </p>
-
-            </div>
-        </div>
-
-    </section>
-
-
-    <!-- GROTE STATISTIEKEN BLOK -->
-
-    <section class="statistics-main-grid">
-
-        <!-- TOPSCORERS -->
-
-        <div class="statistics-panel">
-
-            <div class="statistics-panel-header">
-
-                <div>
-                    <span class="section-kicker">
-                        COMPETITIE
-                    </span>
-
-                    <h2>
-                        ⚽ Topscorers
-                    </h2>
-                </div>
-
-            </div>
-
-
-            {% if topscorers %}
-
-                <div class="topscorer-list">
-
-                    {% for player in topscorers %}
+                {% for player in topscorers %}
 
                     <div class="topscorer-row">
 
@@ -152,114 +207,100 @@
 
 
                         <div class="topscorer-rating">
-                            {{ player.rating }}
+
+                            <span>
+                                Rating
+                            </span>
+
+                            <strong>
+                                {{ player.rating }}
+                            </strong>
+
                         </div>
 
 
                         <div class="topscorer-goals">
-                            {{ player.doelpunten }}
-                            <small>goals</small>
-                        </div>
 
-                    </div>
-
-                    {% endfor %}
-
-                </div>
-
-            {% else %}
-
-                <div class="empty-stat-message">
-                    Er zijn nog geen doelpunten geregistreerd.
-                </div>
-
-            {% endif %}
-
-        </div>
+                            <strong>
+                                {{ player.doelpunten }}
+                            </strong>
 
 
-        <!-- PLAYER OF THE MONTH -->
+                            {% if player.doelpunten == 1 %}
 
-        <div class="statistics-panel">
+                                <span>
+                                    goal
+                                </span>
 
-            <span class="section-kicker">
-                AWARD
-            </span>
+                            {% else %}
 
-            <h2>
-                🌟 Player of the Month
-            </h2>
+                                <span>
+                                    goals
+                                </span>
 
-
-            {% if player_of_month %}
-
-                <div class="award-card">
-
-                    <div class="award-icon">
-                        🏆
-                    </div>
-
-                    <div class="award-player">
-
-                        <h3>
-                            {{ player_of_month.naam }}
-                        </h3>
-
-                        <p>
-                            {{ player_of_month.club_naam }}
-                            ·
-                            {{ player_of_month.positie }}
-                        </p>
-
-                        <div class="award-stats">
-
-                            <span>
-                                ⚽ {{ player_of_month.doelpunten }}
-                            </span>
-
-                            <span>
-                                🏆 {{ player_of_month.motm }}
-                            </span>
-
-                            <span>
-                                👟 {{ player_of_month.wedstrijden }}
-                            </span>
+                            {% endif %}
 
                         </div>
 
                     </div>
 
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-stat-message">
+
+                <span>
+                    ⚽
+                </span>
+
+                <div>
+
+                    <strong>
+                        Nog geen topscorers
+                    </strong>
+
+                    <p>
+                        Na de eerste gespeelde wedstrijden verschijnen hier de doelpuntenmakers.
+                    </p>
+
                 </div>
 
-            {% else %}
+            </div>
 
-                <div class="empty-stat-message">
-                    Er zijn nog geen gegevens voor deze award.
-                </div>
+        {% endif %}
 
-            {% endif %}
+    </div>
+
+
+    <!-- MAN OF THE MATCH -->
+
+    <div class="statistics-panel">
+
+        <div class="statistics-panel-header">
+
+            <div>
+
+                <span class="section-kicker">
+                    WEDSTRIJDEN
+                </span>
+
+                <h2>
+                    🏆 Man of the Match
+                </h2>
+
+            </div>
 
         </div>
 
 
-        <!-- MOTM -->
+        {% if recente_motm %}
 
-        <div class="statistics-panel">
+            <div class="motm-list">
 
-            <span class="section-kicker">
-                WEDSTRIJDEN
-            </span>
-
-            <h2>
-                🏆 Man of the Match
-            </h2>
-
-
-            {% if recente_motm %}
-
-                <div class="motm-list">
-
-                    {% for motm in recente_motm %}
+                {% for motm in recente_motm %}
 
                     <div class="motm-row">
 
@@ -287,39 +328,63 @@
 
                     </div>
 
-                    {% endfor %}
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-stat-message">
+
+                <span>
+                    🏆
+                </span>
+
+                <div>
+
+                    <strong>
+                        Nog geen awards
+                    </strong>
+
+                    <p>
+                        Na gespeelde wedstrijden worden hier de Man of the Match-spelers weergegeven.
+                    </p>
 
                 </div>
 
-            {% else %}
+            </div>
 
-                <div class="empty-stat-message">
-                    Nog geen Man of the Match-awards.
-                </div>
+        {% endif %}
 
-            {% endif %}
+    </div>
+
+
+    <!-- INTERVIEWS -->
+
+    <div class="statistics-panel">
+
+        <div class="statistics-panel-header">
+
+            <div>
+
+                <span class="section-kicker">
+                    CLUBMASTER NIEUWS
+                </span>
+
+                <h2>
+                    🎙️ Interviews
+                </h2>
+
+            </div>
 
         </div>
 
 
-        <!-- INTERVIEWS -->
+        {% if interviews %}
 
-        <div class="statistics-panel">
+            <div class="interview-list">
 
-            <span class="section-kicker">
-                CLUBMASTER NIEUWS
-            </span>
-
-            <h2>
-                🎙️ Interviews
-            </h2>
-
-
-            {% if interviews %}
-
-                <div class="interview-list">
-
-                    {% for interview in interviews %}
+                {% for interview in interviews %}
 
                     <article class="interview-card">
 
@@ -353,93 +418,153 @@
 
                     </article>
 
-                    {% endfor %}
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-stat-message">
+
+                <span>
+                    🎙️
+                </span>
+
+                <div>
+
+                    <strong>
+                        Nog geen interviews
+                    </strong>
+
+                    <p>
+                        Na de eerste wedstrijden verschijnen hier reacties van spelers en trainers.
+                    </p>
 
                 </div>
 
-            {% else %}
+            </div>
 
-                <div class="empty-stat-message">
-                    Na de eerste wedstrijden verschijnen hier interviews.
-                </div>
+        {% endif %}
 
-            {% endif %}
-
-        </div>
-
-    </section>
+    </div>
 
 
     <!-- BESTE SPELER -->
 
-    {% if hoogste_rating %}
+    <div class="statistics-panel">
 
-    <section class="statistics-section">
-
-        <span class="section-kicker">
-            SELECTIE
-        </span>
-
-        <h2>
-            ⭐ Beste speler
-        </h2>
-
-
-        <div class="best-player">
-
-            <div class="best-player-rating">
-                {{ hoogste_rating.rating }}
-            </div>
+        <div class="statistics-panel-header">
 
             <div>
 
-                <h3>
-                    {{ hoogste_rating.naam }}
-                </h3>
+                <span class="section-kicker">
+                    SELECTIE
+                </span>
 
-                <p>
-                    {{ hoogste_rating.positie }}
-                    ·
-                    {{ hoogste_rating.leeftijd }} jaar
-                </p>
+                <h2>
+                    ⭐ Beste speler
+                </h2>
 
             </div>
 
         </div>
 
-    </section>
 
-    {% endif %}
+        {% if hoogste_rating %}
 
+            <div class="best-player">
 
-    <!-- SPELERSOVERZICHT -->
-
-    <section class="statistics-section">
-
-        <span class="section-kicker">
-            SELECTIE
-        </span>
-
-        <h2>
-            Spelersoverzicht
-        </h2>
+                <div class="best-player-rating">
+                    {{ hoogste_rating.rating }}
+                </div>
 
 
-        <div class="statistics-table">
+                <div>
 
-            <div class="statistics-row statistics-header">
+                    <h3>
+                        {{ hoogste_rating.naam }}
+                    </h3>
 
-                <span>Speler</span>
-                <span>Positie</span>
-                <span>Rating</span>
-                <span>Wedstrijden</span>
-                <span>Goals</span>
-                <span>MOTM</span>
+                    <p>
+                        {{ hoogste_rating.positie }}
+                        ·
+                        {{ hoogste_rating.leeftijd }} jaar
+                    </p>
+
+                </div>
 
             </div>
 
+        {% else %}
 
-            {% for player in players %}
+            <div class="empty-stat-message">
+                Nog geen spelers beschikbaar.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<!-- SPELERSOVERZICHT -->
+
+<section class="statistics-section">
+
+    <div class="statistics-section-heading">
+
+        <div>
+
+            <span class="section-kicker">
+                SELECTIE
+            </span>
+
+            <h2>
+                Spelersoverzicht
+            </h2>
+
+            <p>
+                Statistieken van jouw eigen selectie.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="statistics-table">
+
+        <div class="statistics-row statistics-header">
+
+            <span>
+                Speler
+            </span>
+
+            <span>
+                Positie
+            </span>
+
+            <span>
+                Rating
+            </span>
+
+            <span>
+                Wedstrijden
+            </span>
+
+            <span>
+                Goals
+            </span>
+
+            <span>
+                MOTM
+            </span>
+
+        </div>
+
+
+        {% for player in players %}
 
             <div class="statistics-row">
 
@@ -469,13 +594,21 @@
 
             </div>
 
-            {% endfor %}
+        {% else %}
 
-        </div>
+            <div class="empty-stat-message">
+                Er zijn nog geen spelers beschikbaar.
+            </div>
 
-    </section>
+        {% endfor %}
+
+    </div>
+
+</section>
+```
 
 </main>
 
 </body>
+
 </html>

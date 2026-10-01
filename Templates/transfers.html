@@ -10,7 +10,9 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Transfermarkt - ClubMaster</title>
+    <title>
+        Transfermarkt - ClubMaster
+    </title>
 
     <link
         rel="stylesheet"
@@ -27,13 +29,16 @@
 
 <main class="transfers-page">
 
+
     <!-- HEADER -->
 
     <div class="transfers-header">
 
         <div>
 
-            <h1>💰 Transfermarkt</h1>
+            <h1>
+                💰 Transfermarkt
+            </h1>
 
             <p class="page-subtitle">
                 Zoek spelers en versterk je selectie.
@@ -44,7 +49,9 @@
 
         <div class="transfer-budget">
 
-            <span>Clubbudget</span>
+            <span>
+                Clubbudget
+            </span>
 
             <strong>
                 €{{ "{:,.0f}".format(club.budget).replace(",", ".") }}
@@ -55,59 +62,181 @@
     </div>
 
 
-    <!-- TESTMODUS -->
+    <!-- =========================
+         AI BIEDINGEN
+         ========================= -->
 
-    <section class="transfer-test-panel">
+    {% if transfer_offers %}
 
-        <div>
+    <section class="transfer-section ai-offers-section">
 
-            <strong>
-                🧪 Ontwikkelmodus
-            </strong>
+        <div class="transfer-section-header">
 
-            {% if testmodus %}
+            <div>
 
-                <p>
-                    Testmodus staat aan. Aankopen kosten geen geld
-                    en veranderen je echte selectie niet.
+                <h2>
+                    📨 Biedingen op jouw spelers
+                </h2>
+
+                <p class="transfer-offers-subtitle">
+                    Andere clubs zijn geïnteresseerd in spelers uit jouw selectie.
                 </p>
 
-            {% else %}
+            </div>
 
-                <p>
-                    Echte transfermodus. Aankopen kosten echt budget
-                    en veranderen je selectie.
-                </p>
-
-            {% endif %}
+            <span>
+                {{ transfer_offers|length }} biedingen
+            </span>
 
         </div>
 
 
-        <form
-            method="POST"
-            action="{{ url_for('toggle_transfer_testmode') }}"
-        >
+        <div class="transfer-offers-list">
 
-            <button
-                type="submit"
-                class="transfer-mode-button"
-            >
+            {% for offer in transfer_offers %}
 
-                {% if testmodus %}
-                    Testmodus: AAN
-                {% else %}
-                    Testmodus: UIT
-                {% endif %}
+            <article class="ai-offer-card">
 
-            </button>
+                <div class="ai-offer-icon">
+                    💼
+                </div>
 
-        </form>
+
+                <div class="ai-offer-main">
+
+                    <div class="ai-offer-player">
+
+                        <strong>
+                            {{ offer.player_name }}
+                        </strong>
+
+                        <span>
+                            {{ offer.position }}
+                            ·
+                            Rating {{ offer.rating }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="ai-offer-route">
+
+                        <span>
+                            {{ offer.from_club }}
+                        </span>
+
+                        <strong>
+                            →
+                        </strong>
+
+                        <span>
+                            {{ offer.to_club }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="ai-offer-value">
+
+                        <span>
+                            Marktwaarde
+                        </span>
+
+                        <strong>
+                            €{{ "{:,.0f}".format(offer.market_value).replace(",", ".") }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="ai-offer-price">
+
+                        <span>
+                            Bod
+                        </span>
+
+                        <strong>
+                            €{{ "{:,.0f}".format(offer.offer).replace(",", ".") }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="ai-offer-actions">
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('accept_transfer_offer', offer_id=offer.id) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            class="club-button ai-accept-button"
+                        >
+                            ✅ Accepteren
+                        </button>
+
+                    </form>
+
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('reject_transfer_offer', offer_id=offer.id) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            class="ai-reject-button"
+                        >
+                            ❌ Afwijzen
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </article>
+
+            {% endfor %}
+
+        </div>
 
     </section>
 
+    {% else %}
 
-    <!-- BESCHIKBARE SPELERS -->
+    <section class="transfer-section no-offers-section">
+
+        <div class="no-offers-content">
+
+            <span class="no-offers-icon">
+                📭
+            </span>
+
+            <div>
+
+                <h3>
+                    Nog geen biedingen
+                </h3>
+
+                <p>
+                    Andere clubs hebben op dit moment geen bod op jouw spelers.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    {% endif %}
+
+
+    <!-- =========================
+         BESCHIKBARE SPELERS
+         ========================= -->
 
     <section class="transfer-section">
 
@@ -156,7 +285,9 @@
 
                         <div>
 
-                            <span>Leeftijd</span>
+                            <span>
+                                Leeftijd
+                            </span>
 
                             <strong>
                                 {{ player.leeftijd }}
@@ -167,7 +298,9 @@
 
                         <div>
 
-                            <span>Marktwaarde</span>
+                            <span>
+                                Marktwaarde
+                            </span>
 
                             <strong>
                                 €{{ "{:,.0f}".format(player.marktwaarde).replace(",", ".") }}
@@ -178,7 +311,9 @@
 
                         <div>
 
-                            <span>Club</span>
+                            <span>
+                                Club
+                            </span>
 
                             <strong>
                                 {{ player.club_naam }}
@@ -208,13 +343,7 @@
                                 type="submit"
                                 class="club-button transfer-buy-button"
                             >
-
-                                {% if testmodus %}
-                                    🧪 Test kopen
-                                {% else %}
-                                    💰 Kopen
-                                {% endif %}
-
+                                💰 Kopen
                             </button>
 
                         </form>
@@ -236,116 +365,9 @@
     </section>
 
 
-    <!-- TEST AANKOPEN -->
-
-    {% if test_players %}
-
-        <section class="transfer-section test-purchases">
-
-            <div class="transfer-section-header">
-
-                <h2>
-                    🧪 Mijn testaankopen
-                </h2>
-
-                <span>
-                    {{ test_players|length }} spelers
-                </span>
-
-            </div>
-
-
-            <div class="transfer-grid">
-
-                {% for player in test_players %}
-
-                    <article class="transfer-card test-transfer-card">
-
-                        <div class="transfer-card-top">
-
-                            <div>
-
-                                <h3>
-                                    {{ player.naam }}
-                                </h3>
-
-                                <span class="transfer-position">
-                                    {{ player.positie }}
-                                </span>
-
-                            </div>
-
-
-                            <div class="transfer-rating">
-                                {{ player.rating }}
-                            </div>
-
-                        </div>
-
-
-                        <div class="transfer-details">
-
-                            <div>
-
-                                <span>Leeftijd</span>
-
-                                <strong>
-                                    {{ player.leeftijd }}
-                                </strong>
-
-                            </div>
-
-
-                            <div>
-
-                                <span>Waarde</span>
-
-                                <strong>
-                                    €{{ "{:,.0f}".format(player.marktwaarde).replace(",", ".") }}
-                                </strong>
-
-                            </div>
-
-
-                            <div>
-
-                                <span>Status</span>
-
-                                <strong>
-                                    Testaankoop
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-
-                        <form
-                            method="POST"
-                            action="{{ url_for('test_sell_transfer', player_id=player.id) }}"
-                        >
-
-                            <button
-                                type="submit"
-                                class="transfer-sell-button"
-                            >
-                                ↩ Testaankoop verwijderen
-                            </button>
-
-                        </form>
-
-                    </article>
-
-                {% endfor %}
-
-            </div>
-
-        </section>
-
-    {% endif %}
-
-
-    <!-- TRANSFER HISTORIE -->
+    <!-- =========================
+         TRANSFER HISTORIE
+         ========================= -->
 
     <section class="transfer-section">
 
@@ -413,14 +435,6 @@
                         <span>
                             {{ transfer.date }}
                         </span>
-
-                        {% if transfer.test %}
-
-                            <small class="history-test">
-                                TEST
-                            </small>
-
-                        {% endif %}
 
                     </div>
 
