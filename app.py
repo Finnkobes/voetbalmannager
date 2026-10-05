@@ -1740,6 +1740,10 @@ def genereer_live_events(
 
     tactieken = tactieken or {}
 
+    # =========================================================
+    # TACTIEKEN
+    # =========================================================
+
     home_attack_modifier = 1.0
     home_defense_modifier = 1.0
 
@@ -1840,14 +1844,54 @@ def genereer_live_events(
             away_attack_modifier -= 0.03
             away_defense_modifier += 0.04
 
+    # =========================================================
+    # EVENTS
+    # =========================================================
+
+    eerste_helft_events = 0
+    tweede_helft_events = 0
+
+    def kies_event_helft():
+
+        nonlocal eerste_helft_events
+        nonlocal tweede_helft_events
+
+        # Zorg ervoor dat events niet allemaal in dezelfde helft
+        # terechtkomen.
+        if eerste_helft_events > tweede_helft_events:
+
+            tweede_helft = True
+
+        elif tweede_helft_events > eerste_helft_events:
+
+            tweede_helft = False
+
+        else:
+
+            tweede_helft = random.random() < 0.5
+
+        if tweede_helft:
+
+            tweede_helft_events += 1
+
+        else:
+
+            eerste_helft_events += 1
+
+        return tweede_helft
+
     def voeg_event(
         type_,
         team,
         speler,
         titel,
         tekst,
-        tweede_helft=False
+        tweede_helft=None
     ):
+
+        if tweede_helft is None:
+
+            tweede_helft = kies_event_helft()
 
         tijd = maak_unieke_event_tijd(
             gebruikte_tijden,
@@ -1877,7 +1921,12 @@ def genereer_live_events(
                 speler["naam"],
 
             "player_id":
-                int(speler.get("id", 0)),
+                int(
+                    speler.get(
+                        "id",
+                        0
+                    )
+                ),
 
             "title":
                 titel,
@@ -1885,6 +1934,10 @@ def genereer_live_events(
             "text":
                 tekst
         })
+
+    # =========================================================
+    # VERWACHTE GOALS
+    # =========================================================
 
     home_expected_goals = (
         1.00
@@ -1934,6 +1987,10 @@ def genereer_live_events(
         )
     )
 
+    # =========================================================
+    # GOALS
+    # =========================================================
+
     home_goals = min(
         poisson_getal(
             max(
@@ -1967,6 +2024,7 @@ def genereer_live_events(
         else:
             away_goals = 1
 
+    # Home goals
     for _ in range(home_goals):
 
         speler = kies_live_speler(
@@ -1981,10 +2039,10 @@ def genereer_live_events(
             "home",
             speler,
             f"GOAL! {home_name}",
-            f"{speler['naam']} schiet de bal binnen.",
-            random.random() < 0.45
+            f"{speler['naam']} schiet de bal binnen."
         )
 
+    # Away goals
     for _ in range(away_goals):
 
         speler = kies_live_speler(
@@ -1999,9 +2057,12 @@ def genereer_live_events(
             "away",
             speler,
             f"GOAL! {away_name}",
-            f"{speler['naam']} schiet de bal binnen.",
-            random.random() < 0.45
+            f"{speler['naam']} schiet de bal binnen."
         )
+
+    # =========================================================
+    # AANVALLEN
+    # =========================================================
 
     aantal_aanvallen = 4
 
@@ -2047,6 +2108,10 @@ def genereer_live_events(
                 f"{speler['naam']} zoekt de ruimte."
             )
 
+    # =========================================================
+    # KANSEN
+    # =========================================================
+
     for _ in range(2):
 
         if random.random() < 0.5:
@@ -2082,6 +2147,10 @@ def genereer_live_events(
                 f"Grote kans voor {away_name}",
                 f"{speler['naam']} komt gevaarlijk voor het doel."
             )
+
+    # =========================================================
+    # SCHOTEN
+    # =========================================================
 
     for _ in range(2):
 
@@ -2119,6 +2188,10 @@ def genereer_live_events(
                 f"{speler['naam']} haalt uit."
             )
 
+    # =========================================================
+    # CORNERS
+    # =========================================================
+
     for _ in range(2):
 
         if random.random() < 0.5:
@@ -2152,6 +2225,10 @@ def genereer_live_events(
                 f"Corner voor {away_name}",
                 f"{speler['naam']} legt de bal voor."
             )
+
+    # =========================================================
+    # REDDINGEN
+    # =========================================================
 
     for _ in range(2):
 
@@ -2202,6 +2279,10 @@ def genereer_live_events(
                 f"Redding van {away_name}",
                 f"{keeper['naam']} stopt het schot van {schutter['naam']}."
             )
+
+    # =========================================================
+    # KAARTEN
+    # =========================================================
 
     aantal_kaarten = random.randint(
         1,
@@ -2281,13 +2362,12 @@ def genereer_live_events(
             team,
             speler,
             titel,
-            tekst,
-            random.random() < 0.5
+            tekst
         )
 
-    # -----------------------------------------------------
+    # =========================================================
     # LOGISCHE WISSELS
-    # -----------------------------------------------------
+    # =========================================================
 
     voeg_logische_wissel_toe(
         events,
@@ -2306,6 +2386,10 @@ def genereer_live_events(
         away_starting_players,
         away_name
     )
+
+    # =========================================================
+    # BLESSURE
+    # =========================================================
 
     if random.random() < 0.30:
 
@@ -2340,6 +2424,10 @@ def genereer_live_events(
                 f"Blessure bij {away_name}",
                 f"{speler['naam']} heeft verzorging nodig."
             )
+
+    # =========================================================
+    # BUITENSPEL
+    # =========================================================
 
     if random.random() < 0.50:
 
@@ -2376,6 +2464,10 @@ def genereer_live_events(
                 "Buitenspel",
                 f"{speler['naam']} staat buitenspel."
             )
+
+    # =========================================================
+    # SORTEREN OP TIJD
+    # =========================================================
 
     events.sort(
         key=lambda event: event["at"]
