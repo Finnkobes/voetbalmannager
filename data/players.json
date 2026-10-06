@@ -1085,5 +1085,1173 @@
         "marktwaarde": 1500000,
         "rating": 67
     }
-]
+],
+"ADO Den Haag": [
+        {
+            "naam": "Kilian Nikièma",
+            "positie": "Keeper",
+            "leeftijd": 23,
+            "marktwaarde": 800000,
+            "rating": 68
+        },
+        {
+            "naam": "Sander Eekhout",
+            "positie": "Keeper",
+            "leeftijd": 21,
+            "marktwaarde": 250000,
+            "rating": 62
+        },
+        {
+            "naam": "Oskar Raterink",
+            "positie": "Verdediger",
+            "leeftijd": 20,
+            "marktwaarde": 500000,
+            "rating": 64
+        },
+        {
+            "naam": "Pim Mulder",
+            "positie": "Verdediger",
+            "leeftijd": 24,
+            "marktwaarde": 700000,
+            "rating": 66
+        },
+        {
+            "naam": "Matteo Waem",
+            "positie": "Verdediger",
+            "leeftijd": 24,
+            "marktwaarde": 900000,
+            "rating": 67
+        },
+        {
+            "naam": "Jesse Jensen-Abbew",
+            "positie": "Verdediger",
+            "leeftijd": 23,
+            "marktwaarde": 800000,
+            "rating": 66
+        },
+        {
+            "naam": "Isaac de Ruijter",
+            "positie": "Verdediger",
+            "leeftijd": 20,
+            "marktwaarde": 600000,
+            "rating": 64
+        },
+        {
+            "naam": "Milan Hokke",
+            "positie": "Verdediger",
+            "leeftijd": 22,
+            "marktwaarde": 500000,
+            "rating": 63
+        },
+        {
+            "naam": "S. Sylla",
+            "positie": "Verdediger",
+            "leeftijd": 25,
+            "marktwaarde": 700000,
+            "rating": 65
+        },
+        {
+            "naam": "L. Wilhelm",
+            "positie": "Verdediger",
+            "leeftijd": 21,
+            "marktwaarde": 400000,
+            "rating": 62
+        },
+        {
+            "naam": "J. Žambůrek",
+            "positie": "Middenvelder",
+            "leeftijd": 24,
+            "marktwaarde": 1000000,
+            "rating": 69
+        },
+        {
+            "naam": "M. Jiménez",
+            "positie": "Middenvelder",
+            "leeftijd": 23,
+            "marktwaarde": 750000,
+            "rating": 66
+        },
+        {
+            "naam": "Finn de Bruin",
+            "positie": "Middenvelder",
+            "leeftijd": 22,
+            "marktwaarde": 700000,
+            "rating": 65
+        },
+        {
+            "naam": "D. Hawkins",
+            "positie": "Middenvelder",
+            "leeftijd": 24,
+            "marktwaarde": 600000,
+            "rating": 64
+        },
+        {
+            "naam": "Álex Pozo",
+            "positie": "Middenvelder",
+            "leeftijd": 30,
+            "marktwaarde": 900000,
+            "rating": 67
+        },
+        {
+            "naam": "J. Kilo",
+            "positie": "Middenvelder",
+            "leeftijd": 24,
+            "marktwaarde": 850000,
+            "rating": 66
+        },
+        {
+            "naam": "D. van Loenen",
+            "positie": "Middenvelder",
+            "leeftijd": 20,
+            "marktwaarde": 300000,
+            "rating": 61
+        },
+        {
+            "naam": "M. Šín",
+            "positie": "Middenvelder",
+            "leeftijd": 21,
+            "marktwaarde": 650000,
+            "rating": 64
+        },
+        {
+            "naam": "Daryl van Mieghem",
+            "positie": "Aanvaller",
+            "leeftijd": 36,
+            "marktwaarde": 500000,
+            "rating": 69
+        },
+        {
+            "naam": "Joel Ideho",
+            "positie": "Aanvaller",
+            "leeftijd": 23,
+            "marktwaarde": 800000,
+            "rating": 67
+        },
+        {
+            "naam": "Elias Rottier",
+            "positie": "Aanvaller",
+            "leeftijd": 23,
+            "marktwaarde": 700000,
+            "rating": 66
+        },
+        {
+            "naam": "L. Reischl",
+            "positie": "Aanvaller",
+            "leeftijd": 21,
+            "marktwaarde": 900000,
+            "rating": 67
+        }
+    ],
+
+    "FC Groningen": [
+        {
+            "naam": "Etienne Vaessen",
+            "positie": "Keeper",
+            "leeftijd": 30,
+            "marktwaarde": 1000000,
+            "rating": 70
+        },
+        {
+            "naam": "Luka Štubljar",
+            "positie": "Keeper",
+            "leeftijd": 21,
+            "marktwaarde": 500000,
+            "rating": 64
+        },
+        {
+            "naam": "Pelle Boevink",
+            "positie": "Keeper",
+            "leeftijd": 28,
+            "marktwaarde": 900000,
+            "rating": 67
+        },
+        {
+            "naam": "Rijk Janse",
+            "positie": "Keeper",
+            "leeftijd": 19,
+            "marktwaarde": 300000,
+            "rating": 61
+        },
+        {
+            "naam": "Wouter Prins",
+            "positie": "Verdediger",
+            "leeftijd": 22,
+            "marktwaarde": 1000000,
+            "rating": 67
+        },
+        {
+            "naam": "Thijmen Blokzijl",
+            "positie": "Verdediger",
+            "leeftijd": 21,
+            "marktwaarde": 2500000,
+            "rating": 70
+        },
+        {
+            "naam": "Márk Csinger",
+            "positie": "Verdediger",
+            "leeftijd": 23,
+            "marktwaarde": 1500000,
+            "rating": 68
+        },
+        {
+            "naam": "Marco Rente",
+            "positie": "Verdediger",
+            "leeftijd": 29,
+            "marktwaarde": 1200000,
+            "rating": 69
+        },
+        {
+            "naam": "Nikolas Brandis",
+            "positie": "Verdediger",
+            "leeftijd": 20,
+            "marktwaarde": 700000,
+            "rating": 64
+        },
+        {
+            "naam": "Hans Hateboer",
+            "positie": "Verdediger",
+            "leeftijd": 32,
+            "marktwaarde": 1500000,
+            "rating": 71
+        },
+        {
+            "naam": "Travis Hernes",
+            "positie": "Middenvelder",
+            "leeftijd": 22,
+            "marktwaarde": 1200000,
+            "rating": 68
+        },
+        {
+            "naam": "Tygo Land",
+            "positie": "Middenvelder",
+            "leeftijd": 20,
+            "marktwaarde": 2500000,
+            "rating": 70
+        },
+        {
+            "naam": "Johan Schreuders",
+            "positie": "Middenvelder",
+            "leeftijd": 21,
+            "marktwaarde": 1800000,
+            "rating": 69
+        },
+        {
+            "naam": "Alvin Nordin",
+            "positie": "Middenvelder",
+            "leeftijd": 22,
+            "marktwaarde": 1000000,
+            "rating": 67
+        },
+        {
+            "naam": "Pelle Clement",
+            "positie": "Middenvelder",
+            "leeftijd": 29,
+            "marktwaarde": 1000000,
+            "rating": 68
+        },
+        {
+            "naam": "Oscar Zawada",
+            "positie": "Aanvaller",
+            "leeftijd": 30,
+            "marktwaarde": 1300000,
+            "rating": 69
+        },
+        {
+            "naam": "J. Ondrejka",
+            "positie": "Aanvaller",
+            "leeftijd": 23,
+            "marktwaarde": 2500000,
+            "rating": 71
+        },
+        {
+            "naam": "Brynjólfur Willumsson",
+            "positie": "Aanvaller",
+            "leeftijd": 26,
+            "marktwaarde": 1500000,
+            "rating": 69
+        },
+        {
+            "naam": "Thom van Bergen",
+            "positie": "Aanvaller",
+            "leeftijd": 21,
+            "marktwaarde": 1800000,
+            "rating": 68
+        }
+    ],
+
+    "Fortuna Sittard": [
+        {
+            "naam": "Luuk Koopmans",
+            "positie": "Keeper",
+            "leeftijd": 32,
+            "marktwaarde": 500000,
+            "rating": 67
+        },
+        {
+            "naam": "Mattijs Branderhorst",
+            "positie": "Keeper",
+            "leeftijd": 32,
+            "marktwaarde": 600000,
+            "rating": 68
+        },
+        {
+            "naam": "Kaylen Reitmaier",
+            "positie": "Keeper",
+            "leeftijd": 20,
+            "marktwaarde": 300000,
+            "rating": 61
+        },
+        {
+            "naam": "Rodrigo Guth",
+            "positie": "Verdediger",
+            "leeftijd": 25,
+            "marktwaarde": 2500000,
+            "rating": 70
+        },
+        {
+            "naam": "Iván Márquez",
+            "positie": "Verdediger",
+            "leeftijd": 31,
+            "marktwaarde": 600000,
+            "rating": 67
+        },
+        {
+            "naam": "Syb van Ottele",
+            "positie": "Verdediger",
+            "leeftijd": 23,
+            "marktwaarde": 1200000,
+            "rating": 68
+        },
+        {
+            "naam": "Jasper Dahlhaus",
+            "positie": "Verdediger",
+            "leeftijd": 24,
+            "marktwaarde": 1000000,
+            "rating": 67
+        },
+        {
+            "naam": "Ivo Pinto",
+            "positie": "Verdediger",
+            "leeftijd": 36,
+            "marktwaarde": 300000,
+            "rating": 65
+        },
+        {
+            "naam": "Nick de Groot",
+            "positie": "Verdediger",
+            "leeftijd": 22,
+            "marktwaarde": 700000,
+            "rating": 64
+        },
+        {
+            "naam": "Justin Hubner",
+            "positie": "Verdediger",
+            "leeftijd": 22,
+            "marktwaarde": 1500000,
+            "rating": 69
+        },
+        {
+            "naam": "Younes Oukili",
+            "positie": "Middenvelder",
+            "leeftijd": 24,
+            "marktwaarde": 1000000,
+            "rating": 67
+        },
+        {
+            "naam": "S. Simons",
+            "positie": "Middenvelder",
+            "leeftijd": 21,
+            "marktwaarde": 900000,
+            "rating": 66
+        },
+        {
+            "naam": "Édouard Michut",
+            "positie": "Middenvelder",
+            "leeftijd": 23,
+            "marktwaarde": 2000000,
+            "rating": 70
+        },
+        {
+            "naam": "Sontje Hansen",
+            "positie": "Middenvelder",
+            "leeftijd": 24,
+            "marktwaarde": 1800000,
+            "rating": 68
+        },
+        {
+            "naam": "M. Ihattaren",
+            "positie": "Middenvelder",
+            "leeftijd": 24,
+            "marktwaarde": 1200000,
+            "rating": 68
+        },
+        {
+            "naam": "Kaj Sierhuis",
+            "positie": "Aanvaller",
+            "leeftijd": 28,
+            "marktwaarde": 1800000,
+            "rating": 69
+        },
+        {
+            "naam": "Oğuzhan Özyakup",
+            "positie": "Aanvaller",
+            "leeftijd": 33,
+            "marktwaarde": 700000,
+            "rating": 65
+        },
+        {
+            "naam": "L. Zeefuik",
+            "positie": "Aanvaller",
+            "leeftijd": 21,
+            "marktwaarde": 600000,
+            "rating": 64
+        }
+    ],
+
+    "Go Ahead Eagles": [
+        {
+            "naam": "Kjetil Haug",
+            "positie": "Keeper",
+            "leeftijd": 32,
+            "marktwaarde": 800000,
+            "rating": 69
+        },
+        {
+            "naam": "Nick Marsman",
+            "positie": "Keeper",
+            "leeftijd": 35,
+            "marktwaarde": 300000,
+            "rating": 65
+        },
+        {
+            "naam": "Alfons Sampsted",
+            "positie": "Verdediger",
+            "leeftijd": 28,
+            "marktwaarde": 1200000,
+            "rating": 69
+        },
+        {
+            "naam": "Gerrit Nauber",
+            "positie": "Verdediger",
+            "leeftijd": 34,
+            "marktwaarde": 400000,
+            "rating": 66
+        },
+        {
+            "naam": "Joris Kramer",
+            "positie": "Verdediger",
+            "leeftijd": 29,
+            "marktwaarde": 800000,
+            "rating": 68
+        },
+        {
+            "naam": "Dean James",
+            "positie": "Verdediger",
+            "leeftijd": 25,
+            "marktwaarde": 1000000,
+            "rating": 67
+        },
+        {
+            "naam": "T. Jukić",
+            "positie": "Verdediger",
+            "leeftijd": 22,
+            "marktwaarde": 700000,
+            "rating": 65
+        },
+        {
+            "naam": "Melle Meulensteen",
+            "positie": "Verdediger",
+            "leeftijd": 26,
+            "marktwaarde": 1000000,
+            "rating": 68
+        },
+        {
+            "naam": "Evert Linthorst",
+            "positie": "Middenvelder",
+            "leeftijd": 26,
+            "marktwaarde": 1200000,
+            "rating": 69
+        },
+        {
+            "naam": "Søren Tengstedt",
+            "positie": "Middenvelder",
+            "leeftijd": 25,
+            "marktwaarde": 1000000,
+            "rating": 67
+        },
+        {
+            "naam": "Robbin Weijenberg",
+            "positie": "Middenvelder",
+            "leeftijd": 21,
+            "marktwaarde": 600000,
+            "rating": 64
+        },
+        {
+            "naam": "Stefan Sigurðarson",
+            "positie": "Aanvaller",
+            "leeftijd": 24,
+            "marktwaarde": 1600000,
+            "rating": 69
+        },
+        {
+            "naam": "Oskar Sivertsen",
+            "positie": "Aanvaller",
+            "leeftijd": 22,
+            "marktwaarde": 1200000,
+            "rating": 67
+        },
+        {
+            "naam": "Victor Edvardsen",
+            "positie": "Aanvaller",
+            "leeftijd": 30,
+            "marktwaarde": 1000000,
+            "rating": 68
+        },
+        {
+            "naam": "Mathis Suray",
+            "positie": "Aanvaller",
+            "leeftijd": 24,
+            "marktwaarde": 900000,
+            "rating": 66
+        },
+        {
+            "naam": "Richonell Margaret",
+            "positie": "Aanvaller",
+            "leeftijd": 25,
+            "marktwaarde": 1000000,
+            "rating": 67
+        },
+        {
+            "naam": "Thibo Baeten",
+            "positie": "Aanvaller",
+            "leeftijd": 24,
+            "marktwaarde": 900000,
+            "rating": 66
+        }
+    ],
+
+    "N.E.C. Nijmegen": [
+        {
+            "naam": "Giorgi Crettaz",
+            "positie": "Keeper",
+            "leeftijd": 30,
+            "marktwaarde": 900000,
+            "rating": 68
+        },
+        {
+            "naam": "Niki Polster",
+            "positie": "Keeper",
+            "leeftijd": 22,
+            "marktwaarde": 500000,
+            "rating": 63
+        },
+        {
+            "naam": "Perr Schuurs",
+            "positie": "Verdediger",
+            "leeftijd": 26,
+            "marktwaarde": 5000000,
+            "rating": 73
+        },
+        {
+            "naam": "Philippe Sandler",
+            "positie": "Verdediger",
+            "leeftijd": 29,
+            "marktwaarde": 1800000,
+            "rating": 70
+        },
+        {
+            "naam": "Bram Nuytinck",
+            "positie": "Verdediger",
+            "leeftijd": 36,
+            "marktwaarde": 400000,
+            "rating": 67
+        },
+        {
+            "naam": "A. Kaplan",
+            "positie": "Verdediger",
+            "leeftijd": 23,
+            "marktwaarde": 1200000,
+            "rating": 68
+        },
+        {
+            "naam": "D. Fonville",
+            "positie": "Verdediger",
+            "leeftijd": 22,
+            "marktwaarde": 600000,
+            "rating": 64
+        },
+        {
+            "naam": "Anass Kabar",
+            "positie": "Verdediger",
+            "leeftijd": 20,
+            "marktwaarde": 1500000,
+            "rating": 68
+        },
+        {
+            "naam": "Dario Geiger",
+            "positie": "Middenvelder",
+            "leeftijd": 23,
+            "marktwaarde": 1000000,
+            "rating": 67
+        },
+        {
+            "naam": "Tjarron Chery",
+            "positie": "Middenvelder",
+            "leeftijd": 38,
+            "marktwaarde": 400000,
+            "rating": 70
+        },
+        {
+            "naam": "Isaac Hansen-Aarøen",
+            "positie": "Middenvelder",
+            "leeftijd": 21,
+            "marktwaarde": 2200000,
+            "rating": 70
+        },
+        {
+            "naam": "Magnus Riisgaard Jensen",
+            "positie": "Middenvelder",
+            "leeftijd": 29,
+            "marktwaarde": 1000000,
+            "rating": 67
+        },
+        {
+            "naam": "Jamiro Monteiro",
+            "positie": "Middenvelder",
+            "leeftijd": 32,
+            "marktwaarde": 1200000,
+            "rating": 69
+        },
+        {
+            "naam": "Elayis Tavsan",
+            "positie": "Aanvaller",
+            "leeftijd": 25,
+            "marktwaarde": 1500000,
+            "rating": 68
+        },
+        {
+            "naam": "Dusan Tadic",
+            "positie": "Aanvaller",
+            "leeftijd": 37,
+            "marktwaarde": 1000000,
+            "rating": 72
+        },
+        {
+            "naam": "Kaj Sierhuis",
+            "positie": "Aanvaller",
+            "leeftijd": 28,
+            "marktwaarde": 1800000,
+            "rating": 69
+        },
+        {
+            "naam": "Bryan Linssen",
+            "positie": "Aanvaller",
+            "leeftijd": 35,
+            "marktwaarde": 600000,
+            "rating": 68
+        }
+    ],
+
+    "PEC Zwolle": [
+        {
+            "naam": "Jasper Schendelaar",
+            "positie": "Keeper",
+            "leeftijd": 25,
+            "marktwaarde": 1800000,
+            "rating": 69
+        },
+        {
+            "naam": "Tom de Graaff",
+            "positie": "Keeper",
+            "leeftijd": 20,
+            "marktwaarde": 500000,
+            "rating": 63
+        },
+        {
+            "naam": "Sven Floranus",
+            "positie": "Verdediger",
+            "leeftijd": 28,
+            "marktwaarde": 1000000,
+            "rating": 67
+        },
+        {
+            "naam": "Olivier Aertssen",
+            "positie": "Verdediger",
+            "leeftijd": 21,
+            "marktwaarde": 1500000,
+            "rating": 68
+        },
+        {
+            "naam": "Thomas Velthuis",
+            "positie": "Verdediger",
+            "leeftijd": 24,
+            "marktwaarde": 1000000,
+            "rating": 67
+        },
+        {
+            "naam": "Nick Viergever",
+            "positie": "Verdediger",
+            "leeftijd": 37,
+            "marktwaarde": 300000,
+            "rating": 66
+        },
+        {
+            "naam": "Daniël van der Haar",
+            "positie": "Verdediger",
+            "leeftijd": 21,
+            "marktwaarde": 700000,
+            "rating": 64
+        },
+        {
+            "naam": "Odysseus Velanas",
+            "positie": "Middenvelder",
+            "leeftijd": 27,
+            "marktwaarde": 1200000,
+            "rating": 68
+        },
+        {
+            "naam": "Tristan Sommer",
+            "positie": "Middenvelder",
+            "leeftijd": 23,
+            "marktwaarde": 800000,
+            "rating": 65
+        },
+        {
+            "naam": "Thijs Oosting",
+            "positie": "Middenvelder",
+            "leeftijd": 25,
+            "marktwaarde": 1300000,
+            "rating": 68
+        },
+        {
+            "naam": "Younes Namli",
+            "positie": "Aanvaller",
+            "leeftijd": 32,
+            "marktwaarde": 1000000,
+            "rating": 69
+        },
+        {
+            "naam": "Kjeld Kostons",
+            "positie": "Aanvaller",
+            "leeftijd": 26,
+            "marktwaarde": 1200000,
+            "rating": 68
+        },
+        {
+            "naam": "David Mbayo",
+            "positie": "Aanvaller",
+            "leeftijd": 24,
+            "marktwaarde": 1400000,
+            "rating": 68
+        },
+        {
+            "naam": "Sydney van Hooijdonk",
+            "positie": "Aanvaller",
+            "leeftijd": 26,
+            "marktwaarde": 2200000,
+            "rating": 70
+        },
+        {
+            "naam": "Ibrahima Cissoko",
+            "positie": "Aanvaller",
+            "leeftijd": 23,
+            "marktwaarde": 1200000,
+            "rating": 67
+        }
+    ],
+        "Excelsior Rotterdam": [
+        {
+            "naam": "Calvin Raatsie",
+            "positie": "Doelman",
+            "leeftijd": 24,
+            "marktwaarde": 800000,
+            "rating": 67
+        },
+
+        {
+            "naam": "Siebe Horemans",
+            "positie": "Verdediger",
+            "leeftijd": 28,
+            "marktwaarde": 900000,
+            "rating": 67
+        },
+
+        {
+            "naam": "Redouan El Yaakoubi",
+            "positie": "Verdediger",
+            "leeftijd": 30,
+            "marktwaarde": 700000,
+            "rating": 66
+        },
+
+        {
+            "naam": "Lennard Hartjes",
+            "positie": "Middenvelder",
+            "leeftijd": 23,
+            "marktwaarde": 1200000,
+            "rating": 68
+        },
+
+        {
+            "naam": "Julian Baas",
+            "positie": "Middenvelder",
+            "leeftijd": 23,
+            "marktwaarde": 1500000,
+            "rating": 69
+        },
+
+        {
+            "naam": "Couhaib Driouech",
+            "positie": "Aanvaller",
+            "leeftijd": 23,
+            "marktwaarde": 1800000,
+            "rating": 70
+        },
+
+        {
+            "naam": "Richie Omorowa",
+            "positie": "Aanvaller",
+            "leeftijd": 22,
+            "marktwaarde": 1000000,
+            "rating": 68
+        },
+
+        {
+            "naam": "Oscar Uddenäs",
+            "positie": "Aanvaller",
+            "leeftijd": 23,
+            "marktwaarde": 900000,
+            "rating": 67
+        }
+    ],
+
+    "SC Cambuur": [
+        {
+            "naam": "Thijs Jansen",
+            "positie": "Doelman",
+            "leeftijd": 24,
+            "marktwaarde": 500000,
+            "rating": 64
+        },
+
+        {
+            "naam": "Leon Bergsma",
+            "positie": "Verdediger",
+            "leeftijd": 29,
+            "marktwaarde": 450000,
+            "rating": 63
+        },
+
+        {
+            "naam": "Sekou Sylla",
+            "positie": "Verdediger",
+            "leeftijd": 26,
+            "marktwaarde": 550000,
+            "rating": 64
+        },
+
+        {
+            "naam": "Jeremy van Mullem",
+            "positie": "Middenvelder",
+            "leeftijd": 25,
+            "marktwaarde": 600000,
+            "rating": 65
+        },
+
+        {
+            "naam": "Michael de Leeuw",
+            "positie": "Middenvelder",
+            "leeftijd": 39,
+            "marktwaarde": 300000,
+            "rating": 62
+        },
+
+        {
+            "naam": "Silvester van der Water",
+            "positie": "Aanvaller",
+            "leeftijd": 29,
+            "marktwaarde": 700000,
+            "rating": 65
+        },
+
+        {
+            "naam": "Fedde de Jong",
+            "positie": "Middenvelder",
+            "leeftijd": 23,
+            "marktwaarde": 650000,
+            "rating": 65
+        },
+
+        {
+            "naam": "Remco Balk",
+            "positie": "Aanvaller",
+            "leeftijd": 25,
+            "marktwaarde": 750000,
+            "rating": 66
+        }
+    ],
+
+    "sc Heerenveen": [
+        {
+            "naam": "Andries Noppert",
+            "positie": "Doelman",
+            "leeftijd": 32,
+            "marktwaarde": 1000000,
+            "rating": 69
+        },
+
+        {
+            "naam": "Sam Kersten",
+            "positie": "Verdediger",
+            "leeftijd": 28,
+            "marktwaarde": 1500000,
+            "rating": 69
+        },
+
+        {
+            "naam": "Pawel Bochniewicz",
+            "positie": "Verdediger",
+            "leeftijd": 29,
+            "marktwaarde": 1800000,
+            "rating": 70
+        },
+
+        {
+            "naam": "Luuk Brouwers",
+            "positie": "Middenvelder",
+            "leeftijd": 27,
+            "marktwaarde": 2200000,
+            "rating": 70
+        },
+
+        {
+            "naam": "Espen van Ee",
+            "positie": "Middenvelder",
+            "leeftijd": 23,
+            "marktwaarde": 1800000,
+            "rating": 69
+        },
+
+        {
+            "naam": "Simon Olsson",
+            "positie": "Middenvelder",
+            "leeftijd": 28,
+            "marktwaarde": 2000000,
+            "rating": 69
+        },
+
+        {
+            "naam": "Ion Nicolaescu",
+            "positie": "Aanvaller",
+            "leeftijd": 27,
+            "marktwaarde": 2500000,
+            "rating": 71
+        },
+
+        {
+            "naam": "Che Nunnely",
+            "positie": "Aanvaller",
+            "leeftijd": 26,
+            "marktwaarde": 1300000,
+            "rating": 68
+        }
+    ],
+
+    "Sparta Rotterdam": [
+        {
+            "naam": "Nick Olij",
+            "positie": "Doelman",
+            "leeftijd": 31,
+            "marktwaarde": 2500000,
+            "rating": 72
+        },
+
+        {
+            "naam": "Bart Vriends",
+            "positie": "Verdediger",
+            "leeftijd": 35,
+            "marktwaarde": 700000,
+            "rating": 68
+        },
+
+        {
+            "naam": "Mike Eerdhuijzen",
+            "positie": "Verdediger",
+            "leeftijd": 25,
+            "marktwaarde": 2500000,
+            "rating": 71
+        },
+
+        {
+            "naam": "Shunsuke Mito",
+            "positie": "Middenvelder",
+            "leeftijd": 23,
+            "marktwaarde": 3500000,
+            "rating": 73
+        },
+
+        {
+            "naam": "Arno Verschueren",
+            "positie": "Middenvelder",
+            "leeftijd": 29,
+            "marktwaarde": 1800000,
+            "rating": 69
+        },
+
+        {
+            "naam": "Metinho",
+            "positie": "Middenvelder",
+            "leeftijd": 22,
+            "marktwaarde": 2200000,
+            "rating": 70
+        },
+
+        {
+            "naam": "Tobias Lauritsen",
+            "positie": "Aanvaller",
+            "leeftijd": 28,
+            "marktwaarde": 3000000,
+            "rating": 72
+        },
+
+        {
+            "naam": "Camiel Neghli",
+            "positie": "Aanvaller",
+            "leeftijd": 24,
+            "marktwaarde": 2000000,
+            "rating": 70
+        }
+    ],
+
+    "Telstar": [
+        {
+            "naam": "Ronald Koeman",
+            "positie": "Doelman",
+            "leeftijd": 25,
+            "marktwaarde": 350000,
+            "rating": 62
+        },
+
+        {
+            "naam": "Danny Bakker",
+            "positie": "Verdediger",
+            "leeftijd": 30,
+            "marktwaarde": 300000,
+            "rating": 61
+        },
+
+        {
+            "naam": "Tom Overtoom",
+            "positie": "Middenvelder",
+            "leeftijd": 34,
+            "marktwaarde": 250000,
+            "rating": 60
+        },
+
+        {
+            "naam": "Youssef El Kachati",
+            "positie": "Aanvaller",
+            "leeftijd": 26,
+            "marktwaarde": 600000,
+            "rating": 65
+        },
+
+        {
+            "naam": "Zakaria Eddahchouri",
+            "positie": "Aanvaller",
+            "leeftijd": 25,
+            "marktwaarde": 750000,
+            "rating": 66
+        },
+
+        {
+            "naam": "Mees Kaandorp",
+            "positie": "Middenvelder",
+            "leeftijd": 25,
+            "marktwaarde": 450000,
+            "rating": 63
+        },
+
+        {
+            "naam": "Danny van den Berg",
+            "positie": "Middenvelder",
+            "leeftijd": 24,
+            "marktwaarde": 400000,
+            "rating": 63
+        },
+
+        {
+            "naam": "Mohamed Hamdaoui",
+            "positie": "Aanvaller",
+            "leeftijd": 31,
+            "marktwaarde": 300000,
+            "rating": 62
+        }
+    ],
+
+    "Willem II": [
+        {
+            "naam": "Thomas Didillon",
+            "positie": "Doelman",
+            "leeftijd": 30,
+            "marktwaarde": 1200000,
+            "rating": 68
+        },
+
+        {
+            "naam": "Erik Schouten",
+            "positie": "Verdediger",
+            "leeftijd": 33,
+            "marktwaarde": 1000000,
+            "rating": 67
+        },
+
+        {
+            "naam": "Raffael Behounek",
+            "positie": "Verdediger",
+            "leeftijd": 28,
+            "marktwaarde": 1600000,
+            "rating": 69
+        },
+
+        {
+            "naam": "Jesse Bosch",
+            "positie": "Middenvelder",
+            "leeftijd": 25,
+            "marktwaarde": 1800000,
+            "rating": 69
+        },
+
+        {
+            "naam": "Amine Lachkar",
+            "positie": "Middenvelder",
+            "leeftijd": 24,
+            "marktwaarde": 1300000,
+            "rating": 67
+        },
+
+        {
+            "naam": "Niels van Berkel",
+            "positie": "Middenvelder",
+            "leeftijd": 22,
+            "marktwaarde": 900000,
+            "rating": 65
+        },
+
+        {
+            "naam": "Kyan Vaesen",
+            "positie": "Aanvaller",
+            "leeftijd": 24,
+            "marktwaarde": 2200000,
+            "rating": 70
+        },
+
+        {
+            "naam": "Cisse Sandra",
+            "positie": "Aanvaller",
+            "leeftijd": 22,
+            "marktwaarde": 2500000,
+            "rating": 70
+        }
+    ]
 }

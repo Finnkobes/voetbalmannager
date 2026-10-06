@@ -72,15 +72,9 @@ def reset_database():
     # =========================
     # WEDSTRIJDEN RESETTEN
     # =========================
-
     cursor.execute("""
-        UPDATE matches
-        SET
-            home_score = 0,
-            away_score = 0,
-            gespeeld = 0
+        DELETE FROM matches
     """)
-
 
     # =========================
     # COMPETITIE RESETTEN

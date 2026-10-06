@@ -368,6 +368,7 @@ def create_competition_table():
         )
     """)
 
+    # Zorg dat iedere club in de competitie staat.
     clubs = connection.execute("""
         SELECT id
         FROM clubs
@@ -377,16 +378,22 @@ def create_competition_table():
 
         connection.execute("""
             INSERT OR IGNORE INTO competition (
-                club_id
+                club_id,
+                gespeeld,
+                gewonnen,
+                gelijk,
+                verloren,
+                doelpunten_voor,
+                doelpunten_tegen,
+                punten
             )
-            VALUES (?)
+            VALUES (?, 0, 0, 0, 0, 0, 0, 0)
         """, (
             club["id"],
         ))
 
     connection.commit()
     connection.close()
-
 
 # =========================================================
 # STATISTIEKEN
@@ -962,10 +969,23 @@ def generate_matches():
     """).fetchall()
 
     if len(clubs) < 2:
-
         connection.close()
         return
 
+    club_ids = [
+        club["id"]
+        for club in clubs
+    ]
+
+    # Bij een oneven aantal clubs wordt een vrije plek toegevoegd.
+    if len(club_ids) % 2 != 0:
+        club_ids.append(None)
+
+    aantal_clubs = len(club_ids)
+    aantal_rondes = aantal_clubs - 1
+    wedstrijden_per_ronde = aantal_clubs // 2
+
+    # Controleer of er al wedstrijden bestaan.
     bestaande = connection.execute("""
         SELECT COUNT(*) AS aantal
         FROM matches
@@ -977,48 +997,32 @@ def generate_matches():
         WHERE gespeeld = 1
     """).fetchone()["aantal"]
 
-    if (
-        bestaande > 0
-        and
-        gespeelde == 0
-    ):
-
-        connection.execute("""
-            DELETE FROM matches
-        """)
-
-        connection.commit()
-
-    elif bestaande > 0:
-
+    # Als er al gespeelde wedstrijden zijn,
+    # laten we de bestaande competitie staan.
+    if gespeelde > 0:
         connection.close()
         return
 
-    club_ids = [
-        club["id"]
-        for club in clubs
-    ]
-
-    if len(club_ids) % 2 != 0:
-        club_ids.append(None)
-
-    aantal_clubs = len(club_ids)
-    aantal_rondes = aantal_clubs - 1
-    helft = aantal_clubs // 2
-
-    startdatum = date.today()
+    # Als er nog alleen oude, niet-gespeelde wedstrijden staan,
+    # kunnen deze opnieuw worden opgebouwd.
+    if bestaande > 0:
+        connection.execute("""
+            DELETE FROM matches
+        """)
+        connection.commit()
 
     eerste_helft = []
     volgorde = club_ids[:]
 
-    for ronde in range(
-        1,
-        aantal_rondes + 1
-    ):
+    # -----------------------------------------
+    # HEENRONDE
+    # -----------------------------------------
+
+    for ronde in range(1, aantal_rondes + 1):
 
         wedstrijden_ronde = []
 
-        for i in range(helft):
+        for i in range(wedstrijden_per_ronde):
 
             thuis = volgorde[i]
 
@@ -1026,13 +1030,11 @@ def generate_matches():
                 aantal_clubs - 1 - i
             ]
 
-            if (
-                thuis is None
-                or
-                uit is None
-            ):
+            # Vrije speelplek overslaan.
+            if thuis is None or uit is None:
                 continue
 
+            # Thuis/uit afwisselen.
             if ronde % 2 == 0:
                 thuis, uit = uit, thuis
 
@@ -1044,6 +1046,7 @@ def generate_matches():
             wedstrijden_ronde
         )
 
+        # Rotatiesysteem voor de volgende speelronde.
         volgorde = (
             [volgorde[0]]
             +
@@ -1051,6 +1054,10 @@ def generate_matches():
             +
             volgorde[1:-1]
         )
+
+    # -----------------------------------------
+    # TERUGRONDE
+    # -----------------------------------------
 
     tweede_helft = []
 
@@ -1068,11 +1075,19 @@ def generate_matches():
             return_wedstrijden
         )
 
+    # Heenronde + terugronde
     alle_rondes = (
         eerste_helft
         +
         tweede_helft
     )
+
+    # Start van het seizoen.
+    startdatum = date.today()
+
+    # -----------------------------------------
+    # WEDSTRIJDEN IN DATABASE ZETTEN
+    # -----------------------------------------
 
     for index, wedstrijden in enumerate(
         alle_rondes
@@ -1080,10 +1095,11 @@ def generate_matches():
 
         speelronde = index + 1
 
+        # Eén speelronde per week.
         datum = (
             startdatum
             +
-            timedelta(days=index)
+            timedelta(days=index * 7)
         )
 
         for thuis, uit in wedstrijden:
@@ -1109,59 +1125,20 @@ def generate_matches():
             ))
 
     connection.commit()
-    connection.close()
 
-
-def maak_bestaand_schema_dagelijks():
-
-    connection = get_connection()
-
-    rondes = connection.execute("""
-        SELECT
-            speelronde,
-            MIN(datum) AS datum
+    # Controle voor onszelf.
+    totaal = connection.execute("""
+        SELECT COUNT(*) AS aantal
         FROM matches
-        GROUP BY speelronde
-        ORDER BY speelronde ASC
-    """).fetchall()
+    """).fetchone()["aantal"]
 
-    if not rondes:
+    print(
+        f"Competitie aangemaakt: "
+        f"{len(clubs)} clubs, "
+        f"{len(alle_rondes)} speelrondes, "
+        f"{totaal} wedstrijden."
+    )
 
-        connection.close()
-        return
-
-    try:
-
-        eerste_datum = datetime.strptime(
-            rondes[0]["datum"],
-            "%Y-%m-%d"
-        ).date()
-
-    except (
-        TypeError,
-        ValueError
-    ):
-
-        eerste_datum = date.today()
-
-    for index, ronde in enumerate(rondes):
-
-        nieuwe_datum = (
-            eerste_datum
-            +
-            timedelta(days=index)
-        )
-
-        connection.execute("""
-            UPDATE matches
-            SET datum = ?
-            WHERE speelronde = ?
-        """, (
-            nieuwe_datum.isoformat(),
-            ronde["speelronde"]
-        ))
-
-    connection.commit()
     connection.close()
 
 
@@ -1267,28 +1244,41 @@ def update_competition(
 
     if home_score > away_score:
 
-        home_result = "gewonnen"
-        away_result = "verloren"
-
+        home_wins = 1
+        home_draws = 0
+        home_losses = 0
         home_points = 3
+
+        away_wins = 0
+        away_draws = 0
+        away_losses = 1
         away_points = 0
 
     elif home_score < away_score:
 
-        home_result = "verloren"
-        away_result = "gewonnen"
-
+        home_wins = 0
+        home_draws = 0
+        home_losses = 1
         home_points = 0
+
+        away_wins = 1
+        away_draws = 0
+        away_losses = 0
         away_points = 3
 
     else:
 
-        home_result = "gelijk"
-        away_result = "gelijk"
-
+        home_wins = 0
+        home_draws = 1
+        home_losses = 0
         home_points = 1
+
+        away_wins = 0
+        away_draws = 1
+        away_losses = 0
         away_points = 1
 
+    # Thuisclub bijwerken
     connection.execute("""
         UPDATE competition
         SET
@@ -1296,23 +1286,21 @@ def update_competition(
             gewonnen = gewonnen + ?,
             gelijk = gelijk + ?,
             verloren = verloren + ?,
-            doelpunten_voor =
-                doelpunten_voor + ?,
-            doelpunten_tegen =
-                doelpunten_tegen + ?,
-            punten =
-                punten + ?
+            doelpunten_voor = doelpunten_voor + ?,
+            doelpunten_tegen = doelpunten_tegen + ?,
+            punten = punten + ?
         WHERE club_id = ?
     """, (
-        1 if home_result == "gewonnen" else 0,
-        1 if home_result == "gelijk" else 0,
-        1 if home_result == "verloren" else 0,
+        home_wins,
+        home_draws,
+        home_losses,
         home_score,
         away_score,
         home_points,
         home_club_id
     ))
 
+    # Uitclub bijwerken
     connection.execute("""
         UPDATE competition
         SET
@@ -1320,17 +1308,14 @@ def update_competition(
             gewonnen = gewonnen + ?,
             gelijk = gelijk + ?,
             verloren = verloren + ?,
-            doelpunten_voor =
-                doelpunten_voor + ?,
-            doelpunten_tegen =
-                doelpunten_tegen + ?,
-            punten =
-                punten + ?
+            doelpunten_voor = doelpunten_voor + ?,
+            doelpunten_tegen = doelpunten_tegen + ?,
+            punten = punten + ?
         WHERE club_id = ?
     """, (
-        1 if away_result == "gewonnen" else 0,
-        1 if away_result == "gelijk" else 0,
-        1 if away_result == "verloren" else 0,
+        away_wins,
+        away_draws,
+        away_losses,
         away_score,
         home_score,
         away_points,
@@ -5530,6 +5515,8 @@ def player_detail(player_id):
             players.leeftijd,
             players.marktwaarde,
             players.rating,
+            players.salaris,
+            players.contractduur,
             clubs.naam AS club_naam,
             clubs.logo AS club_logo
         FROM players
@@ -6041,15 +6028,100 @@ if __name__ == "__main__":
 
     create_users_table()
 
-    create_competition_table()
-
     create_matches_table()
+
+    create_competition_table()
 
     create_statistics_tables()
 
     generate_matches()
 
-    maak_bestaand_schema_dagelijks()
+    def maak_bestaand_schema_wekelijks():
+        connection = get_connection()
+
+        rondes = connection.execute("""
+            SELECT
+                speelronde,
+                MIN(datum) AS datum
+            FROM matches
+            GROUP BY speelronde
+            ORDER BY speelronde ASC
+        """).fetchall()
+
+        if not rondes:
+            connection.close()
+            return
+
+        try:
+            eerste_datum = datetime.strptime(
+                rondes[0]["datum"],
+                "%Y-%m-%d"
+            ).date()
+        except (
+            TypeError,
+            ValueError
+        ):
+            eerste_datum = date.today()
+
+        for index, ronde in enumerate(rondes):
+            nieuwe_datum = (
+                eerste_datum
+                +
+                timedelta(days=index * 7)
+            )
+
+            connection.execute("""
+                UPDATE matches
+                SET datum = ?
+                WHERE speelronde = ?
+            """, (
+                nieuwe_datum.isoformat(),
+                ronde["speelronde"]
+            ))
+
+        connection.commit()
+        connection.close()
+
+    connection = get_connection()
+
+    clubs = connection.execute("""
+        SELECT id, naam
+        FROM clubs
+        ORDER BY id
+    """).fetchall()
+
+    competition_clubs = connection.execute("""
+        SELECT club_id
+        FROM competition
+        ORDER BY club_id
+    """).fetchall()
+
+    matches = connection.execute("""
+        SELECT COUNT(*) AS aantal
+        FROM matches
+    """).fetchone()
+
+    print("\n===== DATABASE CONTROLE =====")
+
+    print("CLUBS:")
+    for club in clubs:
+        print(club["id"], club["naam"])
+
+    print("\nAANTAL CLUBS:", len(clubs))
+
+    print("\nCOMPETITION CLUBS:")
+    for club in competition_clubs:
+        print(club["club_id"])
+
+    print("\nAANTAL COMPETITION:", len(competition_clubs))
+
+    print("\nAANTAL MATCHES:", matches["aantal"])
+
+    print("============================\n")
+
+    connection.close()
+
+    maak_bestaand_schema_wekelijks()
 
     Timer(
         1,
