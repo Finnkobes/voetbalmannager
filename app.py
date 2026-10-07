@@ -718,14 +718,17 @@ def bouw_basiself(
     ]
 
     gebruikte_ids = set()
+
     basiself = []
+
+    # =====================================================
+    # 1. OPSTELLING DIE DOOR DE GEBRUIKER IS OPGESLAGEN
+    # =====================================================
 
     for slot, label, groep in slots:
 
         opgeslagen_id = (
-            opgeslagen_opstelling.get(
-                slot
-            )
+            opgeslagen_opstelling.get(slot)
         )
 
         gekozen = None
@@ -736,10 +739,12 @@ def bouw_basiself(
                 opgeslagen_id = int(
                     opgeslagen_id
                 )
+
             except (
                 TypeError,
                 ValueError
             ):
+
                 opgeslagen_id = None
 
         if opgeslagen_id:
@@ -771,6 +776,10 @@ def bouw_basiself(
                 int(gekozen["id"])
             )
 
+    # =====================================================
+    # 2. JUISTE POSITIES INVULLEN
+    # =====================================================
+
     for positie in basiself:
 
         if positie["player"] is not None:
@@ -796,6 +805,7 @@ def bouw_basiself(
                 and
                 groep == "keeper"
             ):
+
                 geschikte_spelers.append(
                     speler
                 )
@@ -809,6 +819,7 @@ def bouw_basiself(
                 and
                 groep == "verdediging"
             ):
+
                 geschikte_spelers.append(
                     speler
                 )
@@ -821,6 +832,7 @@ def bouw_basiself(
                 and
                 groep == "middenveld"
             ):
+
                 geschikte_spelers.append(
                     speler
                 )
@@ -834,6 +846,7 @@ def bouw_basiself(
                 and
                 groep == "aanval"
             ):
+
                 geschikte_spelers.append(
                     speler
                 )
@@ -848,39 +861,58 @@ def bouw_basiself(
 
             gekozen = geschikte_spelers[0]
 
-        else:
-
-            vrije_spelers = [
-                speler
-                for speler in spelers
-                if int(speler["id"])
-                not in gebruikte_ids
-            ]
-
-            if vrije_spelers:
-
-                vrije_spelers.sort(
-                    key=lambda speler:
-                    int(speler["rating"]),
-                    reverse=True
-                )
-
-                gekozen = vrije_spelers[0]
-
-            else:
-
-                gekozen = None
-
-        positie["player"] = gekozen
-
-        if gekozen:
+            positie["player"] = gekozen
 
             gebruikte_ids.add(
                 int(gekozen["id"])
             )
 
-    return basiself
+    # =====================================================
+    # 3. LEGE POSITIES AANVULLEN
+    # =====================================================
 
+    vrije_spelers = [
+        speler
+        for speler in spelers
+        if int(speler["id"])
+        not in gebruikte_ids
+    ]
+
+    vrije_spelers.sort(
+        key=lambda speler:
+        int(speler["rating"]),
+        reverse=True
+    )
+
+    vrije_index = 0
+
+    for positie in basiself:
+
+        if positie["player"] is not None:
+            continue
+
+        if vrije_index >= len(
+            vrije_spelers
+        ):
+            break
+
+        gekozen = vrije_spelers[
+            vrije_index
+        ]
+
+        vrije_index += 1
+
+        positie["player"] = gekozen
+
+        gebruikte_ids.add(
+            int(gekozen["id"])
+        )
+
+    # =====================================================
+    # 4. RESULTAAT
+    # =====================================================
+
+    return basiself
 
 # =========================================================
 # URL
@@ -1085,9 +1117,16 @@ def generate_matches():
     # Start van het seizoen.
     startdatum = date.today()
 
-    # -----------------------------------------
+    # =========================================
+    # START VAN HET SEIZOEN
+    # =========================================
+
+    # Eerste speelronde is vandaag.
+    startdatum = date.today()
+
+    # =========================================
     # WEDSTRIJDEN IN DATABASE ZETTEN
-    # -----------------------------------------
+    # =========================================
 
     for index, wedstrijden in enumerate(
         alle_rondes
@@ -1095,11 +1134,10 @@ def generate_matches():
 
         speelronde = index + 1
 
-        # Eén speelronde per week.
+        # Iedere dag één speelronde.
         datum = (
             startdatum
-            +
-            timedelta(days=index * 7)
+            + timedelta(days=index)
         )
 
         for thuis, uit in wedstrijden:
@@ -1124,7 +1162,7 @@ def generate_matches():
                 datum.isoformat()
             ))
 
-    connection.commit()
+        connection.commit()
 
     # Controle voor onszelf.
     totaal = connection.execute("""
@@ -5034,7 +5072,6 @@ def transfers():
     club = get_user_club()
 
     if club is None:
-
         return redirect(
             url_for("clubs_page")
         )
@@ -5055,14 +5092,15 @@ def transfers():
             players.leeftijd,
             players.marktwaarde,
             players.rating,
+            players.club_id,
             clubs.naam AS club_naam,
             clubs.logo AS club_logo
         FROM players
         JOIN clubs
             ON players.club_id = clubs.id
         WHERE players.club_id != ?
-        ORDER BY players.rating DESC
-        LIMIT 50
+        ORDER BY RANDOM()
+        LIMIT 20
     """, (
         club["id"],
     )).fetchall()
@@ -5078,7 +5116,6 @@ def transfers():
         transfer_offers=
             transfer_offers
     )
-
 
 # =========================================================
 # AI BOD ACCEPTEREN
@@ -6067,7 +6104,7 @@ if __name__ == "__main__":
             nieuwe_datum = (
                 eerste_datum
                 +
-                timedelta(days=index * 7)
+                timedelta(days=index )
             )
 
             connection.execute("""
